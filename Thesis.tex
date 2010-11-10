@@ -8,15 +8,22 @@
 \usepackage{epstopdf}
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
 
-%code listings
+%code listings%%%
 \usepackage{listings}
 %\lstset{language=C}
-\lstset{basicstyle=\small}
+\lstset{
+	basicstyle=\small,
+	tabsize=4
+ }
 \def\lstlistlistingname{Code Excerpts}
 \def\lstlistingname{Figure}
 \newcommand{\refCode}{\lstlistingname \hspace{1mm}}
+%%%
 
+\usepackage{hyperref}
+\usepackage{booktabs}
 
+%for title page
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
 
 \title{Customizable Style Checking for C Programs}
@@ -70,6 +77,7 @@ Dr.~Robert \textsc{Dondero}
 \begin{abstract}
 \end{abstract}
 
+\tableofcontents
 
 \lstlistoflistings
 
@@ -79,12 +87,14 @@ Dr.~Robert \textsc{Dondero}
 	\caption{Error Checking}
 	\label{errorChecking}
 	\begin{center}
-	\begin{tabular}{|c|c|c|}
-		\hline
-		Types of Errors & Tools for Essays & Tools for Code \\ \hline
-		Syntactic & Spell Check & Compiler \\ \hline
-		Semantic & Grammar Check & \\ \hline
-		Substantive & Audience/Grader & User/Tests \\ \hline
+	\begin{tabular}{ccc}
+		\toprule
+		Types of Errors & Tools for Essays & Tools for Code \\
+		\midrule
+		Syntactic & Spell Check & Compiler \\
+		Semantic & Grammar Check & \\ 
+		Substantive & Audience/Grader & User/Tests \\
+		\bottomrule
 	\end{tabular}
 	\end{center}
 \end{table}
@@ -101,27 +111,27 @@ While I have talked about the nature of semantic error checking, I have yet to c
 There are some tools that try to fill this gap with semantic error checking. Each approaches the problem differently but all help to find some semantic errors. The tools that I will be discussing are Splint, PMD, and Checkstyle.
 
 \section{Splint}
-Splint is a tool for “statically checking C programs for security vulnerabilities and programming mistakes” \cite[p. 9]{splint-manual}. It works exactly as my program will from the student’s perspective, namely as a command-line program which prints warnings and errors to stdout. Without additional information, Splint displays warnings about basic semantic errors like assignments with mismatched types and ignored return values. With some more effort, programmers can add annotations (effectively fancy comments) that give Splint a specification to check against. These annotations allow for stronger checks like memory management, null pointers and “violations of information hiding”\cite[p. 9]{splint-manual}. Examples of annotations in action are the following abstract type declarations (\refCode \ref{splint-annotations}).
-%\begin{figure}[h]
-%\caption{Splint Annotations}
-%\label{splint-annotations}
+Splint is a tool for ``statically checking C programs for security vulnerabilities and programming mistakes" \cite[p. 9]{splint-manual}. It works exactly as my program will from the student’s perspective, namely as a command-line program which prints warnings and errors to stdout. Without additional information, Splint displays warnings about basic semantic errors like assignments with mismatched types and ignored return values. With some more effort, programmers can add annotations (effectively fancy comments) that give Splint a specification to check against. These annotations allow for stronger checks like memory management, null pointers and ``violations of information hiding" \cite[p. 9]{splint-manual}. Examples of annotations in action are the following abstract type declarations (\refCode \ref{splint-annotations}).
+
+\begin{figure}
 \begin{lstlisting}[frame=single, language=C, caption=Splint Annotations, label=splint-annotations]
 typedef /*@abstract@*/ /*@mutable@*/ char *mstring;
 typedef /*@abstract@*/ /*@immutable@*/ int weekDay;
 \end{lstlisting}
-%\end{figure}
+\end{figure}
 
-These annotations define mstring and weekDay as abstract types and further specify that they are mutable/immutable respectively.
+These annotations define \lstinline!mstring! and \lstinline!weekDay! as abstract types and further specify that they are mutable/immutable respectively.
 
-While these annotations provide an extensive feature set, they are a hugely inconvenient. They require programmers specifically write their code to meet the specification, not only of the client, but also of the tool. For new programmers (often the ones who need the most error checking), these annotations are almost impossible to implement on top of learning to program. As described by Evans in an email, “One of the goals of the original design of Splint was for programmers who add no annotations to start getting some useful warnings right away, including warnings that encourage them to start adding annotations.  For some aspects, such as /*@null@*/ annotations I think this has worked okay, but for others like abstract types, memory management, etc. I don't think it has worked very well, and the warnings on these issues tend to either make developers want to stop using Splint, or at least just turn off all the warnings of that type, rather than start adding the annotations needed to enable better checking.” \cite{evans-email}
+While these annotations provide an extensive feature set, they are a hugely inconvenient. They require programmers specifically write their code to meet the specification, not only of the client, but also of the tool. For new programmers (often the ones who need the most error checking), these annotations are almost impossible to implement on top of learning to program. As described by Evans in an email, ``One of the goals of the original design of Splint was for programmers who add no annotations to start getting some useful warnings right away, including warnings that encourage them to start adding annotations.  For some aspects, such as /*@null@*/ annotations I think this has worked okay, but for others like abstract types, memory management, etc. I don't think it has worked very well, and the warnings on these issues tend to either make developers want to stop using Splint, or at least just turn off all the warnings of that type, rather than start adding the annotations needed to enable better checking." \cite{evans-email}
 
 \section{PMD and Checkstyle}
-PMD is a tool for checking Java Code that is integrated into a dozen or so different popular IDEs. PMD comes premade with over 250 checks broken up mostly by purpose such as Braces Rules, Basic Rules, Coupling Rules, etc. Some of these checks also deal explicitly with a certain library or platform like Android, Jakarta and JUnit. PMD works by passing source code into a JavaCC-generated parser and receiving an Abstract Syntax Tree (AST, basically an object containing a model of the source code). PMD then traverses the AST and calls each rule in the RuleSet to check for any violations. This pattern of examining a tree of nodes is called the Visitor Pattern \cite{design-patterns}. The RuleSet is an XML file that can be edited to augment the functionality of PMD with customized rules. Rules are written in their own classes and extend a base implementation. The rule itself can override three functions (start, visit and end) to perform various checks against the source code based on the nodes in the AST. Here is the “dummy” example from the PMD website which counts how many expressions are in the source code (\refCode \ref{pmd-rule}):
+PMD is a tool for checking Java Code that is integrated into a dozen or so different popular IDEs. PMD comes premade with over 250 checks broken up mostly by purpose such as Braces Rules, Basic Rules, Coupling Rules, etc. Some of these checks also deal explicitly with a certain library or platform like Android, Jakarta and JUnit. PMD works by passing source code into a JavaCC-generated parser and receiving an Abstract Syntax Tree (AST, basically an object containing a model of the source code). PMD then traverses the AST and calls each rule in the RuleSet to check for any violations. This pattern of examining a tree of nodes is called the Visitor Pattern \cite{design-patterns}. The RuleSet is an XML file that can be edited to augment the functionality of PMD with customized rules. Rules are written in their own classes and extend a base implementation. The rule itself can override three functions (start, visit and end) to perform various checks against the source code based on the nodes in the AST. Here is the ``dummy" example from the PMD website which counts how many expressions are in the source code (\refCode \ref{pmd-rule}):
 
-%\begin{figure}[h]
-%\caption{Example PMD Rule counting the number expressions}
-%\label{pmd-rule}
-\begin{lstlisting}[frame=single, language=Java, caption=Example PMD Rule counting the number expressions, label=pmd-rule]
+\begin{figure}
+\begin{lstlisting}[
+	frame=single, language=Java,
+	caption={[Example PMD Rule] Example PMD Rule counting the number expressions},
+	label=pmd-rule]
 package net.sourceforge.pmd.rules;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -160,7 +170,7 @@ public class CountRule extends AbstractJavaRule {
 	}
 }
 \end{lstlisting}
-%\end{figure}
+\end{figure}
 
 Checkstyle mimics PMD in function but provides different checks out of the box (namely those regarding duplicate code, class design, whitespace, etc). It also uses the Visitor Pattern and provides ways to examine the beginning and ends of the tree as well as each node. New rules are added through an XML file and similarly passed to Checkstyle at runtime.
 
