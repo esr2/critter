@@ -39,7 +39,7 @@
 
 \tableofcontents
 
-\lstlistoflistings
+\listoffigures
 
 \chapter{Problem Description}
 
@@ -111,7 +111,9 @@ pointers and ``violations of information hiding" \cite[p. 9]{splint-manual}. Exa
 action are the following abstract type declarations (\refCode \ref{splint-annotations}).
 
 \begin{figure}[h]
-\begin{lstlisting}[frame=single, language=C, caption=Splint Annotations, label=splint-annotations]
+\caption{Splint Annotations}
+\label{splint-annotations}
+\begin{lstlisting}[frame=single, language=C]
 typedef /*@abstract@*/ /*@mutable@*/ char *mstring;
 typedef /*@abstract@*/ /*@immutable@*/ int weekDay;
 \end{lstlisting}
@@ -148,10 +150,9 @@ example from the PMD website which counts how many expressions are in the source
 (\refCode \ref{pmd-rule}):
 
 \begin{figure}
-\begin{lstlisting}[
-	frame=single, language=Java,
-	caption={[Example PMD Rule] Example PMD Rule counting the number expressions},
-	label=pmd-rule]
+\caption[Example PMD Rule]{Example PMD Rule counting the number expressions}
+\label{pmd-rule}
+\begin{lstlisting}[frame=single, language=Java]
 package net.sourceforge.pmd.rules;
 
 import java.util.concurrent.atomic.AtomicLong;
