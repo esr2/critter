@@ -1,6 +1,6 @@
-default: run
+default: all
 
-run: all
+run: 
 	echo "==================="
 	a.out
 
@@ -14,3 +14,4 @@ generate: c.y c.l
 
 clean:
 	rm -f *.tab.* lex.yy.c
+	rm -f a.out
