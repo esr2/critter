@@ -156,18 +156,21 @@ loop:
 
 
 int column = 0;
+int lineNum = 0;
 
 void count()
 {
 	int i;
 
 	for (i = 0; yytext[i] != '\0'; i++)
-		if (yytext[i] == '\n')
+		if (yytext[i] == '\n') {
 			column = 0;
-		else if (yytext[i] == '\t')
+			lineNum++;
+		} else if (yytext[i] == '\t') {
 			column += 8 - (column % 8);
-		else
+		} else {
 			column++;
+		}
 
 	/*ECHO;*/
 }

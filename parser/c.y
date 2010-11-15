@@ -422,10 +422,12 @@ function_definition
 
 extern char yytext[];
 extern int column;
+extern int lineNum;
 
 yyerror(s)
 char *s;
 {
 	fflush(stdout);
+	printf("\n%d: %s", lineNum, yytext);
 	printf("\n%*s\n%*s\n", column, "^", column, s);
 }
