@@ -121,6 +121,9 @@ yywrap()
 }
 
 
+int column = 0;
+int lineNum = 1;
+
 comment()
 {
 	char c, c1;
@@ -128,8 +131,12 @@ comment()
 	/*putchar('/'); putchar('*');*/
 
 loop:
-	while ((c = input()) != '*' && c != 0)
+	while ((c = input()) != '*' && c != 0) {
 		/*putchar(c); */ ;
+		if (c == '\n') { 
+			lineNum++; 
+		}
+	}
 
 	if ((c1 = input()) != '/' && c != 0)
 	{
@@ -147,16 +154,19 @@ directive()
 	char c;
 
 loop:
-	while ((c = input()) != '\n' && c != 0)
+	while ((c = input()) != '\n' && c != 0) {
 		/*putchar(c);*/;
-
+	}
+	
+	if (c != 0) {
+		unput(c);
+	}
+	
 	/*if (c != 0)
 		putchar(c);*/
 }
 
 
-int column = 0;
-int lineNum = 0;
 
 void count()
 {

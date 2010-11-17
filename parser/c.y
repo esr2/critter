@@ -380,8 +380,8 @@ expression_statement
 	;
 
 selection_statement
-	: IF '(' expression ')' statement
-	| IF '(' expression ')' statement ELSE statement
+	: IF '(' expression ')' statement 	{printMe(1);}
+	| IF '(' expression ')' statement ELSE statement {printMe(2);}
 	| SWITCH '(' expression ')' statement
 	;
 
@@ -430,4 +430,15 @@ char *s;
 	fflush(stdout);
 	printf("\n%d: %s", lineNum, yytext);
 	printf("\n%*s\n%*s\n", column, "^", column, s);
+}
+
+printMe(int option) {
+  if (option == 1) {
+  printf("%d: using an if statement (as opposed to if-else)\n", lineNum);
+  }
+
+  if (option == 2) {
+  printf("%d: using an if-else statement\n", lineNum);
+  }
+
 }
