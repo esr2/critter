@@ -13,6 +13,7 @@
 %start translation_unit
 
 %error-verbose
+%locations
 
 %%
 
@@ -358,8 +359,8 @@ labeled_statement
 	;
 
 compound_statement
-	: '{' '}'
-	| '{' statement_list '}'
+	: '{' '}' {printMe(3, @1);}
+	| '{' statement_list '}' {printMe(4, @2); }
 	| '{' declaration_list '}'
 	| '{' declaration_list statement_list '}'
 	;
@@ -380,8 +381,8 @@ expression_statement
 	;
 
 selection_statement
-	: IF '(' expression ')' statement 	{printMe(1);}
-	| IF '(' expression ')' statement ELSE statement {printMe(2);}
+	: IF '(' expression ')' statement 	{printMe(1, @2);}
+	| IF '(' expression ')' statement ELSE statement {printMe(2, @2);}
 	| SWITCH '(' expression ')' statement
 	;
 
@@ -420,7 +421,7 @@ function_definition
 %%
 #include <stdio.h>
 
-extern char yytext[];
+extern char linebuf[];
 extern int column;
 extern int lineNum;
 
@@ -428,17 +429,28 @@ yyerror(s)
 char *s;
 {
 	fflush(stdout);
-	printf("\n%d: %s", lineNum, yytext);
-	printf("\n%*s\n%*s\n", column, "^", column, s);
+	printf("\n%s", linebuf);
+	printf("\n%*s\n%d:%d %s\n", column, "^", lineNum, column, s);
 }
 
-printMe(int option) {
+printMe(int option, struct YYLTYPE param) {
+  printf("%s\n", linebuf);
   if (option == 1) {
-  printf("%d: using an if statement (as opposed to if-else)\n", lineNum);
+ 	 printf("%d: using an if statement (as opposed to if-else)", lineNum);
   }
 
   if (option == 2) {
-  printf("%d: using an if-else statement\n", lineNum);
+  printf("%d: using an if-else statement", lineNum);
   }
 
+  if (option == 3) {
+  printf("%d: using brackets", lineNum);
+  }
+
+  if (option == 4) {
+  printf("%d: using compound statement", lineNum);
+  }
+  
+  printf(" %d,%d - %d,%d\n", param.first_line, param.first_column,
+                             param.last_line, param.last_column);
 }

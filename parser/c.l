@@ -10,10 +10,21 @@ IS			(u|U|l|L)*
 #include <stdio.h>
 #include "c.tab.h"
 
+int column = 0;
+int lineNum = 1;
+char linebuf[500];
+
+#define YY_USER_ACTION {yylloc.first_line = lineNum; yylloc.first_column = column; int colnum=column+yyleng; yylloc.last_column=colnum; yylloc.last_line = lineNum;}
+
+void countLines();
 void count();
 %}
 
 %%
+\n.*  { countLines();
+		strncpy(linebuf, yytext+1, sizeof(linebuf)); /* save the next line */
+		yyless(1);      /* give back all but the \n to rescan */
+		}
 "/*"			{ comment(); }
 "#"			{ directive(); }
 
@@ -121,8 +132,7 @@ yywrap()
 }
 
 
-int column = 0;
-int lineNum = 1;
+
 
 comment()
 {
@@ -167,6 +177,10 @@ loop:
 }
 
 
+void countLines() {
+	column = 0;
+	lineNum++;
+}
 
 void count()
 {
@@ -174,10 +188,9 @@ void count()
 
 	for (i = 0; yytext[i] != '\0'; i++)
 		if (yytext[i] == '\n') {
-			column = 0;
-			lineNum++;
+			countLines();
 		} else if (yytext[i] == '\t') {
-			column += 8 - (column % 8);
+			column += 4 - (column % 4);
 		} else {
 			column++;
 		}
