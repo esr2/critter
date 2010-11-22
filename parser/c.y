@@ -351,7 +351,7 @@ initializer_list
 
 statement
 	: labeled_statement
-	| compound_statement
+	| compound_statement {$$ = COMPOUND_STATEMENT;}
 	| expression_statement
 	| selection_statement
 	| iteration_statement
@@ -365,9 +365,9 @@ labeled_statement
 	;
 
 compound_statement
-	: '{' '}' {printMe(3, @$, $$);}
-	| '{' statement_list '}' {printMe(4, @$, $$); }
-	| '{' declaration_list '}'
+	: '{' '}' {$$ = EMPTY_COMPOUND; printMe($$, @$, $$);}
+	| '{' statement_list '}' {$$ = STATEMENT_COMPOUND; printMe($$, @$, $2); }
+	| '{' declaration_list '} '
 	| '{' declaration_list statement_list '}'
 	;
 
@@ -387,8 +387,8 @@ expression_statement
 	;
 
 selection_statement
-	: IF '(' expression ')' statement 	{$$ = IF_SELECTION; printMe(1, @$, $$);}
-	| IF '(' expression ')' statement ELSE statement {$$ = IF_ELSE_SELECTION, printMe(2, @$, $$);}
+	: IF '(' expression ')' statement 	{$$ = IF_SELECTION; printMe($$, @$, $5);}
+	| IF '(' expression ')' statement ELSE statement {$$ = IF_ELSE_SELECTION, printMe($$, @$, $5);}
 	| SWITCH '(' expression ')' statement
 	;
 
@@ -438,7 +438,7 @@ char *s;
 	printf("\n%*s\n%d:%d %s\n", column, "^", lineNum, column, s);
 }
 
-printMe(int option, struct YYLTYPE param, int value) {
+printMe(int value, struct YYLTYPE param, int data) {
 	if (value == IF_SELECTION) {
 		printf("using an if statement (as opposed to if-else)");
 	}
@@ -447,11 +447,11 @@ printMe(int option, struct YYLTYPE param, int value) {
 		printf("using an if-else statement");
 	}
 	
-	if (option == 3) {
+	if (value == EMPTY_COMPOUND) {
 		printf("using brackets");
 	}
 	
-	if (option == 4) {
+	if (value == STATEMENT_COMPOUND) {
 		printf("using compound statement");
 	}
 	
@@ -460,6 +460,6 @@ printMe(int option, struct YYLTYPE param, int value) {
 			   param.last_line, param.last_column);
 	}
 	
-	printf("value is %d\n", value);
+	printf("field is %d\n", data);
 	
 }

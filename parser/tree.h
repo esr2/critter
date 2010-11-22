@@ -10,6 +10,8 @@
 /* Codes of tree nodes */
 
 enum tree_code {
+		FIRST_AND_UNUSED_TREE_CODE, /* unspecified default to 0 */
+		COMPOUND_STATEMENT,
 		EMPTY_COMPOUND,
 		STATEMENT_COMPOUND,
 		IF_SELECTION,
