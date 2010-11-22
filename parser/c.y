@@ -359,8 +359,8 @@ labeled_statement
 	;
 
 compound_statement
-	: '{' '}' {printMe(3, @1);}
-	| '{' statement_list '}' {printMe(4, @2); }
+	: '{' '}' {printMe(3, @$);}
+	| '{' statement_list '}' {printMe(4, @$); }
 	| '{' declaration_list '}'
 	| '{' declaration_list statement_list '}'
 	;
@@ -381,8 +381,8 @@ expression_statement
 	;
 
 selection_statement
-	: IF '(' expression ')' statement 	{printMe(1, @2);}
-	| IF '(' expression ')' statement ELSE statement {printMe(2, @2);}
+	: IF '(' expression ')' statement 	{printMe(1, @$);}
+	| IF '(' expression ')' statement ELSE statement {printMe(2, @$);}
 	| SWITCH '(' expression ')' statement
 	;
 
@@ -434,23 +434,24 @@ char *s;
 }
 
 printMe(int option, struct YYLTYPE param) {
-  printf("%s\n", linebuf);
-  if (option == 1) {
- 	 printf("%d: using an if statement (as opposed to if-else)", lineNum);
-  }
-
-  if (option == 2) {
-  printf("%d: using an if-else statement", lineNum);
-  }
-
-  if (option == 3) {
-  printf("%d: using brackets", lineNum);
-  }
-
-  if (option == 4) {
-  printf("%d: using compound statement", lineNum);
-  }
-  
-  printf(" %d,%d - %d,%d\n", param.first_line, param.first_column,
-                             param.last_line, param.last_column);
+	if (option == 1) {
+		printf("using an if statement (as opposed to if-else)");
+	}
+	
+	if (option == 2) {
+		printf("using an if-else statement");
+	}
+	
+	if (option == 3) {
+		printf("using brackets");
+	}
+	
+	if (option == 4) {
+		printf("using compound statement");
+	}
+	
+	if (param.first_line) {
+		printf(" %d,%d - %d,%d\n", param.first_line, param.first_column,
+			   param.last_line, param.last_column);
+	}
 }
