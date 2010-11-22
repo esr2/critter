@@ -1,3 +1,9 @@
+%{
+#include <stdio.h>
+#include <stdlib.h>
+#include "tree.h"
+%}
+
 %token IDENTIFIER CONSTANT STRING_LITERAL SIZEOF
 %token PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
 %token AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
@@ -359,8 +365,8 @@ labeled_statement
 	;
 
 compound_statement
-	: '{' '}' {printMe(3, @$);}
-	| '{' statement_list '}' {printMe(4, @$); }
+	: '{' '}' {printMe(3, @$, $$);}
+	| '{' statement_list '}' {printMe(4, @$, $$); }
 	| '{' declaration_list '}'
 	| '{' declaration_list statement_list '}'
 	;
@@ -381,8 +387,8 @@ expression_statement
 	;
 
 selection_statement
-	: IF '(' expression ')' statement 	{printMe(1, @$);}
-	| IF '(' expression ')' statement ELSE statement {printMe(2, @$);}
+	: IF '(' expression ')' statement 	{$$ = IF_SELECTION; printMe(1, @$, $$);}
+	| IF '(' expression ')' statement ELSE statement {$$ = IF_ELSE_SELECTION, printMe(2, @$, $$);}
 	| SWITCH '(' expression ')' statement
 	;
 
@@ -419,7 +425,6 @@ function_definition
 	;
 
 %%
-#include <stdio.h>
 
 extern char linebuf[];
 extern int column;
@@ -433,12 +438,12 @@ char *s;
 	printf("\n%*s\n%d:%d %s\n", column, "^", lineNum, column, s);
 }
 
-printMe(int option, struct YYLTYPE param) {
-	if (option == 1) {
+printMe(int option, struct YYLTYPE param, int value) {
+	if (value == IF_SELECTION) {
 		printf("using an if statement (as opposed to if-else)");
 	}
 	
-	if (option == 2) {
+	if (value == IF_ELSE_SELECTION) {
 		printf("using an if-else statement");
 	}
 	
@@ -454,4 +459,7 @@ printMe(int option, struct YYLTYPE param) {
 		printf(" %d,%d - %d,%d\n", param.first_line, param.first_column,
 			   param.last_line, param.last_column);
 	}
+	
+	printf("value is %d\n", value);
+	
 }
