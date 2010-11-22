@@ -350,12 +350,12 @@ initializer_list
 	;
 
 statement
-	: labeled_statement
+	: labeled_statement {$$ = LABELED_STATEMENT; }
 	| compound_statement {$$ = COMPOUND_STATEMENT;}
-	| expression_statement
-	| selection_statement
-	| iteration_statement
-	| jump_statement
+	| expression_statement {$$ = EXPRESSION_STATEMENT;}
+	| selection_statement {$$ = SELECTION_STATEMENT;}
+	| iteration_statement {$$ = ITERATION_STATEMENT;}
+	| jump_statement {$$ = JUMP_STATEMENT;}
 	;
 
 labeled_statement
@@ -438,7 +438,7 @@ char *s;
 	printf("\n%*s\n%d:%d %s\n", column, "^", lineNum, column, s);
 }
 
-printMe(int value, struct YYLTYPE param, int data) {
+printMe(int value, struct YYLTYPE param, enum tree_code field) {
 	if (value == IF_SELECTION) {
 		printf("using an if statement (as opposed to if-else)");
 	}
@@ -460,6 +460,6 @@ printMe(int value, struct YYLTYPE param, int data) {
 			   param.last_line, param.last_column);
 	}
 	
-	printf("field is %d\n", data);
+	printf("field is %s\n", treeCodeLabels[field]);
 	
 }
