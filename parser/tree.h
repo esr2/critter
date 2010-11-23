@@ -23,6 +23,8 @@ enum tree_code {
 
 #define DefCode(x) #x
 const char* treeCodeLabels[] = {
+	"FIRST_AND_UNUSED",
 #include "tree.txt"
+	"LAND_AND_UNUSED"
 };
 #undef DefCode
