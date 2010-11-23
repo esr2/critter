@@ -445,6 +445,7 @@ printMe(int value, struct YYLTYPE param, enum tree_code field) {
 	
 	if (value == IF_ELSE_SELECTION) {
 		printf("using an if-else statement");
+		callError();
 	}
 	
 	if (value == EMPTY_COMPOUND) {
@@ -460,6 +461,9 @@ printMe(int value, struct YYLTYPE param, enum tree_code field) {
 			   param.last_line, param.last_column);
 	}
 	
-	printf("field is %s\n", treeCodeLabels[field]);
+	printf("field is %s\n\n", treeCodeLabels[field]);
 	
 }
+
+
+

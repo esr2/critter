@@ -5,10 +5,10 @@ run:
 	a.out
 
 
-all: generate main.c
-	gcc main.c c.tab.c
+all: generate main.c checks.c
+	gcc main.c c.tab.c checks.c
 
-generate: c.y c.l tree.h tree.txt
+generate: c.y c.l tree.txt tree.h checks.h
 	bison -d c.y
 	flex c.l
 
