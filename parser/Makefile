@@ -8,7 +8,7 @@ run:
 all: generate main.c
 	gcc main.c c.tab.c
 
-generate: c.y c.l
+generate: c.y c.l tree.h tree.txt
 	bison -d c.y
 	flex c.l
 

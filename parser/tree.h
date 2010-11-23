@@ -9,36 +9,20 @@
 
 /* Codes of tree nodes */
 
+#define DefCode(x) x
 enum tree_code {
-		FIRST_AND_UNUSED_TREE_CODE, /* unspecified default to 0 */
-		LABELED_STATEMENT,
-		COMPOUND_STATEMENT,
-		EXPRESSION_STATEMENT,
-		SELECTION_STATEMENT,
-		ITERATION_STATEMENT,
-		JUMP_STATEMENT,
-		EMPTY_COMPOUND,
-		STATEMENT_COMPOUND,
-		IF_SELECTION,
-		IF_ELSE_SELECTION,
-		LAST_AND_UNUSED_TREE_CODE	/* A convenient way to get a value for
+	FIRST_AND_UNUSED_TREE_CODE, /* unspecified default to 0 */
+#include "tree.txt"
+	,LAST_AND_UNUSED_TREE_CODE	/* A convenient way to get a value for
 									   NUM_TREE_CODE.  */
 };
+#undef DefCode
 
 /* Number of language-independent tree codes.  */
 #define NUM_TREE_CODES ((int) LAST_AND_UNUSED_TREE_CODE)
 
+#define DefCode(x) #x
 const char* treeCodeLabels[] = {
-	"FIRST_AND_UNUSED_TREE_CODE",
-	"LABELED_STATEMENT",
-	"COMPOUND_STATEMENT",
-	"EXPRESSION_STATEMENT",
-	"SELECTION_STATEMENT",
-	"ITERATION_STATEMENT",
-	"JUMP_STATEMENT",
-	"EMPTY_COMPOUND",
-	"STATEMENT_COMPOUND",
-	"IF_SELECTION",
-	"IF_ELSE_SELECTION",
-	"LAST_AND_UNUSED_TREE_CODE"
+#include "tree.txt"
 };
+#undef DefCode
