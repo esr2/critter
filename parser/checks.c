@@ -9,8 +9,8 @@
 
 #include "checks.h"
 
-#include <stdio.h>
-
-void callError() {
-	yyerror("bad if else");
+void ifHasBraces(enum tree_code statementValue, YYLTYPE location) {
+	if (statementValue != COMPOUND_STATEMENT) {
+		lyyerror(location, "Please use braces after all if statements");
+	}
 }

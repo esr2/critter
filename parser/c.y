@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "tree.h"
+#include "checks.h"
+
 %}
 
 %token IDENTIFIER CONSTANT STRING_LITERAL SIZEOF
@@ -387,8 +389,8 @@ expression_statement
 	;
 
 selection_statement
-	: IF '(' expression ')' statement 	{$$ = IF_SELECTION; printMe($$, @$, $5);}
-	| IF '(' expression ')' statement ELSE statement {$$ = IF_ELSE_SELECTION, printMe($$, @$, $5);}
+	: IF '(' expression ')' statement 	{$$ = IF_SELECTION; ifHasBraces($5, @5);}
+| IF '(' expression ')' statement ELSE statement {$$ = IF_ELSE_SELECTION, ifHasBraces($5, @5); ifHasBraces($7, @7);}
 	| SWITCH '(' expression ')' statement
 	;
 
@@ -438,6 +440,15 @@ char *s;
 	printf("\n%*s\n%d:%d %s\n", column, "^", lineNum, column, s);
 }
 
+void lyyerror(YYLTYPE t, char *s)
+{
+	if(t.first_line) {
+		fprintf(stderr, "%d.%d-%d.%d: error: ", t.first_line,
+				t.first_column, t.last_line, t.last_column);
+	} 
+	fprintf(stderr, "%s\n", s);
+}
+
 printMe(int value, struct YYLTYPE param, enum tree_code field) {
 	if (value == IF_SELECTION) {
 		printf("using an if statement (as opposed to if-else)");
@@ -445,7 +456,6 @@ printMe(int value, struct YYLTYPE param, enum tree_code field) {
 	
 	if (value == IF_ELSE_SELECTION) {
 		printf("using an if-else statement");
-		callError();
 	}
 	
 	if (value == EMPTY_COMPOUND) {
@@ -461,7 +471,7 @@ printMe(int value, struct YYLTYPE param, enum tree_code field) {
 			   param.last_line, param.last_column);
 	}
 	
-	printf("field is %s\n\n", treeCodeLabels[field]);
+	/*printf("field is %s\n\n", treeCodeLabels[field]);*/
 	
 }
 

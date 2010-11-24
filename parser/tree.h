@@ -7,6 +7,9 @@
  *
  */
 
+#ifndef TREE_INCLUDED
+#define TREE_INCLUDED
+
 /* Codes of tree nodes */
 
 #define DefCode(x) x
@@ -20,7 +23,7 @@ enum tree_code {
 
 /* Number of language-independent tree codes.  */
 #define NUM_TREE_CODES ((int) LAST_AND_UNUSED_TREE_CODE)
-
+/*
 #define DefCode(x) #x
 const char* treeCodeLabels[] = {
 	"FIRST_AND_UNUSED",
@@ -28,3 +31,5 @@ const char* treeCodeLabels[] = {
 	"LAND_AND_UNUSED"
 };
 #undef DefCode
+*/
+#endif

@@ -7,5 +7,12 @@
  *
  */
 
+#ifndef CHECKS_INCLUDED
+#define CHECKS_INCLUDED
 
-void callError();
+#include "tree.h"
+#include "c.tab.h"
+
+void ifHasBraces(enum tree_code statementValue, YYLTYPE location);
+
+#endif
