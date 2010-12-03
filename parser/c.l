@@ -257,7 +257,7 @@ int check_type() {
 	return(IDENTIFIER);
 }
 
-
+/* FROM O'REILY */
 int newfile(char *fn) {
 	FILE *f = fopen(fn, "r");
 	struct bufstack *bs = malloc(sizeof(struct bufstack));
