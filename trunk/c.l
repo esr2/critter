@@ -167,12 +167,9 @@ yywrap() {
 
 comment() {
 	char c, c1;
-	
-	/*putchar('/'); putchar('*');*/
 
 loop:
 	while ((c = input()) != '*' && c != 0) {
-		/*putchar(c); */ ;
 		if (c == '\n') { 
 			lineNum++; 
 		}
@@ -183,26 +180,16 @@ loop:
 		unput(c1);
 		goto loop;
 	}
-
-	/*if (c != 0)
-		putchar(c);
-		putchar(c1); */
 }
 
 include() {
 	char c;
-/*	int localInclude = 0;
-	
-	if ((c = input()) == '"') {
-		localInclude = 1;
-	}
-*/
+
 loop:
 	while ((c = input()) != '\n' && c != 0) {
 		putchar(c);
 	}
 	
-/*	if(localInclude && !newfile(yytext)) { */
 	if(!newfile(yytext)) { 
 		yyterminate(); /* no such file */
 	}
@@ -235,8 +222,6 @@ void count() {
 		} else {
 			column++;
 		}
-
-	/*ECHO;*/
 }
 
 
