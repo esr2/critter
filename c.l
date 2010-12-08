@@ -24,19 +24,31 @@ char linebuf[500];
 
 void countLines();
 void count();
+
+
+struct bufstack { 
+	struct bufstack *prev;
+	YY_BUFFER_STATE bs;
+	int lineno;
+	char *filename;
+	FILE *f;
+} *curbs = 0;
+char *curfilename;
 	
-	
-	struct bufstack { 
-		struct bufstack *prev;
-		YY_BUFFER_STATE bs;
-		int lineno;
-		char *filename;
-		FILE *f;
-	} *curbs = 0;
-	char *curfilename;
-	
-	int newfile(char *fn);
-	int popfile(void);
+int newfile(char *fn);
+int popfile(void);
+
+/* the symbol table inspired by O'Reily */
+struct symbol {
+	char *name;
+};
+
+/* simple symtab of fixed size */ 
+#define NHASH 9997 
+struct symbol symtab[NHASH];
+
+struct symbol *lookup(char*);
+
 %}
 
 %%
@@ -288,5 +300,34 @@ int popfile(void) {
 	curfilename = curbs->filename; 
 
 	return 1;
+}
+
+/* hash a symbol */ 
+static unsigned symhash(char *sym) {
+	unsigned int hash = 0; 
+	unsigned c;
+	
+	while(c = *sym++) { hash = hash*9 ^ c; }
+	
+	return hash;
+}
+
+struct symbol * lookup(char* sym) {
+	struct symbol *sp = &symtab[symhash(sym)%NHASH];
+	int scount = NHASH;	/* how many have we looked at */
+
+	while(--scount >= 0) {
+		if(sp->name && !strcmp(sp->name, sym)) return sp;
+
+		if(!sp->name) {	/* new entry */ 
+			sp->name = strdup(sym); 
+			return sp;
+		}
+
+		if(++sp >= symtab+NHASH) sp = symtab; /* try the next entry */
+	} 
+
+	fputs("symbol table overflow\n", stderr);
+	abort(); /* tried them all, table is full */
 }
 
