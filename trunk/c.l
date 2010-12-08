@@ -47,7 +47,9 @@ struct symbol {
 #define NHASH 9997 
 struct symbol symtab[NHASH];
 
-struct symbol *lookup(char*);
+struct symbol *lookup();
+struct symbol *add();
+void printSymTable();
 
 %}
 
@@ -249,13 +251,23 @@ int check_type() {
 *		return(TYPE_NAME);
 *
 *	return(IDENTIFIER);
-*/
-
-/*
+*
 *	it actually will only return IDENTIFIER
 */
+	printf("looking up %s\n", yytext);
+	
 
-	return(IDENTIFIER);
+	if (strcmp(yytext, "size_t") == 0) {
+		return TYPE_NAME;
+	}
+
+	struct symbol *sp = lookup();
+
+	if (sp != NULL) {
+		return (TYPE_NAME);
+	}
+
+	return(IDENTIFIER); 
 }
 
 /* FROM O'REILY */
@@ -303,31 +315,68 @@ int popfile(void) {
 }
 
 /* hash a symbol */ 
-static unsigned symhash(char *sym) {
-	unsigned int hash = 0; 
+static unsigned symhash(const char *sym) {
+	unsigned int hash = 0U; 
+	int i = 0;
 	unsigned c;
 	
-	while(c = *sym++) { hash = hash*9 ^ c; }
+/*	while(c = *sym++) { 
+		hash = hash*9 ^ c;
+	} */
 	
-	return hash;
+	return hash % NHASH;
 }
 
-struct symbol * lookup(char* sym) {
-	struct symbol *sp = &symtab[symhash(sym)%NHASH];
-	int scount = NHASH;	/* how many have we looked at */
+struct symbol * lookup() {
+	const char* sym = yytext;
+	int start = symhash(sym);
+	struct symbol *sp = &symtab[start];
+	int scount = NHASH;	// how many have we looked at
 
 	while(--scount >= 0) {
-		if(sp->name && !strcmp(sp->name, sym)) return sp;
-
-		if(!sp->name) {	/* new entry */ 
-			sp->name = strdup(sym); 
-			return sp;
+		if(sp->name && !strcmp(sp->name, sym)) {
+			return sp; //entry found
 		}
 
-		if(++sp >= symtab+NHASH) sp = symtab; /* try the next entry */
+		if(!sp->name) {	// empty entry
+			return NULL;
+		}
+
+		if(++sp >= symtab+NHASH) sp = symtab; // try the next entry
 	} 
 
 	fputs("symbol table overflow\n", stderr);
-	abort(); /* tried them all, table is full */
+	abort();  // tried them all, table is full
 }
 
+struct symbol * add() {
+	const char* sym = yytext;
+	int start = symhash(sym);
+	struct symbol *sp = &symtab[start];
+	int scount = NHASH;	// how many have we looked at
+
+	while(--scount >= 0) {
+		if(sp->name && !strcmp(sp->name, sym)) {
+			return sp; //entry already found
+		}
+	
+		if(!sp->name) {	// new entry
+			sp->name = strdup(sym); 
+			return NULL;
+		}
+
+		if(++sp >= symtab+NHASH) sp = symtab; // try the next entry
+	}
+
+	fputs("symbol table overflow\n", stderr);
+	abort();  // tried them all, table is full
+}
+
+/* debugging function to print symbol table */
+void printSymTable() {
+	printf("printing the symbol table\n");
+	struct symbol *sp;
+	for(sp = symtab; sp->name && sp < symtab+NHASH; sp++) {
+		printf("\t%10s\n", sp->name);
+	}
+}

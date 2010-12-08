@@ -165,6 +165,8 @@ constant_expression
 declaration
 	: declaration_specifiers ';'
 	| declaration_specifiers init_declarator_list ';'
+//	| TYPEDEF declaration_specifiers type_init_declarator ';'
+	| TYPEDEF declaration_specifiers init_declarator_list ';'
 	;
 
 declaration_specifiers
@@ -186,9 +188,27 @@ init_declarator
 	| declarator '=' initializer
 	;
 
+/*type_init_declarator
+	: pointer type_direct_declarator
+	| type_direct_declarator
+	;
+
+type_direct_declarator
+	: IDENTIFIER				{ add();}
+	| '(' type_declarator ')'
+	| type_direct_declarator '[' constant_expression ']'
+	| type_direct_declarator '[' ']'
+	| type_direct_declarator '(' parameter_type_list ')'
+	| type_direct_declarator '(' identifier_list ')'
+	| type_direct_declarator '(' ')' 
+	;
+
+type_declaration
+	: TYPEDEF declaration_specifiers type_declarator
+	;
+*/
 storage_class_specifier
-	: TYPEDEF
-	| EXTERN
+	: EXTERN
 	| STATIC
 	| AUTO
 	| REGISTER
@@ -352,12 +372,12 @@ initializer_list
 	;
 
 statement
-	: labeled_statement {$$ = LABELED_STATEMENT; }
-	| compound_statement {$$ = COMPOUND_STATEMENT;}
-	| expression_statement {$$ = EXPRESSION_STATEMENT;}
-	| selection_statement {$$ = SELECTION_STATEMENT;}
-	| iteration_statement {$$ = ITERATION_STATEMENT;}
-	| jump_statement {$$ = JUMP_STATEMENT;}
+	: labeled_statement {$$ = LABELED_STATEMENT; printMe($$, @$, $$);}
+	| compound_statement {$$ = COMPOUND_STATEMENT; printMe($$, @$, $$);}
+	| expression_statement {$$ = EXPRESSION_STATEMENT; printMe($$, @$, $$);}
+	| selection_statement {$$ = SELECTION_STATEMENT; printMe($$, @$, $$);}
+	| iteration_statement {$$ = ITERATION_STATEMENT; printMe($$, @$, $$);}
+	| jump_statement {$$ = JUMP_STATEMENT; printMe($$, @$, $$);}
 	;
 
 labeled_statement
@@ -472,7 +492,6 @@ printMe(int value, struct YYLTYPE param, enum tree_code field) {
 	}
 	
 	printf("field is %s\n\n", treeCodeLabels[field]);
-	
 }
 
 
