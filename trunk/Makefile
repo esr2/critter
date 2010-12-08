@@ -1,7 +1,6 @@
 default: all
 
 run: 
-	echo "==================="
 	a.out
 
 

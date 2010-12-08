@@ -15,7 +15,7 @@ int main(void) {
 		printf("FILE FAIL\n");
 		return;
 	} else {
-		printf("opened file\n");
+		printf("=================\n");
 	}
 	
 	if (!yyparse()) {
