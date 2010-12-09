@@ -32,7 +32,7 @@ struct bufstack {
 	char *filename;
 	FILE *f;
 } *curbs = 0;
-char *curfilename = "NEED FIX";
+char *curfilename;
 
 /* the symbol table inspired by O'Reily */
 struct symbol {
@@ -69,7 +69,7 @@ void printSymTable();
 <IFILE>.|\n	{ fprintf(stderr, "%4d bad include line\n", yylineno);
 				yyterminate();
 			}
-<<EOF>>	{printf("trying to pop\n"); if(!popfile()) yyterminate(); printf("popped\n");}
+<<EOF>>	{if(!popfile()) yyterminate(); }
 
 "/*"			{ comment(); }
 "#"			{ directive(); }
@@ -273,7 +273,7 @@ int newfile(char *fn) {
 	if(!bs) { perror("malloc"); exit(1); }
 
 	/* remember state */ 
-	if(curbs) { curbs->lineno = yylineno; printf("curbs exists\n"); }
+	if(curbs) { curbs->lineno = yylineno; }
 	bs->prev = curbs;
 
 	/* set up current entry */ 
@@ -284,7 +284,6 @@ int newfile(char *fn) {
 	curbs = bs;
 	yylineno = 1; 
 	curfilename = fn; 
-printf("curfile now is %s\n", curfilename);
 	return 1;
 }
 
@@ -292,8 +291,7 @@ int popfile(void) {
 	struct bufstack *bs = curbs;
 	struct bufstack *prevbs;
 	if(!bs) return 0;
-printf("curbs exists\n");
-printf("current file is %s", bs->filename);
+
 	/* get rid of current entry */
 	fclose(bs->f); 
 	yy_delete_buffer(bs->bs);
@@ -303,8 +301,6 @@ printf("current file is %s", bs->filename);
 	free(bs);
 
 	if(!prevbs) return 0;
-printf("prevbs exists\n");
-printf("last file is %s", bs->prev->filename);
 
 	yy_switch_to_buffer(prevbs->bs); 
 	curbs = prevbs;
