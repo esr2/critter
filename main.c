@@ -24,6 +24,9 @@ int main(void) {
 	} else {
 		return 1;
 	}
+/*	if(newfile("test.c")) {
+		yylex();
+	}*/
 }
 
 

@@ -163,10 +163,10 @@ constant_expression
 	;
 
 declaration
-	: declaration_specifiers ';'
-	| declaration_specifiers init_declarator_list ';'
-//	| TYPEDEF declaration_specifiers type_init_declarator ';'
-	| TYPEDEF declaration_specifiers init_declarator_list ';'
+	: declaration_specifiers ';' {$$ = DECLARATION_SPECIFIER; printMe($$, @$, $$);}
+	| declaration_specifiers init_declarator_list ';' {$$ = DECLARATION_SPECIFIER_LIST; printMe($$, @$, $$);}
+	| TYPEDEF declaration_specifiers type_init_declarator ';' {$$ = DECLARATION_TYPEDEF; printMe($$, @$, $$);}
+//	| TYPEDEF declaration_specifiers init_declarator_list ';'
 	;
 
 declaration_specifiers
@@ -188,22 +188,12 @@ init_declarator
 	| declarator '=' initializer
 	;
 
-/*type_init_declarator
+type_init_declarator
 	: pointer type_direct_declarator
 	| type_direct_declarator
 	;
 
-type_direct_declarator
-	: IDENTIFIER				{ add();}
-	| '(' type_declarator ')'
-	| type_direct_declarator '[' constant_expression ']'
-	| type_direct_declarator '[' ']'
-	| type_direct_declarator '(' parameter_type_list ')'
-	| type_direct_declarator '(' identifier_list ')'
-	| type_direct_declarator '(' ')' 
-	;
-
-type_declaration
+/*type_declaration
 	: TYPEDEF declaration_specifiers type_declarator
 	;
 */
@@ -303,6 +293,17 @@ direct_declarator
 	| direct_declarator '(' ')'
 	;
 
+type_direct_declarator
+	: IDENTIFIER				{ add();}
+	| '(' type_init_declarator ')'
+	| type_direct_declarator '[' constant_expression ']'
+	| type_direct_declarator '[' ']'
+	| type_direct_declarator '(' parameter_type_list ')'
+	| type_direct_declarator '(' identifier_list ')'
+	| type_direct_declarator '(' ')'
+;
+
+
 pointer
 	: '*'
 	| '*' type_qualifier_list
@@ -372,12 +373,12 @@ initializer_list
 	;
 
 statement
-	: labeled_statement {$$ = LABELED_STATEMENT; printMe($$, @$, $$);}
-	| compound_statement {$$ = COMPOUND_STATEMENT; printMe($$, @$, $$);}
-	| expression_statement {$$ = EXPRESSION_STATEMENT; printMe($$, @$, $$);}
-	| selection_statement {$$ = SELECTION_STATEMENT; printMe($$, @$, $$);}
-	| iteration_statement {$$ = ITERATION_STATEMENT; printMe($$, @$, $$);}
-	| jump_statement {$$ = JUMP_STATEMENT; printMe($$, @$, $$);}
+	: labeled_statement {$$ = LABELED_STATEMENT; }
+	| compound_statement {$$ = COMPOUND_STATEMENT; }
+	| expression_statement {$$ = EXPRESSION_STATEMENT; }
+	| selection_statement {$$ = SELECTION_STATEMENT; }
+	| iteration_statement {$$ = ITERATION_STATEMENT; }
+	| jump_statement {$$ = JUMP_STATEMENT; }
 	;
 
 labeled_statement
