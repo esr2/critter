@@ -10,20 +10,6 @@
 #include <stdio.h>
 
 int main(void) {
-/*	yyin = fopen("test.c", "r");
-	if (yyin == NULL) {
-		printf("FILE FAIL\n");
-		return;
-	} else {
-		printf("=================\n");
-	}
-	
-	if (!yyparse()) {
-		printf("\n\nWIN\n");
-		return 0;
-	} else {
-		return 1;
-	}*/
 	if(newfile("test.c")) {
 		if (!yyparse()) {
 			printf("\n\nWIN\n");
