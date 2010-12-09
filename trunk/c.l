@@ -282,7 +282,8 @@ int newfile(char *fn) {
 	bs->filename = fn; 
 	yy_switch_to_buffer(bs->bs); 
 	curbs = bs;
-	yylineno = 1; 
+	//yylineno = 1; 
+	lineNum = 1;
 	curfilename = fn; 
 	return 1;
 }
@@ -304,7 +305,8 @@ int popfile(void) {
 
 	yy_switch_to_buffer(prevbs->bs); 
 	curbs = prevbs;
-	yylineno = curbs->lineno; 
+	//yylineno = curbs->lineno; 
+	lineNum = curbs->lineno;
 	curfilename = curbs->filename; 
 
 	return 1;
