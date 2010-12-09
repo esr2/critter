@@ -25,7 +25,6 @@ char linebuf[500];
 void countLines();
 void count();
 
-
 struct bufstack { 
 	struct bufstack *prev;
 	YY_BUFFER_STATE bs;
@@ -33,10 +32,7 @@ struct bufstack {
 	char *filename;
 	FILE *f;
 } *curbs = 0;
-char *curfilename;
-	
-int newfile(char *fn);
-int popfile(void);
+char *curfilename = "NEED FIX";
 
 /* the symbol table inspired by O'Reily */
 struct symbol {
@@ -73,10 +69,10 @@ void printSymTable();
 <IFILE>.|\n	{ fprintf(stderr, "%4d bad include line\n", yylineno);
 				yyterminate();
 			}
+<<EOF>>	{printf("trying to pop\n"); if(!popfile()) yyterminate(); printf("popped\n");}
 
 "/*"			{ comment(); }
 "#"			{ directive(); }
-<<EOF>>	{ if(!popfile()) yyterminate(); }
 
 "auto"			{ count(); return(AUTO); }
 "break"			{ count(); return(BREAK); }
@@ -254,9 +250,6 @@ int check_type() {
 *
 *	it actually will only return IDENTIFIER
 */
-	printf("looking up %s\n", yytext);
-	
-
 	if (strcmp(yytext, "size_t") == 0) {
 		return TYPE_NAME;
 	}
@@ -280,15 +273,18 @@ int newfile(char *fn) {
 	if(!bs) { perror("malloc"); exit(1); }
 
 	/* remember state */ 
-	if(curbs)curbs->lineno = yylineno; 
+	if(curbs) { curbs->lineno = yylineno; printf("curbs exists\n"); }
 	bs->prev = curbs;
 
 	/* set up current entry */ 
 	bs->bs = yy_create_buffer(f, YY_BUF_SIZE);
 	bs->f = f; 
-	bs->filename = fn; yy_switch_to_buffer(bs->bs); 
-	curbs = bs; yylineno = 1; 
+	bs->filename = fn; 
+	yy_switch_to_buffer(bs->bs); 
+	curbs = bs;
+	yylineno = 1; 
 	curfilename = fn; 
+printf("curfile now is %s\n", curfilename);
 	return 1;
 }
 
@@ -296,7 +292,8 @@ int popfile(void) {
 	struct bufstack *bs = curbs;
 	struct bufstack *prevbs;
 	if(!bs) return 0;
-
+printf("curbs exists\n");
+printf("current file is %s", bs->filename);
 	/* get rid of current entry */
 	fclose(bs->f); 
 	yy_delete_buffer(bs->bs);
@@ -306,9 +303,12 @@ int popfile(void) {
 	free(bs);
 
 	if(!prevbs) return 0;
+printf("prevbs exists\n");
+printf("last file is %s", bs->prev->filename);
 
 	yy_switch_to_buffer(prevbs->bs); 
-	curbs = prevbs; yylineno = curbs->lineno; 
+	curbs = prevbs;
+	yylineno = curbs->lineno; 
 	curfilename = curbs->filename; 
 
 	return 1;
