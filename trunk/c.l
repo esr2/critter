@@ -316,9 +316,9 @@ static unsigned symhash(const char *sym) {
 	int i = 0;
 	unsigned c;
 	
-/*	while(c = *sym++) { 
+	while(c = *sym++) { 
 		hash = hash*9 ^ c;
-	} */
+	} 
 	
 	return hash % NHASH;
 }
