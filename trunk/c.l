@@ -7,6 +7,7 @@ FS			(f|F|l|L)
 IS			(u|U|l|L)*
 
 %x IFILE
+%x COMMENT
 
 %{
 #include <stdio.h>
@@ -55,6 +56,13 @@ void printSymTable();
 		yyless(1);      /* give back all but the \n to rescan */
 		}
 
+"/*" 				{ BEGIN(COMMENT); }
+<COMMENT>"*/"				{ BEGIN(INITIAL); }
+<COMMENT>([^*]|\n)+|.	
+<COMMENT><<EOF>>			{ printf("%s:%d: Unterminated comment\n",
+									 curfilename, lineNum); return 0; }
+
+
 ^"#"[ \t]*include[ \t]*\" {BEGIN IFILE;}
 <IFILE>[^ \t\n\">]+	{
 						{ int c;
@@ -71,7 +79,6 @@ void printSymTable();
 			}
 <<EOF>>	{if(!popfile()) yyterminate(); }
 
-"/*"			{ comment(); }
 "#"			{ directive(); }
 
 "auto"			{ count(); return(AUTO); }
