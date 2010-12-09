@@ -43,8 +43,8 @@ struct symbol {
 #define NHASH 9997 
 struct symbol symtab[NHASH];
 
-struct symbol *lookup();
-struct symbol *add();
+struct symbol *lookupSymbol();
+struct symbol *addSymbol();
 void printSymTable();
 
 %}
@@ -254,7 +254,7 @@ int check_type() {
 		return TYPE_NAME;
 	}
 
-	struct symbol *sp = lookup();
+	struct symbol *sp = lookupSymbol();
 
 	if (sp != NULL) {
 		return (TYPE_NAME);
@@ -323,7 +323,7 @@ static unsigned symhash(const char *sym) {
 	return hash % NHASH;
 }
 
-struct symbol * lookup() {
+struct symbol * lookupSymbol() {
 	const char* sym = yytext;
 	int start = symhash(sym);
 	struct symbol *sp = &symtab[start];
@@ -345,7 +345,7 @@ struct symbol * lookup() {
 	abort();  // tried them all, table is full
 }
 
-struct symbol * add() {
+struct symbol * addSymbol() {
 	const char* sym = yytext;
 	int start = symhash(sym);
 	struct symbol *sp = &symtab[start];
