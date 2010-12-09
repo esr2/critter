@@ -163,10 +163,9 @@ constant_expression
 	;
 
 declaration
-	: declaration_specifiers ';' {$$ = DECLARATION_SPECIFIER; printMe($$, @$, $$);}
-	| declaration_specifiers init_declarator_list ';' {$$ = DECLARATION_SPECIFIER_LIST; printMe($$, @$, $$);}
-	| TYPEDEF declaration_specifiers type_init_declarator ';' {$$ = DECLARATION_TYPEDEF; printMe($$, @$, $$);}
-//	| TYPEDEF declaration_specifiers init_declarator_list ';'
+	: declaration_specifiers ';'
+	| declaration_specifiers init_declarator_list ';'
+	| TYPEDEF declaration_specifiers type_init_declarator ';'
 	;
 
 declaration_specifiers
@@ -193,10 +192,6 @@ type_init_declarator
 	| type_direct_declarator
 	;
 
-/*type_declaration
-	: TYPEDEF declaration_specifiers type_declarator
-	;
-*/
 storage_class_specifier
 	: EXTERN
 	| STATIC
@@ -294,7 +289,7 @@ direct_declarator
 	;
 
 type_direct_declarator
-	: IDENTIFIER				{ add();}
+	: IDENTIFIER				{ addSymbol();}
 	| '(' type_init_declarator ')'
 	| type_direct_declarator '[' constant_expression ']'
 	| type_direct_declarator '[' ']'
@@ -411,7 +406,9 @@ expression_statement
 
 selection_statement
 	: IF '(' expression ')' statement 	{$$ = IF_SELECTION; ifHasBraces($5, @5);}
-| IF '(' expression ')' statement ELSE statement {$$ = IF_ELSE_SELECTION, ifHasBraces($5, @5); ifHasBraces($7, @7);}
+	| IF '(' expression ')' statement ELSE statement {$$ = IF_ELSE_SELECTION,
+													  ifHasBraces($5, @5);
+													  ifHasBraces($7, @7);}
 	| SWITCH '(' expression ')' statement
 	;
 
