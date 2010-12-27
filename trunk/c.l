@@ -9,7 +9,9 @@ IS			(u|U|l|L)*
 %x IFILE
 %x COMMENT
 
-%code {
+%option yylineno
+
+%{
 #include <stdio.h>
 #include "c.tab.h"
 
@@ -17,38 +19,38 @@ int column = 0;
 int lineNum = 1;
 char linebuf[500];
 
-#define YY_USER_ACTION {yylloc.first_line = lineNum;	\
+#define YY_USER_ACTION {yylloc.first_line = yylineno;	\
 						yylloc.first_column = column;	\
 						int colnum=column+yyleng;		\
 						yylloc.last_column=colnum;		\
-						yylloc.last_line = lineNum;}
+						yylloc.last_line = yylineno;}
 
-void countLines();
-void count();
-
-struct bufstack { 
-	struct bufstack *prev;
-	YY_BUFFER_STATE bs;
-	int lineno;
-	char *filename;
-	FILE *f;
-} *curbs = 0;
-char *curfilename;
-
-/* the symbol table inspired by O'Reily */
-struct symbol {
-	char *name;
-};
-
-/* simple symtab of fixed size */ 
+	void countLines();
+	void count();
+	
+	struct bufstack { 
+		struct bufstack *prev;
+		YY_BUFFER_STATE bs;
+		int lineno;
+		char *filename;
+		FILE *f;
+	} *curbs = 0;
+	char *curfilename;
+	
+	/* the symbol table inspired by O'Reily */
+	struct symbol {
+		char *name;
+	};
+	
+	/* simple symtab of fixed size */ 
 #define NHASH 9997 
-struct symbol symtab[NHASH];
+	struct symbol symtab[NHASH];
 
-struct symbol *lookupSymbol();
-struct symbol *addSymbol();
-void printSymTable();
+	struct symbol *lookupSymbol();
+	struct symbol *addSymbol();
+	void printSymTable();
 
-}
+%}
 
 %%
 \n.*  { countLines();
@@ -60,7 +62,7 @@ void printSymTable();
 <COMMENT>"*/"				{ BEGIN(INITIAL); }
 <COMMENT>([^*]|\n)+|.	
 <COMMENT><<EOF>>			{ printf("%s:%d: Unterminated comment\n",
-									 curfilename, lineNum); return 0; }
+									 curfilename, yylineno); return 0; }
 
 
 ^"#"[ \t]*include[ \t]*\" {BEGIN IFILE;}
@@ -68,7 +70,6 @@ void printSymTable();
 						{ int c;
 						  while((c = input()) && c != '\n') ;
 						}
-						yylineno++;
 						if(!newfile(yytext)) {
 							yyterminate(); /* no such file */ 
 						}
@@ -289,7 +290,7 @@ int newfile(char *fn) {
 	bs->filename = fn; 
 	yy_switch_to_buffer(bs->bs); 
 	curbs = bs;
-	//yylineno = 1; 
+	yylineno = 1; 
 	lineNum = 1;
 	curfilename = fn; 
 	return 1;
@@ -312,7 +313,7 @@ int popfile(void) {
 
 	yy_switch_to_buffer(prevbs->bs); 
 	curbs = prevbs;
-	//yylineno = curbs->lineno; 
+	yylineno = curbs->lineno; 
 	lineNum = curbs->lineno;
 	curfilename = curbs->filename; 
 
