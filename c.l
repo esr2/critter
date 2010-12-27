@@ -9,7 +9,7 @@ IS			(u|U|l|L)*
 %x IFILE
 %x COMMENT
 
-%{
+%code {
 #include <stdio.h>
 #include "c.tab.h"
 
@@ -17,7 +17,7 @@ int column = 0;
 int lineNum = 1;
 char linebuf[500];
 
-#define YY_USER_ACTION {yylloc.first_line = lineNum;	\
+#define YY_USER_ACTION {yylloc.first_line = yylineno;	\
 						yylloc.first_column = column;	\
 						int colnum=column+yyleng;		\
 						yylloc.last_column=colnum;		\
@@ -48,7 +48,7 @@ struct symbol *lookupSymbol();
 struct symbol *addSymbol();
 void printSymTable();
 
-%}
+}
 
 %%
 \n.*  { countLines();
