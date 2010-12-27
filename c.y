@@ -5,6 +5,32 @@
 #include "checks.h"
 }
 
+%code requires {
+	char *filename;
+
+#define YYLTYPE YYLTYPE
+	
+# define YYLLOC_DEFAULT(Current, Rhs, N)                                \
+	do                                                                  \
+		if (N)                                                            \
+		{                                                               \
+			(Current).first_line   = YYRHSLOC(Rhs, 1).first_line;         \
+			(Current).first_column = YYRHSLOC(Rhs, 1).first_column;       \
+			(Current).last_line    = YYRHSLOC(Rhs, N).last_line;          \
+			(Current).last_column  = YYRHSLOC(Rhs, N).last_column;        \
+		}                                                               \
+		else                                                              \
+		{                                                               \
+			(Current).first_line   = (Current).last_line   =              \
+				YYRHSLOC(Rhs, 0).last_line;                                 \
+			(Current).first_column = (Current).last_column =              \
+				YYRHSLOC(Rhs, 0).last_column;                               \
+		}                                                               \
+	while (0)
+
+	
+}
+
 %token IDENTIFIER CONSTANT STRING_LITERAL SIZEOF
 %token PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
 %token AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
