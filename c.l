@@ -16,7 +16,6 @@ IS			(u|U|l|L)*
 #include "c.tab.h"
 
 int column = 0;
-int lineNum = 1;
 char linebuf[500];
 
 #define YY_USER_ACTION {yylloc.first_line = yylineno;	\
@@ -25,7 +24,6 @@ char linebuf[500];
 						yylloc.last_column=colnum;		\
 						yylloc.last_line = yylineno;}
 
-	void countLines();
 	void count();
 	
 	struct bufstack { 
@@ -53,9 +51,9 @@ char linebuf[500];
 %}
 
 %%
-\n.*  { countLines();
-		strncpy(linebuf, yytext+1, sizeof(linebuf)); /* save the next line */
+\n.*  { strncpy(linebuf, yytext+1, sizeof(linebuf)); /* save the next line */
 		yyless(1);      /* give back all but the \n to rescan */
+		column = 0;
 		}
 
 "/*" 				{ BEGIN(COMMENT); }
@@ -186,25 +184,7 @@ yywrap() {
 
 
 
-
-comment() {
-	char c, c1;
-
-loop:
-	while ((c = input()) != '*' && c != 0) {
-		if (c == '\n') { 
-			lineNum++; 
-		}
-	}
-
-	if ((c1 = input()) != '/' && c != 0)
-	{
-		unput(c1);
-		goto loop;
-	}
-}
-
-include() {
+/*include() {
 	char c;
 
 loop:
@@ -214,10 +194,10 @@ loop:
 	
 	if(!newfile(yytext)) { 
 		yyterminate(); /* no such file */
-	}
+/*	}
 
 	BEGIN INITIAL;
-}
+}*/
 
 directive() {
 	char c;
@@ -228,17 +208,12 @@ directive() {
 
 }
 
-void countLines() {
-	column = 0;
-	lineNum++;
-}
-
 void count() {
 	int i;
 
 	for (i = 0; yytext[i] != '\0'; i++)
 		if (yytext[i] == '\n') {
-			countLines();
+			column = 0;
 		} else if (yytext[i] == '\t') {
 			column += 4 - (column % 4);
 		} else {
@@ -291,7 +266,6 @@ int newfile(char *fn) {
 	yy_switch_to_buffer(bs->bs); 
 	curbs = bs;
 	yylineno = 1; 
-	lineNum = 1;
 	curfilename = fn; 
 	return 1;
 }
@@ -314,7 +288,6 @@ int popfile(void) {
 	yy_switch_to_buffer(prevbs->bs); 
 	curbs = prevbs;
 	yylineno = curbs->lineno; 
-	lineNum = curbs->lineno;
 	curfilename = curbs->filename; 
 
 	return 1;
