@@ -17,7 +17,7 @@ int column = 0;
 int lineNum = 1;
 char linebuf[500];
 
-#define YY_USER_ACTION {yylloc.first_line = yylineno;	\
+#define YY_USER_ACTION {yylloc.first_line = lineNum;	\
 						yylloc.first_column = column;	\
 						int colnum=column+yyleng;		\
 						yylloc.last_column=colnum;		\
