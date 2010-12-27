@@ -1,10 +1,9 @@
-%{
+%code {
 #include <stdio.h>
 #include <stdlib.h>
 #include "tree.h"
 #include "checks.h"
-
-%}
+}
 
 %token IDENTIFIER CONSTANT STRING_LITERAL SIZEOF
 %token PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
