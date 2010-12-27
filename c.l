@@ -182,23 +182,6 @@ yywrap() {
 	return(1);
 }
 
-
-
-/*include() {
-	char c;
-
-loop:
-	while ((c = input()) != '\n' && c != 0) {
-		putchar(c);
-	}
-	
-	if(!newfile(yytext)) { 
-		yyterminate(); /* no such file */
-/*	}
-
-	BEGIN INITIAL;
-}*/
-
 directive() {
 	char c;
 

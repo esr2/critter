@@ -449,13 +449,14 @@ extern char linebuf[];
 extern int column;
 extern int lineNum;
 
-yyerror(s)
-char *s;
+yyerror(char *s)
 {
-/*	fflush(stdout);
-	printf("\n%s", linebuf);
-	printf("\n%*s\n%d:%d %s\n", column, "^", yylineno, column, s);*/
-} 
+	if(yylloc.first_line) {
+		fprintf(stderr, "%d.%d-%d.%d: error: ", yylloc.first_line,
+				yylloc.first_column, yylloc.last_line, yylloc.last_column);
+	} 
+	fprintf(stderr, "%s\n", s);
+}
 
 void lyyerror(YYLTYPE t, char *s)
 {
