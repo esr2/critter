@@ -452,10 +452,10 @@ extern int lineNum;
 yyerror(s)
 char *s;
 {
-	fflush(stdout);
+/*	fflush(stdout);
 	printf("\n%s", linebuf);
-	printf("\n%*s\n%d:%d %s\n", column, "^", lineNum, column, s);
-}
+	printf("\n%*s\n%d:%d %s\n", column, "^", yylineno, column, s);*/
+} 
 
 void lyyerror(YYLTYPE t, char *s)
 {
