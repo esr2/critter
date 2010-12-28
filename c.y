@@ -6,29 +6,27 @@
 }
 
 %code requires {
-	char *filename;
-
 #define YYLTYPE YYLTYPE
 	
-# define YYLLOC_DEFAULT(Current, Rhs, N)                                \
-	do                                                                  \
-		if (N)                                                            \
-		{                                                               \
-			(Current).first_line   = YYRHSLOC(Rhs, 1).first_line;         \
-			(Current).first_column = YYRHSLOC(Rhs, 1).first_column;       \
-			(Current).last_line    = YYRHSLOC(Rhs, N).last_line;          \
-			(Current).last_column  = YYRHSLOC(Rhs, N).last_column;        \
-		}                                                               \
-		else                                                              \
-		{                                                               \
-			(Current).first_line   = (Current).last_line   =              \
-				YYRHSLOC(Rhs, 0).last_line;                                 \
-			(Current).first_column = (Current).last_column =              \
-				YYRHSLOC(Rhs, 0).last_column;                               \
-		}                                                               \
+# define YYLLOC_DEFAULT(Current, Rhs, N)								\
+	do																	\
+		if (N)															\
+		{																\
+			(Current).first_line	= YYRHSLOC (Rhs, 1).first_line;		\
+			(Current).first_column	= YYRHSLOC (Rhs, 1).first_column;	\
+			(Current).last_line		= YYRHSLOC (Rhs, N).last_line;		\
+			(Current).last_column	= YYRHSLOC (Rhs, N).last_column;	\
+			(Current).filename		= YYRHSLOC (Rhs, 1).filename;		\
+		}																\
+		else															\
+		{																\
+			(Current).first_line = (Current).last_line	=				\
+				YYRHSLOC (Rhs, 0).last_line;							\
+			(Current).first_column = (Current).last_column =			\
+				YYRHSLOC (Rhs, 0).last_column;							\
+			(Current).filename	= NULL;									\
+		}																\
 	while (0)
-
-	
 }
 
 %token IDENTIFIER CONSTANT STRING_LITERAL SIZEOF
@@ -478,8 +476,9 @@ extern int lineNum;
 yyerror(char *s)
 {
 	if(yylloc.first_line) {
-		fprintf(stderr, "%d.%d-%d.%d: error: ", yylloc.first_line,
-				yylloc.first_column, yylloc.last_line, yylloc.last_column);
+		fprintf(stderr, "%s:%d.%d-%d.%d: error: ", yylloc.filename,
+				yylloc.first_line, yylloc.first_column, yylloc.last_line,
+				yylloc.last_column);
 	} 
 	fprintf(stderr, "%s\n", s);
 }
@@ -487,7 +486,7 @@ yyerror(char *s)
 void lyyerror(YYLTYPE t, char *s)
 {
 	if(t.first_line) {
-		fprintf(stderr, "%d.%d-%d.%d: error: ", t.first_line,
+		fprintf(stderr, "%s:%d.%d-%d.%d: error: ", t.filename, t.first_line,
 				t.first_column, t.last_line, t.last_column);
 	} 
 	fprintf(stderr, "%s\n", s);
@@ -511,7 +510,8 @@ printMe(int value, struct YYLTYPE param, enum tree_code field) {
 	}
 	
 	if (param.first_line) {
-		printf(" %d,%d - %d,%d\n", param.first_line, param.first_column,
+		printf(" at %s: %d,%d - %d,%d\n", param.filename,
+			   param.first_line, param.first_column,
 			   param.last_line, param.last_column);
 	}
 	
