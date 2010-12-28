@@ -6,7 +6,16 @@
 }
 
 %code requires {
+#ifndef YYLTYPE
 #define YYLTYPE YYLTYPE
+	typedef struct YYLTYPE {
+		int first_line;
+		int first_column;
+		int last_line;
+		int last_column;
+		char *filename;
+	} YYLTYPE;
+#endif
 	
 # define YYLLOC_DEFAULT(Current, Rhs, N)								\
 	do																	\
@@ -45,6 +54,7 @@
 
 %error-verbose
 %locations
+%defines
 
 %%
 
