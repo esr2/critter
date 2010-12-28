@@ -36,8 +36,6 @@
 /* Line 1685 of yacc.c  */
 #line 8 "c.y"
 
-	char *filename;
-
 #define YYLTYPE YYLTYPE
 	
 	typedef struct YYLTYPE {
@@ -47,7 +45,7 @@
 		int last_column;
 		char *filename;
 	} YYLTYPE;
-	
+# define YYLTYPE_IS_DECLARED 1
 	
 # define YYLLOC_DEFAULT(Current, Rhs, N)								\
 	do																	\
@@ -72,7 +70,7 @@
 
 
 /* Line 1685 of yacc.c  */
-#line 76 "c.tab.h"
+#line 74 "c.tab.h"
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
