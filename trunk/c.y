@@ -469,10 +469,6 @@ function_definition
 
 %%
 
-extern char linebuf[];
-extern int column;
-extern int lineNum;
-
 yyerror(char *s)
 {
 	if(yylloc.first_line) {

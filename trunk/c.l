@@ -15,8 +15,7 @@ IS			(u|U|l|L)*
 #include <stdio.h>
 #include "c.tab.h"
 
-int column = 0;
-char linebuf[500];
+int column = 1;
 
 #define YY_USER_ACTION {yylloc.first_line = yylineno;		\
 						yylloc.first_column = column;		\
@@ -51,9 +50,8 @@ char linebuf[500];
 %}
 
 %%
-\n.*  { strncpy(linebuf, yytext+1, sizeof(linebuf)); /* save the next line */
-		yyless(1);      /* give back all but the \n to rescan */
-		column = 0;
+\n.*  { yyless(1);      /* give back all but the \n to rescan */
+		column = 1;
 		}
 
 "/*" 				{ BEGIN(COMMENT); }
@@ -196,7 +194,7 @@ void count() {
 
 	for (i = 0; yytext[i] != '\0'; i++)
 		if (yytext[i] == '\n') {
-			column = 0;
+			column = 1;
 		} else if (yytext[i] == '\t') {
 			column += 4 - (column % 4);
 		} else {
