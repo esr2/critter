@@ -12,5 +12,5 @@ generate: c.y c.l tree.txt tree.h checks.h
 	flex c.l
 
 clean:
-	rm -f *.tab.h lex.yy.c
+	rm -f *.tab.c lex.yy.c
 	rm -f a.out

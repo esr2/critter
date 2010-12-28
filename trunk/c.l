@@ -18,11 +18,11 @@ IS			(u|U|l|L)*
 int column = 0;
 char linebuf[500];
 
-#define YY_USER_ACTION {yylloc.first_line = yylineno;	\
-						yylloc.first_column = column;	\
-						int colnum=column+yyleng;		\
-						yylloc.last_column=colnum;		\
-						yylloc.last_line = yylineno;}
+#define YY_USER_ACTION {yylloc.first_line = yylineno;		\
+						yylloc.first_column = column;		\
+						yylloc.last_column=column+yyleng;	\
+						yylloc.last_line = yylineno;		\
+						yylloc.filename = curfilename;}
 
 	void count();
 	
