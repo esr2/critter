@@ -50,9 +50,6 @@ int column = 1;
 %}
 
 %%
-\n.*  { yyless(1);      /* give back all but the \n to rescan */
-		column = 1;
-		}
 
 "/*" 				{ BEGIN(COMMENT); }
 <COMMENT>"*/"				{ BEGIN(INITIAL); }
@@ -61,11 +58,12 @@ int column = 1;
 									 curfilename, yylineno); return 0; }
 
 
-^"#"[ \t]*include[ \t]*\" {BEGIN IFILE;}
+^"#"[ \t]*include[ \t]*[\"<] {BEGIN IFILE;}
 <IFILE>[^ \t\n\">]+	{
 						{ int c;
 						  while((c = input()) && c != '\n') ;
 						}
+printf("include is \t%s:%d \t%s\n", curfilename, yylineno, yytext);
 						if(!newfile(yytext)) {
 							yyterminate(); /* no such file */ 
 						}
@@ -230,10 +228,20 @@ int check_type() {
 /* FROM O'REILY */
 int newfile(char *fn) {
 	FILE *f = fopen(fn, "r");
+	/* if not local then check usr/include */
+	if (!f) {
+		char *prefix =  "/usr/include/";
+		char *filename = calloc(strlen(fn)+strlen(prefix)+5, 1);
+		strcpy(filename, prefix);
+		strcpy(filename+strlen(prefix), fn);
+		f = fopen(filename, "r");
+		if (!f) {perror(fn); return 0;}
+	} 
+
+
 	struct bufstack *bs = malloc(sizeof(struct bufstack));
 
-	/* die if no file or no room */ 
-	if(!f) { perror(fn); return 0; } 
+	/* die if no room */ 
 	if(!bs) { perror("malloc"); exit(1); }
 
 	/* remember state */ 
