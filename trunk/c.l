@@ -182,6 +182,9 @@ directive() {
 	char c;
 
 	while ((c = input()) != '\n' && c != 0) {
+		if (c == '\\') {
+			c = input();
+		}
 		/*putchar(c);*/;
 	}
 
