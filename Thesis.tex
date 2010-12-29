@@ -45,13 +45,13 @@
 
 \chapter{Problem Description}
 
-\begin{table}[h]
+\begin{table}%[h]
 	\caption{Error Checking}
 	\label{errorChecking}
 	\begin{center}
 	\begin{tabular}{ccc}
 		\toprule
-		Types of Errors & Tools for Essays & Tools for Code \\
+		Types of Errors & Tools for {\color{red}Essays} & Tools for Code \\
 		\midrule
 		Syntactic & Spell Check & Compiler \\
 		Semantic & Grammar Check & \\ 
@@ -61,14 +61,15 @@
 	\end{center}
 \end{table}
 
-When writing anything from papers to code, we encounter three different types of 
+\marginpar{go error by error}
+Anytime one writes something, from code to literature, one encounters three different types of 
 errors: syntactic, semantic and substantive. To describe each, let us first examine the process of 
 writing an essay in Word. Word has a Spell Checker that immediately alerts the author that their 
 paper contains a syntactic error --- specifically that they have written something outside the bounds 
 of the English language.  Word also has a Grammar Checker that reports semantic errors --- a 
 passage appears to be poorly written within the English language. Finally when writing, one has an 
 audience who highlights substantive errors --- errors within the arguments or 
-premises. When writing code we have a different set of tools.  Compilers immediately alert us of 
+premises of the essay. When writing code we have a different set of tools.  Compilers immediately alert us of 
 semantic errors --- code is outside the bounds of the language. We also have tests or users that 
 can highlight substantive errors -- the program is not working correctly. However, the area of semantic 
 error checking --- whether code is well written within the language --- has yet to be automated fully.
@@ -163,7 +164,7 @@ import net.sourceforge.pmd.ast.ASTExpression;
 
 public class CountRule extends AbstractJavaRule {
 
-	private static final String COUNT = "count";
+	private static final String COUNT = ``count'';
 
 	@Override
 	public void start(RuleContext ctx) {
