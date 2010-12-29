@@ -322,7 +322,7 @@ direct_declarator
 	;
 
 type_direct_declarator
-	: IDENTIFIER				{ addSymbol();}
+	: IDENTIFIER				{ addSymbol(NULL);}
 	| '(' type_init_declarator ')'
 	| type_direct_declarator '[' constant_expression ']'
 	| type_direct_declarator '[' ']'

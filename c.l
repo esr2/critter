@@ -41,10 +41,11 @@ int column = 1;
 	
 	/* simple symtab of fixed size */ 
 #define NHASH 9997 
-	struct symbol symtab[NHASH];
+	struct symbol symboltable[NHASH];
+	struct symbol filetable[NHASH];
 
-	struct symbol *lookupSymbol();
-	struct symbol *addSymbol();
+	struct symbol *lookupSymbol(char* text);
+	struct symbol *addSymbol(char* text);
 	void printSymTable();
 
 %}
@@ -58,7 +59,7 @@ int column = 1;
 									 curfilename, yylineno); return 0; }
 
 
-^"#"[ \t]*include[ \t]*[\"<] {BEGIN IFILE;}
+^"#"[ \t]*include[ \t]*[\"] {BEGIN IFILE;}
 <IFILE>[^ \t\n\">]+	{
 						{ int c;
 						  while((c = input()) && c != '\n') ;
@@ -219,7 +220,7 @@ int check_type() {
 		return TYPE_NAME;
 	}
 
-	struct symbol *sp = lookupSymbol();
+	struct symbol *sp = lookupSymbol(NULL);
 
 	if (sp != NULL) {
 		return (TYPE_NAME);
@@ -230,6 +231,11 @@ int check_type() {
 
 /* FROM O'REILY */
 int newfile(char *fn) {
+	/* don't include if file was already included */
+	if (lookupSymbol(fn)) {
+		return 2;
+	}
+
 	FILE *f = fopen(fn, "r");
 	/* if not local then check usr/include */
 	if (!f) {
@@ -240,7 +246,8 @@ int newfile(char *fn) {
 		f = fopen(filename, "r");
 		if (!f) {perror(fn); return 0;}
 	} 
-
+	/* add file to included list */
+	addSymbol(fn);
 
 	struct bufstack *bs = malloc(sizeof(struct bufstack));
 
@@ -298,10 +305,19 @@ static unsigned symhash(const char *sym) {
 	return hash % NHASH;
 }
 
-struct symbol * lookupSymbol() {
-	const char* sym = yytext;
+struct symbol * lookupSymbol(char *text) {
+	const char* sym = NULL;
+	struct symbol *table = NULL;
+	if (!text) {
+		sym = yytext;
+		table = symboltable;
+	} else {
+		sym = text;
+		table = filetable;
+	}
+
 	int start = symhash(sym);
-	struct symbol *sp = &symtab[start];
+	struct symbol *sp = &table[start];
 	int scount = NHASH;	// how many have we looked at
 
 	while(--scount >= 0) {
@@ -313,17 +329,26 @@ struct symbol * lookupSymbol() {
 			return NULL;
 		}
 
-		if(++sp >= symtab+NHASH) sp = symtab; // try the next entry
+		if(++sp >= table+NHASH) sp = table; // try the next entry
 	} 
 
 	fputs("symbol table overflow\n", stderr);
 	abort();  // tried them all, table is full
 }
 
-struct symbol * addSymbol() {
-	const char* sym = yytext;
+struct symbol * addSymbol(char* text) {
+	const char* sym = NULL;
+	struct symbol *table = NULL;
+	if (!text) {
+		sym = yytext;
+		table = symboltable;
+	} else {
+		sym = text;
+		table = filetable;
+	}
+
 	int start = symhash(sym);
-	struct symbol *sp = &symtab[start];
+	struct symbol *sp = &table[start];
 	int scount = NHASH;	// how many have we looked at
 
 	while(--scount >= 0) {
@@ -336,7 +361,7 @@ struct symbol * addSymbol() {
 			return NULL;
 		}
 
-		if(++sp >= symtab+NHASH) sp = symtab; // try the next entry
+		if(++sp >= table+NHASH) sp = table; // try the next entry
 	}
 
 	fputs("symbol table overflow\n", stderr);
@@ -347,7 +372,7 @@ struct symbol * addSymbol() {
 void printSymTable() {
 	printf("printing the symbol table\n");
 	struct symbol *sp;
-	for(sp = symtab; sp->name && sp < symtab+NHASH; sp++) {
+	for(sp = symboltable; sp->name && sp < symboltable+NHASH; sp++) {
 		printf("\t%10s\n", sp->name);
 	}
 }
