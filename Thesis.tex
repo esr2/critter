@@ -62,94 +62,93 @@
 	\end{center}
 \end{table}
 
-When writing, one encounters three different types of errors: syntactic, semantic and substantive.  In 
-the case of writing literature, these errors take the form of spelling, grammar and logical mistakes. 
-When writing code, they form syntax errors, poorly written and malfunctioning code. Both spelling 
-mistakes and syntax errors represent text that contains something outside the language (be it 
-English, C, etc.). A passage with bad grammar and poorly written code both represent text that is 
+When one writes, one encounters three different types of errors: syntactic, semantic and substantive.  
+In the case of writing literature, these errors take the form of spelling, grammar and logical mistakes. 
+When writing code, they form syntax errors, poorly written code and malfunctioning code. Both 
+spelling mistakes and syntax errors represent text that contains something outside the language (be it 
+English, C, etc.). A passage with bad grammar and poorly written code both denote text that is 
 technically valid but hard to understand. Finally, illogical arguments and malfunctioning code both 
-represent errors in the ideas behind the text. 
+imply errors in the ideas behind the text. 
 There are tools to help one find these errors in both literature and code (see Table \ref
-{errorChecking}). Spelling and Grammar Check exist on nearly every text editor. The reader highlights 
+{errorChecking}). Spelling and Grammar Check exist in nearly every text editor; the reader highlights 
 substantive errors in literature. With code, the compiler shows semantic errors and the user/testing 
-reveal substantive errors. Yet the are of semantic error checking for code has yet to be automated 
-fully.
+reveal substantive errors. Yet semantic error checking for code has yet to be automated fully.
 
-Seen from a different point of view, this problem can be formulated in terms of software quality. 
+From a different point of view, this problem can be formulated in terms of software quality. 
 Namely, there are two perspectives on software quality: that of the user and that of the programmer. 
-Users care about whether or not a piece of software works (i.e.\ behaves as it ought to). In contrast, 
-programmers care about if software is easily maintainable. Minimally, maintainability implies that 
-code is easy to read and update. Evaluating the user’s perspective of a program, is possible and most 
-easily accomplished through automated testing. Though it is possible to evaluate the programmer's 
-perspective, tools to so only check for certain qualities. Given that code quality is 
+Users evaluate software on whether or not it behaves as it ought to. In contrast, programmers evaluate 
+software on whether or not it is easily maintainable. Minimally, maintainability implies that 
+code is easy to read and update. Evaluating the user’s perspective of a program is possible and most 
+easily accomplished through automated testing. Though it is possible to evaluate the programmers' 
+perspective, tools that do so only check for certain qualities. Unfortunately, code quality is 
 subjective, any tool that only performs pre-defined inspections will never be satisfactory to every 
 programmer.
 
-While I have talked about the nature of semantic error checking, I have yet to comment on why it is 
-important. The biggest reason to perform semantic error checking is to improve readability (the 
+The biggest reason to perform semantic error checking is to improve readability (the 
 ease with which another programmer can understand a piece of code). In the same way that 
-grammatical errors in a paper can confound its underlying arguments, poorly written code can easily 
-obscure its underlying function. Similarly, readable code is easy to revise and update later.  In an 
-industry or academic setting where other individuals will necessarily need to read or edit one's code, 
-maintaining readability is essential. In an academic environment, automated semantic error checking 
-can immediately save work for professors by replacing the process of writing the same set of stylistic comments to many students with a set of automated warnings.
+grammatical errors in a paper often confound its underlying arguments, poorly written code can easily 
+obscure its underlying function. Furthermore, readable code is easy to revise and update later.  In an 
+industry or academic setting, where it is necessary to read or edit another's code, maintaining 
+readability is essential. The successful implementation of automated semantic error checking 
+can immediately save work for professors by replacing the process of writing the same set of stylistic 
+comments to many students with a set of automated warnings.
 Students can also directly benefit by applying this tool to their code before submitting assignments --- 
 giving them the chance to improve their grades as well as their coding habits.
 
 \chapter{Related Products}
 
 There are some tools that try to fill the semantic error checking gap. Each approaches the 
-problem differently, but all help to find some semantic errors. The tools that I will be discussing are 
-Splint \cite{splint-manual} , PMD \cite{pmd}, and Checkstyle \cite{checkstyle}.
+problem differently, but all succeed in finding some semantic errors. The tools that I will be discussing 
+are Splint \cite{splint-manual} , PMD \cite{pmd}, and Checkstyle \cite{checkstyle}.
 
 \section{Splint}
 Splint is a tool for ``statically checking C programs for security vulnerabilities and programming 
-mistakes" \cite[p.\ 9]{splint-manual}. It works exactly as my program will from the student’s 
+mistakes" \cite[p.\ 9]{splint-manual}. It works exactly as my program does from the students'
 perspective, i.e.\ as a command-line program which prints warnings and errors to \lstinline{stdout}. 
-Without extra information, Splint displays warnings about basic semantic errors like 
-assignments with mismatched types and ignored return values. With some more effort, 
-programmers can add annotations (i.e.\ fancy comments) that give Splint a specification to 
-check against. These annotations allow for stronger checks like memory management, null 
-pointers and ``violations of information hiding" \cite[p. 9]{splint-manual}. An examples of annotations 
-in action are the following abstract type declarations (\refCode \ref{splint-annotations}). These 
-annotations define \lstinline{mstring} and \lstinline{weekDay} as abstract types and further 
-specify that they are mutable/immutable respectively.
-%
+Splint displays warnings about basic semantic errors like assignments with mismatched types and 
+ignored return values. With more effort, programmers can add annotations (i.e.\ fancy comments) that 
+give Splint a specification to check against. These annotations allow for stronger checks like memory 
+management, null pointers and ``violations of information hiding" \cite[p. 9]{splint-manual}. An 
+example of annotations in action are the following abstract type declarations (\refCode \ref{splint-annotations}). 
+
 \begin{figure}[h]
-\caption{Splint Annotations}
+\caption{Splint Annotations} 
 \label{splint-annotations}
 \begin{lstlisting}[frame=single, language=C]
 typedef /*@abstract@*/ /*@mutable@*/ char *mstring;
 typedef /*@abstract@*/ /*@immutable@*/ int weekDay;
 \end{lstlisting}
+\small{These annotations define \lstinline{mstring} and \lstinline{weekDay} as abstract types and further specify that they are mutable/immutable respectively.}
 \end{figure}
 
-While these annotations provide an extensive feature set, they are a hugely inconvenient. They 
+While these annotations provide an extensive feature set, they are a huge inconvenience. They 
 require programmers to specifically write their code to meet the specification, not only of the client, but 
 also of the tool. For new programmers (often the ones who need the most error checking), these 
-annotations are almost impossible to implement on top of learning to program. As 
-described by David Evans (one of the authors) in an email, ``One of the goals of the original design of 
+annotations are almost impossible to implement on top of learning to program as suggested by  
+David Evans (one of the authors) in an email. He states:
+\begin{quote}
+One of the goals of the original design of 
 Splint was for programmers who add no annotations to start getting some useful warnings right away, 
 including warnings that encourage them to start adding annotations.  For some aspects, such as 
 \lstinline{/*@null@*/} annotations I think this has worked okay, but for others like abstract types, 
 memory management, etc. I don't think it has worked very well, and the warnings on these issues tend 
 to either make developers want to stop using Splint, or at least just turn off all the warnings of that type, 
 rather than start adding the annotations needed to enable better checking." \cite{evans-email} 
+\end{quote}
 
 \section{PMD and Checkstyle}
 PMD is a tool for checking Java Code that is integrated into a dozen or so different popular IDEs.
 PMD comes premade with over 250 checks broken up mostly by purpose such as Braces Rules, 
-Basic Rules, Coupling Rules, etc. Some of these checks also deal explicitly with a certain 
-library or platform like Android, Jakarta and JUnit. PMD works by passing source code into a 
+Basic Rules, Coupling Rules, etc. Some checks also deal explicitly with a certain 
+library or platform like Android, Jakarta and JUnit. PMD functions by passing source code into a 
 JavaCC-generated parser and receiving an Abstract Syntax Tree (a.k.a.\ AST, a tree-based model of 
-the source code). PMD then traverses the AST and calls each rule in the 
-RuleSet to check for any violations. This pattern of examining a tree of nodes is called the Visitor 
-Pattern \cite{design-patterns}. The RuleSet is an XML file that can be edited to augment the 
-functionality of PMD with customized rules. Rules are written in their own classes and extend a 
-base implementation. The rule itself can override three functions (start, visit and end) to perform 
-various checks against the source code based on the nodes in the AST. Here is the ``dummy" 
-example from the PMD website which counts how many expressions are in the source code 
-(\refCode \ref{pmd-rule}).\cite{pmd}
+the source code). PMD then traverses the AST and calls each rule in the RuleSet to check for any
+violations. This pattern of examining a tree of nodes is called the Visitor Pattern \cite{design-patterns}. 
+The RuleSet is an XML file that can be edited to augment the functionality of PMD with customized 
+rules. Rules are written in their own classes and extend a base implementation. The rule itself can 
+override three functions (start, visit and end) to perform various checks against the source code based 
+on the nodes in the AST. Here is the ``dummy" example from the PMD website which counts how 
+many expressions are in the source code (see \refCode \ref{pmd-rule}).\cite{pmd}
 
 \begin{figure}
 \caption[Example PMD Rule]{Example PMD Rule counting the number expressions}
@@ -195,7 +194,7 @@ public class CountRule extends AbstractJavaRule {
 \end{lstlisting}
 \end{figure}
 
-Checkstyle mimics PMD in function but provides different checks out of the box (namely those 
+Checkstyle mimics PMD in function but provides different checks (namely those 
 regarding duplicate code, class design, whitespace, etc). It also uses the Visitor Pattern and 
 provides ways to examine the beginning and ends of the tree as well as each node. New rules are 
 added through an XML file and similarly passed to Checkstyle at runtime.\cite{checkstyle}
