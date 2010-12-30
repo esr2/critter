@@ -41,6 +41,7 @@
 
 \tableofcontents
 
+\listoftables
 \listoffigures
 
 \chapter{Problem Description}
@@ -51,7 +52,7 @@
 	\begin{center}
 	\begin{tabular}{ccc}
 		\toprule
-		Types of Errors & Tools for {\color{red}Essays} & Tools for Code \\
+		Types of Errors & Tools for Literature & Tools for Code \\
 		\midrule
 		Syntactic & Spell Check & Compiler \\
 		Semantic & Grammar Check & \\ 
@@ -61,39 +62,38 @@
 	\end{center}
 \end{table}
 
-\marginpar{go error by error}
-Anytime one writes something, from code to literature, one encounters three different types of 
-errors: syntactic, semantic and substantive. To describe each, let us first examine the process of 
-writing an essay in Word. Word has a Spell Checker that immediately alerts the author that their 
-paper contains a syntactic error --- specifically that they have written something outside the bounds 
-of the English language.  Word also has a Grammar Checker that reports semantic errors --- a 
-passage appears to be poorly written within the English language. Finally when writing, one has an 
-audience who highlights substantive errors --- errors within the arguments or 
-premises of the essay. When writing code we have a different set of tools.  Compilers immediately alert us of 
-semantic errors --- code is outside the bounds of the language. We also have tests or users that 
-can highlight substantive errors -- the program is not working correctly. However, the area of semantic 
-error checking --- whether code is well written within the language --- has yet to be automated fully.
+When writing, one encounters three different types of errors: syntactic, semantic and substantive.  In 
+the case of writing literature, these errors take the form of spelling, grammar and logical mistakes. 
+When writing code, they form syntax errors, poorly written and malfunctioning code. Both spelling 
+mistakes and syntax errors represent text that contains something outside the language (be it 
+English, C, etc.). A passage with bad grammar and poorly written code both represent text that is 
+technically valid but hard to understand. Finally, illogical arguments and malfunctioning code both 
+represent errors in the ideas behind the text. 
+There are tools to help one find these errors in both literature and code (see Table \ref
+{errorChecking}). Spelling and Grammar Check exist on nearly every text editor. The reader highlights 
+substantive errors in literature. With code, the compiler shows semantic errors and the user/testing 
+reveal substantive errors. Yet the are of semantic error checking for code has yet to be automated 
+fully.
 
 Seen from a different point of view, this problem can be formulated in terms of software quality. 
 Namely, there are two perspectives on software quality: that of the user and that of the programmer. 
 Users care about whether or not a piece of software works (i.e.\ behaves as it ought to). In contrast, 
 programmers care about if software is easily maintainable. Minimally, maintainability implies that 
-code is easy to read and update. {\color{red}There are ways} to evaluate the user’s perspective of a 
-program, most easily through automated testing. Though there are tools to evaluate the programmer’s 
-perspective, {\color{red} these tools only check specific aspects of code}. Given that code quality is 
+code is easy to read and update. Evaluating the user’s perspective of a program, is possible and most 
+easily accomplished through automated testing. Though it is possible to evaluate the programmer's 
+perspective, tools to so only check for certain qualities. Given that code quality is 
 subjective, any tool that only performs pre-defined inspections will never be satisfactory to every 
 programmer.
 
 While I have talked about the nature of semantic error checking, I have yet to comment on why it is 
 important. The biggest reason to perform semantic error checking is to improve readability (the 
-ease with which another programmer can understand the code). In the same way that grammatical 
-errors in a paper can confound its underlying arguments, poorly written code can easily obscure its 
-underlying function. In an industry or academic setting where other individuals will necessarily 
-need to read one's code, maintaining readability is essential. Similarly, readable code is easy to 
-revise and update later. In an academic environment, automated semantic error checking can 
-immediately save work for professors and TAs. {\color{red} Such a program could produce a set of 
-automated warnings as opposed to writing the same set of stylistic comments to many students. } 
-Students can also directly benefit by applying this tool to their code before submitting assignments; 
+ease with which another programmer can understand a piece of code). In the same way that 
+grammatical errors in a paper can confound its underlying arguments, poorly written code can easily 
+obscure its underlying function. Similarly, readable code is easy to revise and update later.  In an 
+industry or academic setting where other individuals will necessarily need to read or edit one's code, 
+maintaining readability is essential. In an academic environment, automated semantic error checking 
+can immediately save work for professors by replacing the process of writing the same set of stylistic comments to many students with a set of automated warnings.
+Students can also directly benefit by applying this tool to their code before submitting assignments --- 
 giving them the chance to improve their grades as well as their coding habits.
 
 \chapter{Related Products}
