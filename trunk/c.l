@@ -179,6 +179,9 @@ yywrap() {
 	return(1);
 }
 
+/**
+ * Ignore macros.
+ */
 directive() {
 	char c;
 
@@ -191,6 +194,9 @@ directive() {
 
 }
 
+/**
+ * Keep track of the column number.
+ */
 void count() {
 	int i;
 
@@ -204,7 +210,9 @@ void count() {
 		}
 }
 
-
+/**
+ * Check the type of a string to see if it is a TYPE_NAME or IDENTIFIER
+ */
 int check_type() {
 /*
 * pseudo code --- this is what it should check
@@ -230,6 +238,12 @@ int check_type() {
 }
 
 /* FROM O'REILY */
+/**
+ * Add a file on to the buffer stack and then switch to it.
+ *
+ * @param fn filename to open
+ * @returns 0 on failure, 1 on success and 2 on skipped file due to previous include
+ */
 int newfile(char *fn) {
 	/* don't include if file was already included */
 	if (lookupSymbol(fn)) {
@@ -269,6 +283,11 @@ int newfile(char *fn) {
 	return 1;
 }
 
+/**
+ * Pop file from the buffer stack.
+ *
+ * @returns 0 on failure and 1 on success
+ */
 int popfile(void) {
 	struct bufstack *bs = curbs;
 	struct bufstack *prevbs;
@@ -292,7 +311,9 @@ int popfile(void) {
 	return 1;
 }
 
-/* hash a symbol */ 
+/**
+ * Hash a symbol 
+ */ 
 static unsigned symhash(const char *sym) {
 	unsigned int hash = 0U; 
 	int i = 0;
@@ -305,6 +326,12 @@ static unsigned symhash(const char *sym) {
 	return hash % NHASH;
 }
 
+/**
+ * Looks for a symbol in either the symbol table or file table.
+ * 
+ * @param text the filename to find or NULL (meaning look for yytext)
+ * @returns NULL on failure or the symbol if found
+ */
 struct symbol * lookupSymbol(char *text) {
 	const char* sym = NULL;
 	struct symbol *table = NULL;
@@ -336,6 +363,12 @@ struct symbol * lookupSymbol(char *text) {
 	abort();  // tried them all, table is full
 }
 
+/**
+ * Adds a symbol into either the symbol table or file table.
+ * 
+ * @param text the filename to add or NULL (meaning add yytext)
+ * @returns NULL on add or the symbol if previously found
+ */
 struct symbol * addSymbol(char* text) {
 	const char* sym = NULL;
 	struct symbol *table = NULL;
@@ -368,7 +401,9 @@ struct symbol * addSymbol(char* text) {
 	abort();  // tried them all, table is full
 }
 
-/* debugging function to print symbol table */
+/**
+ * Debugging function to print symbol table 
+ */
 void printSymTable() {
 	printf("printing the symbol table\n");
 	struct symbol *sp;
