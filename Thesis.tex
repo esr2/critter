@@ -106,7 +106,7 @@ Splint \cite{splint-manual} , PMD \cite{pmd}, and Checkstyle \cite{checkstyle}.
 Splint is a tool for ``statically checking C programs for security vulnerabilities and programming 
 mistakes" \cite[p.\ 9]{splint-manual}. It works exactly as my program will from the student’s 
 perspective, i.e.\ as a command-line program which prints warnings and errors to \lstinline{stdout}. 
-{\color{red} Without additional information}, Splint displays warnings about basic semantic errors like 
+Without extra information, Splint displays warnings about basic semantic errors like 
 assignments with mismatched types and ignored return values. With some more effort, 
 programmers can add annotations (i.e.\ fancy comments) that give Splint a specification to 
 check against. These annotations allow for stronger checks like memory management, null 
@@ -127,7 +127,7 @@ typedef /*@abstract@*/ /*@immutable@*/ int weekDay;
 While these annotations provide an extensive feature set, they are a hugely inconvenient. They 
 require programmers to specifically write their code to meet the specification, not only of the client, but 
 also of the tool. For new programmers (often the ones who need the most error checking), these 
-annotations are almost impossible to implement on top of learning to {\color{red}program}. As 
+annotations are almost impossible to implement on top of learning to program. As 
 described by David Evans (one of the authors) in an email, ``One of the goals of the original design of 
 Splint was for programmers who add no annotations to start getting some useful warnings right away, 
 including warnings that encourage them to start adding annotations.  For some aspects, such as 
