@@ -438,10 +438,10 @@ expression_statement
 	;
 
 selection_statement
-	: IF '(' expression ')' statement 	{$$ = IF_SELECTION; ifHasBraces($5, @5);}
+	: IF '(' expression ')' statement 	{$$ = IF_SELECTION; ifHasBraces($5, @$);}
 	| IF '(' expression ')' statement ELSE statement {$$ = IF_ELSE_SELECTION,
-													  ifHasBraces($5, @5);
-													  ifHasBraces($7, @7);}
+													  ifHasBraces($5, @$);
+													  ifHasBraces($7, @$);}
 	| SWITCH '(' expression ')' statement
 	;
 
