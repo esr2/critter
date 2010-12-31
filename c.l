@@ -57,6 +57,7 @@ int column = 1;
 <COMMENT>([^*]|\n)+|.	
 <COMMENT><<EOF>>			{ printf("%s:%d: Unterminated comment\n",
 									 curfilename, yylineno); return 0; }
+"//".*\n			{yyerror("Don't use c++ style comments\n");}
 
 
 ^"#"[ \t]*include[ \t]*[\"] {BEGIN IFILE;}
