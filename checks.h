@@ -14,5 +14,6 @@
 #include "c.tab.h"
 
 void ifHasBraces(enum tree_code statementValue, YYLTYPE location);
+void isFuncTooLong(YYLTYPE location);
 
 #endif

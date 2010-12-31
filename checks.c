@@ -14,3 +14,11 @@ void ifHasBraces(enum tree_code statementValue, YYLTYPE location) {
 		lyyerror(location, "Please use braces after all if statements");
 	}
 }
+
+void isFuncTooLong(YYLTYPE location) {
+	int MAX_FUNCTION_LENGTH = 100;
+	
+	if (location.last_line - location.first_line + 1 >= MAX_FUNCTION_LENGTH) {
+		lyyerror(location, "Function is too long");
+	}
+}
