@@ -64,7 +64,6 @@ int column = 1;
 						{ int c;
 						  while((c = input()) && c != '\n') ;
 						}
-printf("include is \t%s:%d \t%s\n", curfilename, yylineno, yytext);
 						if(!newfile(yytext)) {
 							yyterminate(); /* no such file */ 
 						}
