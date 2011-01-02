@@ -15,7 +15,7 @@ void ifHasBraces(enum tree_code statementValue, YYLTYPE location) {
 	}
 }
 
-void isFuncTooLong(YYLTYPE location) {
+void isFunctionTooLong(YYLTYPE location) {
 	int MAX_FUNCTION_LENGTH = 100;
 	
 	if (location.last_line - location.first_line + 1 >= MAX_FUNCTION_LENGTH) {
