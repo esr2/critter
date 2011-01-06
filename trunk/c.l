@@ -14,6 +14,7 @@ IS			(u|U|l|L)*
 %{
 #include <stdio.h>
 #include "c.tab.h"
+#include "checks.h"
 
 int column = 1;
 
@@ -57,7 +58,7 @@ int column = 1;
 <COMMENT>([^*]|\n)+|.	
 <COMMENT><<EOF>>			{ printf("%s:%d: Unterminated comment\n",
 									 curfilename, yylineno); return 0; }
-"//".*\n			{yyerror("Don't use c++ style comments");}
+"//".*\n			{CPlusPlusComments(yylloc);}
 
 
 ^"#"[ \t]*include[ \t]*[\"] {BEGIN IFILE;}
