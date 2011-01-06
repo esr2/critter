@@ -45,3 +45,7 @@ void tooManyParameters(YYLTYPE location) {
 	numParameters++;
 	prevLoc = location;
 }
+
+void CPlusPlusComments(YYLTYPE location) {
+	lyyerror(location, "Don't use c++ style comments");
+}
