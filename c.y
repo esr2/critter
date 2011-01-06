@@ -352,7 +352,7 @@ parameter_type_list
 
 parameter_list
 	: parameter_declaration
-	| parameter_list ',' parameter_declaration
+	| parameter_list ',' parameter_declaration {tooManyParameters(@1);}
 	;
 
 parameter_declaration

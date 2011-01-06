@@ -8,6 +8,7 @@
  */
 
 #include "checks.h"
+#include <stdlib.h>
 
 void ifHasBraces(enum tree_code statementValue, YYLTYPE location) {
 	if (statementValue != COMPOUND_STATEMENT) {
@@ -21,4 +22,26 @@ void isFunctionTooLong(YYLTYPE location) {
 	if (location.last_line - location.first_line + 1 >= MAX_FUNCTION_LENGTH) {
 		lyyerror(location, "Function is too long");
 	}
+}
+
+void tooManyParameters(YYLTYPE location) {
+	int MAX_NUM_PARAMETERS = 7;
+	
+	static int numParameters = -1;
+	static YYLTYPE prevLoc;
+	
+	if (location.first_line != prevLoc.first_line || numParameters == -1) {
+		if (numParameters != -1 && numParameters >= MAX_NUM_PARAMETERS) {
+			char string[200];
+			sprintf(string,
+					"Please use less than %d function parameters, you used %d",
+					MAX_NUM_PARAMETERS, numParameters);
+			lyyerror(prevLoc, string);
+		}
+		
+		numParameters = 1;
+	}
+	
+	numParameters++;
+	prevLoc = location;
 }

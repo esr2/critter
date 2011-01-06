@@ -15,5 +15,6 @@
 
 void ifHasBraces(enum tree_code statementValue, YYLTYPE location);
 void isFunctionTooLong(YYLTYPE location);
+void tooManyParameters(YYLTYPE location);
 
 #endif
