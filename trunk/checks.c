@@ -8,7 +8,7 @@
  */
 
 #include "checks.h"
-#include <stdlib.h>
+#include <stdio.h>
 
 void ifHasBraces(enum tree_code statementValue, YYLTYPE location) {
 	if (statementValue != COMPOUND_STATEMENT) {
