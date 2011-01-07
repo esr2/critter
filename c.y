@@ -329,7 +329,7 @@ type_direct_declarator
 	| type_direct_declarator '(' parameter_type_list ')'
 	| type_direct_declarator '(' identifier_list ')'
 	| type_direct_declarator '(' ')'
-;
+	;
 
 
 pointer
@@ -416,8 +416,8 @@ labeled_statement
 	;
 
 compound_statement
-	: '{' '}' {$$ = EMPTY_COMPOUND; printMe($$, @$, $$);}
-	| '{' statement_list '}' {$$ = STATEMENT_COMPOUND; printMe($$, @$, $2); }
+	: '{' '}' {$$ = EMPTY_COMPOUND; }
+	| '{' statement_list '}' {$$ = STATEMENT_COMPOUND; }
 	| '{' declaration_list '} '
 	| '{' declaration_list statement_list '}'
 	;
