@@ -28,6 +28,9 @@
 %for title page
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
 
+%project name
+\newcommand{\projectname}{My Project Name }
+
 \title{Customizable Style Checking for C Programs}
 \author{Erin Rosenbaum}
 %\date{}                                           % Activate to display a given date or no date
@@ -203,12 +206,45 @@ added through an XML file and similarly passed to Checkstyle at runtime.\cite{ch
 \nocite{framaC}
 
 
-\chapter{Specifications/High Level Overview of Program}
+\chapter{Version 1}
 
-\section{Functional}
+\textit{Note: the following chapters describe my progress in creating \projectname by looking at each 
+successive version. If you would like to skip ahead please go to Chapter \ref{chap:FinalVersion} on 
+page \pageref{chap:FinalVersion}.}
+\vspace{3mm} 
 
-\section{Requirement}
+This version represents the basic implementation of my goal: a customizable style checker for C code.
+It is built off of Flex and Bison which create a lexical analyzer and a parser from a set of source 
+files. These two elements combine into one larger program which takes a *.c file as input. 
 
+To add a check, one must first figure out how the code in question is represented in the grammar. 
+Then one adds a function call inside the appropriate grammar rule. When Bison 
+
+
+\section{Checks}
+
+\begin{table}%[h]
+	\caption{Implemented Checks in v1.0}
+	\label{1.0checks}
+	\begin{center}
+	\begin{tabular}{l p{10cm}}
+		\toprule
+		Function & Purpose \\
+		\midrule
+		ifHasBraces & Determines if the statement following an \lstinline!if! is surrounded by \{\} \\
+		isFunctionTooLong & Determines if a function's length exceeds the maximum number of lines\\
+		tooManyParameters & Determines if there a function exceeds the maximum number of input parameters \\
+		CPlusPlusComments & Throws an error on finding C++ style single-line comments \\
+		\bottomrule
+	\end{tabular}
+	\end{center}
+\end{table}
+
+
+\section{Limitations}
+
+\chapter{Final Product aka Version X}
+\label{chap:FinalVersion}
 
 \nocite{*}
 \bibliographystyle{plain}
