@@ -8,6 +8,10 @@
 \usepackage{epstopdf}
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
 
+%todonotes
+\usepackage{todonotes}
+\newcommand{\todoin}{\todo[inline]}
+
 %code listings%%%
 \usepackage{listings}
 %\lstset{language=C}
@@ -39,7 +43,10 @@
 %\maketitle
 \input{titlePage}
 
+\listoftodos
+
 \begin{abstract}
+\todoin{Add an abstract}
 \end{abstract}
 
 \tableofcontents
@@ -215,13 +222,16 @@ page \pageref{chap:FinalVersion}.}
 
 This version represents the basic implementation of my goal: a customizable style checker for C code.
 It is built off of Flex and Bison which create a lexical analyzer and a parser from a set of source 
-files. These two elements combine into one larger program which takes a *.c file as input. 
+files. These two elements combine into one larger program which takes a *.c file as input. \todoin{Fix the 
+rest of Version 1 begining}
 
-To add a check, one must first figure out how the code in question is represented in the grammar. 
-Then one adds a function call inside the appropriate grammar rule. When Bison 
 
 
 \section{Checks}
+
+To add a check, one must first figure out how the code in question is represented in the grammar. 
+Then one adds a function call inside the appropriate grammar rule. \todoin{Add rest of how a check works in 1.0} \missingfigure{Grammar file}
+\missingfigure{excerpt from check.c ??}
 
 \begin{table}%[h]
 	\caption{Implemented Checks in v1.0}
@@ -242,6 +252,7 @@ Then one adds a function call inside the appropriate grammar rule. When Bison
 
 
 \section{Limitations}
+\missingfigure{Add list of limitations of v1.0 including some of the reasons for them}
 
 \chapter{Final Product aka Version X}
 \label{chap:FinalVersion}
