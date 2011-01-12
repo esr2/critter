@@ -10,12 +10,18 @@
 #include "checks.h"
 #include <stdio.h>
 
+/**
+ * Checks if there are braces surrounding an if statement.
+ */
 void ifHasBraces(enum tree_code statementValue, YYLTYPE location) {
 	if (statementValue != COMPOUND_STATEMENT) {
 		lyyerror(location, "Please use braces after all if statements");
 	}
 }
 
+/**
+ * Checks if a function is too long
+ */
 void isFunctionTooLong(YYLTYPE location) {
 	int MAX_FUNCTION_LENGTH = 100;
 	
@@ -24,6 +30,9 @@ void isFunctionTooLong(YYLTYPE location) {
 	}
 }
 
+/**
+ * Checks if there are too many parameters in the function declaration.
+ */
 void tooManyParameters(YYLTYPE location) {
 	int MAX_NUM_PARAMETERS = 7;
 	
@@ -46,6 +55,9 @@ void tooManyParameters(YYLTYPE location) {
 	prevLoc = location;
 }
 
+/**
+ * Throws an error on C++ style single line comments.
+ */
 void CPlusPlusComments(YYLTYPE location) {
-	lyyerror(location, "Don't use c++ style comments");
+	lyyerror(location, "Don't use C++ style comments");
 }
