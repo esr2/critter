@@ -17,7 +17,8 @@
 %\lstset{language=C}
 \lstset{
 	basicstyle=\small,
-	tabsize=4
+	tabsize=2,
+	frame=single
  }
 %\def\lstlistlistingname{Code Excerpts}
 \def\lstlistingname{Figure}
@@ -25,10 +26,13 @@
 %%%
 
 %project name
-\newcommand{\projectname}{My Project Name }
+\usepackage{xspace}
+\newcommand{\projectname}{My Project Name\xspace}
+\newcommand{\programname}{a.out\xspace}
 
-\usepackage[pdfauthor={ErinRosenbaum},pdftitle={\projectname},pagebackref=true,pdftex]{hyperref}
 \usepackage{booktabs} %pretty tables
+\usepackage[pdfauthor={ErinRosenbaum},pagebackref=true,pdftex]{hyperref}
+%pdftitle={\projectname}
 
 \usepackage{color}
 
@@ -163,7 +167,7 @@ many expressions are in the source code (see \refCode \ref{pmd-rule}).\cite{pmd}
 \begin{figure}
 \caption[Example PMD Rule]{Example PMD Rule counting the number expressions}
 \label{pmd-rule}
-\begin{lstlisting}[frame=single, language=Java]
+\begin{lstlisting}[language=Java]
 package net.sourceforge.pmd.rules;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -186,16 +190,14 @@ public class CountRule extends AbstractJavaRule {
 		// How many Expression nodes are there in all
 		// files parsed!  I must know!
 		RuleContext ctx = (RuleContext)data;
-		AtomicLong total = 
-			(AtomicLong)ctx.getAttribute(COUNT);
+		AtomicLong total = (AtomicLong)ctx.getAttribute(COUNT);
 		total.incrementAndGet();
 		return super.visit(node, data);
 	}
 
 	@Override
 	public void end(RuleContext ctx) {
-		AtomicLong total = 
-			(AtomicLong)ctx.getAttribute(COUNT);
+		AtomicLong total = (AtomicLong)ctx.getAttribute(COUNT);
 		addViolation(ctx, null, new Object[] { total });
 		ctx.removeAttribute(COUNT);
 		super.start(ctx);
@@ -222,33 +224,118 @@ page \pageref{chap:FinalVersion}.}
 
 This version represents the basic implementation of my goal: a customizable style checker for C code.
 It is built off of Flex and Bison which create a lexical analyzer and a parser from a set of source 
-files. These two elements combine into one larger program which takes a *.c file as input. \todoin{Fix the 
-rest of Version 1 begining}
+files. These two elements combine into one larger program, \programname, which takes a .c file as 
+input.  \programname parses the input file by recognizing each code construction as part of the valid C 
+grammar. While parsing the code, \programname executes any function associated with the matched 
+construction -- this pairing of a construction and associated function is called a grammar rule. My 
+checks, while stored in a different file (checks.c/h), are called by these grammar rules (see \refCode 
+\ref{grammar1.0}).
 
+\begin{figure}
+\caption{Excerpt of the Grammar File from v1.0}
+\label{grammar1.0}
+\begin{lstlisting}[language=Caml]
+selection_statement
+	: IF `(' expression `)' statement 	{$$ = IF_SELECTION;
+		ifHasBraces($5, @$);}
+	| IF `(' expression `)' statement ELSE statement 
+		{$$ = IF_ELSE_SELECTION, ifHasBraces($5, @$); 
+		ifHasBraces($7, @$);}
+	| SWITCH `(' expression `)' statement
+	;
+
+iteration_statement
+	: WHILE `(' expression `)' statement
+	| DO statement WHILE `(' expression `)' `;'
+	| FOR `(' expression_statement expression_statement `)' 
+		statement
+	| FOR `(' expression_statement expression_statement 
+		expression `)' statement
+	;
+
+function_definition
+	: declaration_specifiers declarator declaration_list 
+		compound_statement {isFunctionTooLong(@$);}
+	| declaration_specifiers declarator compound_statement 
+		{isFunctionTooLong(@$);}
+	| declarator declaration_list compound_statement 
+		{isFunctionTooLong(@$);}
+	| declarator compound_statement {isFunctionTooLong(@$);}
+	;
+\end{lstlisting}
+\end{figure} 
+
+
+\missingfigure{Add v1.0 class hierarchy figure -- or at least diagram of how things are related to each other}
 
 
 \section{Checks}
 
-To add a check, one must first figure out how the code in question is represented in the grammar. 
-Then one adds a function call inside the appropriate grammar rule. \todoin{Add rest of how a check works in 1.0} \missingfigure{Grammar file}
-\missingfigure{excerpt from check.c ??}
+To add a check, one must first figure out how the attribute in question is represented in the grammar. 
+Then one adds a function call inside the appropriate grammar rule. Each check can not only take 
+advantage of the type of construction being formed (like Function 1 in Table \ref
+{implementedChecks1.0}), it can also look at the location of each construction. This allows checks to 
+check the length of a construction (like Function 2 in Table \ref{implementedChecks1.0}). It also allows 
+checks to determine if they are still working with the same construction (like Function 3 in Table \ref
+{implementedChecks1.0}). Please see \refCode \ref{checks.c1.0} for examples of a check funciton.
 
 \begin{table}%[h]
 	\caption{Implemented Checks in v1.0}
-	\label{1.0checks}
+	\label{implementedChecks1.0}
 	\begin{center}
-	\begin{tabular}{l p{10cm}}
+	\begin{tabular}{l l p{10cm}}
 		\toprule
-		Function & Purpose \\
+		& Function & Purpose \\
 		\midrule
-		ifHasBraces & Determines if the statement following an \lstinline!if! is surrounded by \{\} \\
-		isFunctionTooLong & Determines if a function's length exceeds the maximum number of lines\\
-		tooManyParameters & Determines if there a function exceeds the maximum number of input parameters \\
-		CPlusPlusComments & Throws an error on finding C++ style single-line comments \\
+		1 & ifHasBraces & Determines if the statement following an \lstinline!if! is surrounded by \{\} \\
+		2 & isFunctionTooLong & Determines if a function's length exceeds the maximum number of lines\\
+		3 & tooManyParameters & Determines if there a function exceeds the maximum number of input parameters \\
+		4 & CPlusPlusComments & Throws an error on finding C++ style single-line comments \\
 		\bottomrule
 	\end{tabular}
 	\end{center}
 \end{table}
+
+
+\begin{figure}
+\caption{Excerpt of Checks.c from v1.0}
+\label{checks.c1.0}
+\begin{lstlisting}[language=C]
+void isFunctionTooLong(YYLTYPE location) {
+	int MAX_FUNCTION_LENGTH = 100;
+	
+	if (location.last_line - location.first_line + 1 >=
+	    MAX_FUNCTION_LENGTH) {
+		lyyerror(location, ``Function is too lengthy'');
+	}
+}
+
+void tooManyParameters(YYLTYPE location) {
+	int MAX_NUM_PARAMETERS = 7;
+	
+	static int numParameters = -1;
+	static YYLTYPE prevLoc;
+	
+	if (location.first_line != prevLoc.first_line ||
+	    numParameters == -1) {
+		if (numParameters != -1 && numParameters >= 
+		    MAX_NUM_PARAMETERS) {
+			char string[200];
+			sprintf(string,
+					``Please use less than %d function parameters,
+					 you used %d'', MAX_NUM_PARAMETERS, numParameters);
+			lyyerror(prevLoc, string);
+		}
+		
+		numParameters = 1;
+	}
+	
+	numParameters++;
+	prevLoc = location;
+}
+
+\end{lstlisting}
+\end{figure}
 
 
 \section{Limitations}
