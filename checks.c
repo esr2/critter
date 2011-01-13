@@ -11,6 +11,25 @@
 #include <stdio.h>
 
 /**
+ * Called at the end of each file. Location.first_line = last_line.
+ */
+void endOfFile(YYLTYPE location) {
+	/* Make one last call to tooManyParameters to make sure that if the last
+	 * function has an error, the error actually gets displayed. */
+	location.first_line++;
+	location.last_line++;
+	tooManyParameters(location);
+	
+}
+
+/**
+ * Called at the end of the program execution.
+ */
+void endOfProgram(YYLTYPE location) {
+
+}
+
+/**
  * Checks if there are braces surrounding an if statement.
  */
 void ifHasBraces(enum tree_code statementValue, YYLTYPE location) {
