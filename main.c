@@ -11,10 +11,12 @@
 
 int main(void) {
 	if(newfile("test.c")) {
+		beginningOfProgram();
 		if (!yyparse()) {
-			printf("\n\nWIN\n");
+			/* Success */
 			return 0;
 		} else {
+			/* Failure */
 			return 1;
 		}
 	}
