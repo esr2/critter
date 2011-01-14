@@ -74,7 +74,7 @@ int column = 1;
 <IFILE>.|\n	{ fprintf(stderr, "%4d bad include line\n", yylineno);
 				yyterminate();
 			}
-<<EOF>>	{if(!popfile()) yyterminate(); }
+<<EOF>>	{endOfFile(yylloc); if(!popfile()) {endOfProgram(yylloc); yyterminate();} }
 
 "#"			{ directive(); }
 
