@@ -1,7 +1,7 @@
 default: all
 
 run: 
-	a.out
+	a.out test.c
 
 
 all: generate main.c checks.c tree.c

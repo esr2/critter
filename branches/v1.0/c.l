@@ -281,6 +281,10 @@ int newfile(char *fn) {
 	curbs = bs;
 	yylineno = 1; 
 	curfilename = fn; 
+
+	/* perform any beginning of file checks */
+	beginningOfFile(curfilename);
+
 	return 1;
 }
 

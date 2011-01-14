@@ -9,6 +9,12 @@
 
 #include "checks.h"
 #include <stdio.h>
+/**
+ * Called at the beginning of each file before parsing begins.
+ */
+void beginningOfFile(char* filename) {
+	
+}
 
 /**
  * Called at the end of each file. Location.first_line = last_line.
@@ -20,6 +26,13 @@ void endOfFile(YYLTYPE location) {
 	location.last_line++;
 	tooManyParameters(location);
 	
+}
+
+/**
+ * Called at the beginning of the program execution before parsing begins.
+ */
+void beginningOfProgram(char* filename) {
+
 }
 
 /**
