@@ -13,7 +13,9 @@
 #include "tree.h"
 #include "c.tab.h"
 
+void beginningOfFile(char* filename);
 void endOfFile(YYLTYPE location);
+void beginningOfProgram();
 void endOfProgram(YYLTYPE location);
 
 void ifHasBraces(enum tree_code statementValue, YYLTYPE location);
