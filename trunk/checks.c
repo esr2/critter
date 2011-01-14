@@ -16,7 +16,6 @@ void beginningOfFile(char* filename) {
 	
 }
 
-
 /**
  * Called at the end of each file. Location.first_line = last_line.
  */
