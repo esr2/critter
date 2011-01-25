@@ -228,8 +228,15 @@ files. These two elements combine into one larger program, \programname, which t
 input.  \programname parses the input file by recognizing each code construction as part of the valid C 
 grammar. While parsing the code, \programname executes any function associated with the matched 
 construction -- this pairing of a construction and associated function is called a grammar rule. My 
-checks, while stored in a different file (checks.c/h), are called by these grammar rules (see \refCode 
-\ref{grammar1.0}).
+checks, while stored in a different file (see Figure \ref{classHierarchy1.0}), are called by these 
+grammar rules (see \refCode \ref{grammar1.0}).
+
+\begin{figure}
+\caption{Class Hierarchy for Version 1.0}
+\label{classHierarchy1.0}
+\missingfigure{Add v1.0 class hierarchy figure -- or at least diagram of how things are related to each other}
+\end{figure}
+
 
 \begin{figure}
 \caption{Excerpt of the Grammar File from v1.0}
@@ -266,18 +273,17 @@ function_definition
 \end{figure} 
 
 
-\missingfigure{Add v1.0 class hierarchy figure -- or at least diagram of how things are related to each other}
 
 
 \section{Checks}
 
-To add a check, one must first figure out how the attribute in question is represented in the grammar. 
-Then one adds a function call inside the appropriate grammar rule. Each check can not only take 
-advantage of the type of construction being formed (like Function 1 in Table \ref
-{implementedChecks1.0}), it can also look at the location of each construction. This allows checks to 
-check the length of a construction (like Function 2 in Table \ref{implementedChecks1.0}). It also allows 
-checks to determine if they are still working with the same construction (like Function 3 in Table \ref
-{implementedChecks1.0}). Please see \refCode \ref{checks.c1.0} for examples of a check funciton.
+To check a stylistic issue, one must first figure out how the issue is represented in the grammar and 
+then add a function call inside that grammar rule. Each check can not only take advantage of the type 
+of construction being formed (like Function ???(1) in Table \ref{implementedChecks1.0}), it can also 
+look at the location of each construction. This allows checks to check the length of a construction (like 
+Function ???(2) in Table \ref{implementedChecks1.0}). It also allows checks to determine if they are 
+still working with the same construction (like Function ???(3) in Table \ref{implementedChecks1.0}). 
+Please see \refCode \ref{checks.c1.0} for examples of a check function.
 
 \begin{table}%[h]
 	\caption{Implemented Checks in v1.0}
