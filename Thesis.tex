@@ -18,7 +18,12 @@
 \lstset{
 	basicstyle=\small,
 	tabsize=2,
-	frame=single
+	frame=single,
+	breaklines=true,
+	breakatwhitespace=true,
+	breakindent=25pt,
+	defaultdialect=[ANSI]C,
+	showstringspaces=false
  }
 %\def\lstlistlistingname{Code Excerpts}
 \def\lstlistingname{Figure}
@@ -177,7 +182,7 @@ import net.sourceforge.pmd.ast.ASTExpression;
 
 public class CountRule extends AbstractJavaRule {
 
-	private static final String COUNT = ``count'';
+	private static final String COUNT = ``count";
 
 	@Override
 	public void start(RuleContext ctx) {
@@ -187,8 +192,7 @@ public class CountRule extends AbstractJavaRule {
 
 	@Override
 	public Object visit(ASTExpression node, Object data) {
-		// How many Expression nodes are there in all
-		// files parsed!  I must know!
+		// How many Expression nodes are there in all files parsed! 
 		RuleContext ctx = (RuleContext)data;
 		AtomicLong total = (AtomicLong)ctx.getAttribute(COUNT);
 		total.incrementAndGet();
@@ -235,30 +239,22 @@ checks which are stored in a different file (see \refCode \ref{grammar1.0}).
 \label{grammar1.0}
 \begin{lstlisting}[language=Caml]
 selection_statement
-	: IF `(' expression `)' statement 	{$$ = IF_SELECTION;
-		ifHasBraces($5, @$);}
-	| IF `(' expression `)' statement ELSE statement 
-		{$$ = IF_ELSE_SELECTION, ifHasBraces($5, @$); 
-		ifHasBraces($7, @$);}
+	: IF `(' expression `)' statement 	{$$ = IF_SELECTION; ifHasBraces($5, @$);}
+	| IF `(' expression `)' statement ELSE statement {$$ = IF_ELSE_SELECTION, ifHasBraces($5, @$);  ifHasBraces($7, @$);}
 	| SWITCH `(' expression `)' statement
 	;
 
 iteration_statement
 	: WHILE `(' expression `)' statement
 	| DO statement WHILE `(' expression `)' `;'
-	| FOR `(' expression_statement expression_statement `)' 
-		statement
-	| FOR `(' expression_statement expression_statement 
-		expression `)' statement
+	| FOR `(' expression_statement expression_statement `)' statement
+	| FOR `(' expression_statement expression_statement expression `)' statement
 	;
 
 function_definition
-	: declaration_specifiers declarator declaration_list 
-		compound_statement {isFunctionTooLong(@$);}
-	| declaration_specifiers declarator compound_statement 
-		{isFunctionTooLong(@$);}
-	| declarator declaration_list compound_statement 
-		{isFunctionTooLong(@$);}
+	: declaration_specifiers declarator declaration_list compound_statement {isFunctionTooLong(@$);}
+	| declaration_specifiers declarator compound_statement {isFunctionTooLong(@$);}
+	| declarator declaration_list compound_statement {isFunctionTooLong(@$);}
 	| declarator compound_statement {isFunctionTooLong(@$);}
 	;
 \end{lstlisting}
@@ -302,9 +298,8 @@ Please see \refCode \ref{checks.c1.0} for examples of a check function.
 void isFunctionTooLong(YYLTYPE location) {
 	int MAX_FUNCTION_LENGTH = 100;
 	
-	if (location.last_line - location.first_line + 1 >=
-	    MAX_FUNCTION_LENGTH) {
-		lyyerror(location, ``Function is too lengthy'');
+	if (location.last_line - location.first_line + 1 >= MAX_FUNCTION_LENGTH) {
+		lyyerror(location, ``Function is too lengthy");
 	}
 }
 
@@ -319,9 +314,7 @@ void tooManyParameters(YYLTYPE location) {
 		if (numParameters != -1 && numParameters >= 
 		    MAX_NUM_PARAMETERS) {
 			char string[200];
-			sprintf(string,
-					``Please use less than %d function parameters,
-					 you used %d'', MAX_NUM_PARAMETERS, numParameters);
+			sprintf(string, ``Please use less than %d function parameters, you used %d", MAX_NUM_PARAMETERS, numParameters);
 			lyyerror(prevLoc, string);
 		}
 		
