@@ -226,17 +226,9 @@ This version represents the basic implementation of my goal: a customizable styl
 It is built off of Flex and Bison which create a lexical analyzer and a parser from a set of source 
 files. These two elements combine into one larger program, \programname, which takes a .c file as 
 input.  \programname parses the input file by recognizing each code construction as part of the valid C 
-grammar. While parsing the code, \programname executes any function associated with the matched 
-construction -- this pairing of a construction and associated function is called a grammar rule. My 
-checks, while stored in a different file (see Figure \ref{classHierarchy1.0}), are called by these 
-grammar rules (see \refCode \ref{grammar1.0}).
-
-\begin{figure}
-\caption{Class Hierarchy for Version 1.0}
-\label{classHierarchy1.0}
-\missingfigure{Add v1.0 class hierarchy figure -- or at least diagram of how things are related to each other}
-\end{figure}
-
+grammar (these possible constructions are known as a grammar rules). While parsing the code, 
+\programname executes any function associated with the grammar rule. These functions are the 
+checks which are stored in a different file (see \refCode \ref{grammar1.0}).
 
 \begin{figure}
 \caption{Excerpt of the Grammar File from v1.0}
