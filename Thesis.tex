@@ -345,7 +345,14 @@ void tooManyParameters(YYLTYPE location) {
 
 
 \section{Limitations}
-There are two main limitations to this version: the hassle of adding a check and macros are not handled. As described above, adding a check is nontrivial because of the interaction with the grammar file. It requires users to be reasonably familiar with not only grammar files but the C grammar itself. The second limitation is that all macros except \lstinline{#include} are completely ignored. This is far easier than the alternative which is to effectively compile and track all definitions, expressions and \lstinline{#ifndefs}. Includes are parsed only so far as to include any local file -- all standard files are ignored because they rely on types that were defined as macros. To make this system work for normal C files, the lexer has the \lstinline{size_t} type built in.
+There are two main limitations to this version:\ adding a check is a hassle and macros are not 
+handled. As described above, adding a check is nontrivial because of the interaction with the 
+grammar file. It requires users to be reasonably familiar with not only grammar files but the C grammar 
+itself. The second limitation is that all macros except \lstinline{#include} are completely ignored. While 
+unfortunate, this implementation is far easier than the alternative:\ effectively compiling and tracking 
+all definitions, expressions and \lstinline{#ifndef}s. Includes are parsed only so far as to include any 
+local file -- all standard files are ignored because they rely on types that were defined as macros. To 
+make this system work for normal C files, the lexer has the \lstinline{size_t} type built in.
 
 \chapter{Final Product aka Version X}
 \label{chap:FinalVersion}
