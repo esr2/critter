@@ -39,6 +39,8 @@
 \usepackage[pdfauthor={ErinRosenbaum},pagebackref=true,pdftex]{hyperref}
 %pdftitle={\projectname}
 
+\newcommand{\tablerow}[1]{#1}
+
 \usepackage{color}
 
 %for title page
@@ -167,7 +169,8 @@ The RuleSet is an XML file that can be edited to augment the functionality of PM
 rules. Rules are written in their own classes and extend a base implementation. The rule itself can 
 override three functions (start, visit and end) to perform various checks against the source code based 
 on the nodes in the AST. Here is the ``dummy" example from the PMD website which counts how 
-many expressions are in the source code (see \refCode \ref{pmd-rule}).\cite{pmd} \todoin{why PMD doesn't work}
+many expressions are in the source code (see \refCode \ref{pmd-rule}).\cite{pmd} 
+\todoin{why PMD doesn't work}
 
 \begin{figure}
 \caption[Example PMD Rule]{Example PMD Rule counting the number expressions}
@@ -259,21 +262,19 @@ function_definition
 	;
 \end{lstlisting}
 \end{figure} 
-
-
-
+\newpage
 
 \section{Checks}
 
 To check a stylistic issue, one must first figure out how the issue is represented in the grammar and 
 then add a function call inside that grammar rule. Each check can not only take advantage of the type 
-of construction being formed (like Function ???(1) in Table \ref{implementedChecks1.0}), it can also 
-look at the location of each construction. This allows checks to check the length of a construction (like 
-Function ???(2) in Table \ref{implementedChecks1.0}). It also allows checks to determine if they are 
-still working with the same construction (like Function ???(3) in Table \ref{implementedChecks1.0}). 
-Please see \refCode \ref{checks.c1.0} for examples of a check function.
+of construction being formed (like Function \tablerow{1} in Table \ref{implementedChecks1.0}), it can 
+also look at the location of each construction. This allows checks to check the length of a construction 
+(like Function \tablerow{2} in Table \ref{implementedChecks1.0}). It also allows checks to determine if 
+they are still working with the same construction (like Function \tablerow{3} in Table 
+\ref{implementedChecks1.0}). Please see \refCode \ref{checks.c1.0} for examples of a check function.
 
-\begin{table}%[h]
+\begin{table}
 	\caption{Implemented Checks in v1.0}
 	\label{implementedChecks1.0}
 	\begin{center}
@@ -289,7 +290,6 @@ Please see \refCode \ref{checks.c1.0} for examples of a check function.
 	\end{tabular}
 	\end{center}
 \end{table}
-
 
 \begin{figure}
 \caption{Excerpt of Checks.c from v1.0}
