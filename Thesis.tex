@@ -89,7 +89,7 @@ English, C, etc.). A passage with bad grammar and poorly written code both denot
 technically valid but hard to understand. Finally, illogical arguments and malfunctioning code both 
 imply errors in the ideas behind the text. 
 There are tools to help one find these errors in both literature and code (see Table \ref
-{errorChecking}). Spelling and Grammar Check exist in nearly every text editor; the reader highlights 
+{errorChecking}). Spelling and grammar check exist in nearly every text editor; the reader highlights 
 substantive errors in literature. With code, the compiler shows semantic errors and the user/testing 
 reveal substantive errors. Yet semantic error checking for code has yet to be automated fully.
 
@@ -107,7 +107,7 @@ The biggest reason to perform semantic error checking is to improve readability 
 ease with which another programmer can understand a piece of code). In the same way that 
 grammatical errors in a paper often confound its underlying arguments, poorly written code can easily 
 obscure its underlying function. Furthermore, readable code is easy to revise and update later.  In an 
-industry or academic setting, where it is necessary to read or edit another's code, maintaining 
+industrial or academic setting, where it is necessary to read or edit another's code, maintaining 
 readability is essential. The successful implementation of automated semantic error checking 
 can immediately save work for professors by replacing the process of writing the same set of stylistic 
 comments to many students with a set of automated warnings.
@@ -167,7 +167,7 @@ The RuleSet is an XML file that can be edited to augment the functionality of PM
 rules. Rules are written in their own classes and extend a base implementation. The rule itself can 
 override three functions (start, visit and end) to perform various checks against the source code based 
 on the nodes in the AST. Here is the ``dummy" example from the PMD website which counts how 
-many expressions are in the source code (see \refCode \ref{pmd-rule}).\cite{pmd}
+many expressions are in the source code (see \refCode \ref{pmd-rule}).\cite{pmd} \todoin{why PMD doesn't work}
 
 \begin{figure}
 \caption[Example PMD Rule]{Example PMD Rule counting the number expressions}
@@ -214,7 +214,7 @@ Checkstyle mimics PMD in function but provides different checks out of the box (
 regarding duplicate code, class design, whitespace, etc). It also uses the Visitor Pattern and 
 provides ways to examine the beginning and ends of the tree as well as each node. New rules are 
 added through an XML file and similarly passed to Checkstyle at runtime.\cite{checkstyle}
-
+\todoin{pad this out into its own}
 
 \nocite{framaC}
 
