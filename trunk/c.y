@@ -471,10 +471,10 @@ external_declaration
 	;
 
 function_definition
-	: declaration_specifiers declarator declaration_list compound_statement {isFunctionTooLong(@$);}
-	| declaration_specifiers declarator compound_statement {isFunctionTooLong(@$);}
-	| declarator declaration_list compound_statement {isFunctionTooLong(@$);}
-	| declarator compound_statement {isFunctionTooLong(@$);}
+	: declaration_specifiers declarator declaration_list compound_statement {isFunctionTooLong(@$); checkForComment(@$);}
+	| declaration_specifiers declarator compound_statement {isFunctionTooLong(@$); checkForComment(@$);}
+	| declarator declaration_list compound_statement {isFunctionTooLong(@$); checkForComment(@$);}
+	| declarator compound_statement {isFunctionTooLong(@$); checkForComment(@$);}
 	;
 
 %%

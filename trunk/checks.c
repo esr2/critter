@@ -95,6 +95,10 @@ void CPlusPlusComments(YYLTYPE location) {
 	lyyerror(location, "Don't use C++ style comments");
 }
 
+#define MAX_COMMENT_LENGTH 2000
+static char lastCommentText[MAX_COMMENT_LENGTH];
+static YYLTYPE lastCommentLocation;
+
 /**
  * Collects the last comment. Progress should equal 1 if true, 0 if in the 
  * middle of a comment, and -1 if starting a comment.
@@ -105,37 +109,42 @@ void registerComment(char* text, YYLTYPE location, int progress) {
 		MIDDLE = 0,
 		BEGIN = -1
 	};
-#define MAX_COMMENT_LENGTH 2000
-	
+
 	static int hasEnded = 0;
-	static YYLTYPE prevLoc;
-	static char fullComment[MAX_COMMENT_LENGTH];
+	static YYLTYPE lastCommentLocation;	
 	
 	if (!text) {
 		// We've encountered an error that should never happen, for now just return
 		return;
 	}
-	if (!prevLoc.first_line) {prevLoc = location;}
+	if (!lastCommentLocation.first_line) {lastCommentLocation = location;}
 	
 	if (progress == END) {
-		prevLoc.last_line = location.last_line;
-		prevLoc.last_column = location.last_column;
+		lastCommentLocation.last_line = location.last_line;
+		lastCommentLocation.last_column = location.last_column;
 		
 	} else if (progress == MIDDLE) {
-		size_t size = MAX_COMMENT_LENGTH - strlen(fullComment);
-		strncat(fullComment, text, size);
+		size_t size = MAX_COMMENT_LENGTH - strlen(lastCommentText);
+		strncat(lastCommentText, text, size);
 		
 	} else if (progress == BEGIN) {
 		int i;
 		for (i = 0; i < MAX_COMMENT_LENGTH; i++) {
-			fullComment[i] = '\0';
+			lastCommentText[i] = '\0';
 		}
 		
-		prevLoc.first_line = location.first_line;
-		prevLoc.first_column = location.first_column;
-		prevLoc.filename = location.filename;
+		lastCommentLocation.first_line = location.first_line;
+		lastCommentLocation.first_column = location.first_column;
+		lastCommentLocation.filename = location.filename;
 	} else {
 		// PROFESSOR ERROR!!!
 	}
 	
+}
+
+void checkForComment(YYLTYPE location) {
+	//lyyerror(location, "Checking for comment");
+	if (strcmp(lastCommentLocation.filename,location.filename) == 0) {
+		// last comment is in same file as current function
+	}
 }
