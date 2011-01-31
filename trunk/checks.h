@@ -22,5 +22,6 @@ void ifHasBraces(enum tree_code statementValue, YYLTYPE location);
 void isFunctionTooLong(YYLTYPE location);
 void tooManyParameters(YYLTYPE location);
 void CPlusPlusComments(YYLTYPE location);
+void comment(char* text, YYLTYPE location, int progress);
 
 #endif

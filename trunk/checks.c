@@ -9,6 +9,7 @@
 
 #include "checks.h"
 #include <stdio.h>
+#include <strings.h>
 /**
  * Called at the beginning of each file before parsing begins.
  */
@@ -92,4 +93,49 @@ void tooManyParameters(YYLTYPE location) {
  */
 void CPlusPlusComments(YYLTYPE location) {
 	lyyerror(location, "Don't use C++ style comments");
+}
+
+/**
+ * Collects the last comment. Progress should equal 1 if true, 0 if in the 
+ * middle of a comment, and -1 if starting a comment.
+ */
+void comment(char* text, YYLTYPE location, int progress) {
+	enum PROGRESS {
+		END = 1,
+		MIDDLE = 0,
+		BEGIN = -1
+	};
+#define MAX_COMMENT_LENGTH 2000
+	
+	static int hasEnded = 0;
+	static YYLTYPE prevLoc;
+	static char fullComment[MAX_COMMENT_LENGTH];
+	
+	if (!text) {
+		// We've encountered an error that should never happen, for now just return
+		return;
+	}
+	if (!prevLoc.first_line) {prevLoc = location;}
+	
+	if (progress == END) {
+		prevLoc.last_line = location.last_line;
+		prevLoc.last_column = location.last_column;
+		lyyerror(prevLoc, fullComment);
+	} else if (progress == MIDDLE) {
+		size_t size = MAX_COMMENT_LENGTH - strlen(fullComment);
+		strncat(fullComment, text, size);
+		
+	} else if (progress == BEGIN) {
+		int i;
+		for (i = 0; i < MAX_COMMENT_LENGTH; i++) {
+			fullComment[i] = '\0';
+		}
+		
+		prevLoc.first_line = location.first_line;
+		prevLoc.first_column = location.first_column;
+		prevLoc.filename = location.filename;
+	} else {
+		// PROFESSOR ERROR!!!
+	}
+	
 }
