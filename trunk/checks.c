@@ -99,7 +99,7 @@ void CPlusPlusComments(YYLTYPE location) {
  * Collects the last comment. Progress should equal 1 if true, 0 if in the 
  * middle of a comment, and -1 if starting a comment.
  */
-void comment(char* text, YYLTYPE location, int progress) {
+void registerComment(char* text, YYLTYPE location, int progress) {
 	enum PROGRESS {
 		END = 1,
 		MIDDLE = 0,
@@ -120,7 +120,7 @@ void comment(char* text, YYLTYPE location, int progress) {
 	if (progress == END) {
 		prevLoc.last_line = location.last_line;
 		prevLoc.last_column = location.last_column;
-		lyyerror(prevLoc, fullComment);
+		
 	} else if (progress == MIDDLE) {
 		size_t size = MAX_COMMENT_LENGTH - strlen(fullComment);
 		strncat(fullComment, text, size);
