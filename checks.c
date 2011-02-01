@@ -133,12 +133,24 @@ void registerComment(char* text, YYLTYPE location, int progress) {
 		// We've encountered an error that should never happen, for now just return
 		return;
 	}
-	if (!lastCommentLocation.first_line) {lastCommentLocation = location;}
 	
 	if (progress == END) {
 		lastCommentLocation.last_line = location.last_line;
 		lastCommentLocation.last_column = location.last_column;
 		
+		// add the latest comment to the arrays
+		char *text = malloc(sizeof(char) * strlen(lastCommentText));
+		strcpy(text, lastCommentText);
+		YYLTYPE *loc = malloc(sizeof(YYLTYPE));
+		loc->filename = malloc(sizeof(char) * strlen(lastCommentLocation.filename));
+		strcpy(loc->filename, lastCommentLocation.filename);
+		loc->first_line = lastCommentLocation.first_line;
+		loc->first_column = lastCommentLocation.first_column;
+		loc->last_line = lastCommentLocation.last_line;
+		loc->last_column = lastCommentLocation.last_column;
+		
+		DynArray_add(commentTexts, text);
+		DynArray_add(commentLocations, loc);
 	} else if (progress == MIDDLE) {
 		size_t size = MAX_COMMENT_LENGTH - strlen(lastCommentText);
 		strncat(lastCommentText, text, size);
@@ -149,9 +161,7 @@ void registerComment(char* text, YYLTYPE location, int progress) {
 			lastCommentText[i] = '\0';
 		}
 		
-		lastCommentLocation.first_line = location.first_line;
-		lastCommentLocation.first_column = location.first_column;
-		lastCommentLocation.filename = location.filename;
+		lastCommentLocation = location;
 	} else {
 		// PROFESSOR ERROR!!!
 	}
