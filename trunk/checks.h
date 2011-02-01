@@ -24,5 +24,6 @@ void tooManyParameters(YYLTYPE location);
 void CPlusPlusComments(YYLTYPE location);
 void registerComment(char* text, YYLTYPE location, int progress);
 void checkForComment(YYLTYPE location);
+void switchHasDefault(YYLTYPE location, int progress);
 
 #endif
