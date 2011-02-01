@@ -10,12 +10,21 @@
 #include "checks.h"
 #include <stdio.h>
 #include <strings.h>
+#include "dynarray.h"
+#include <assert.h>
+#include <stdlib.h>
+
+static DynArray_T commentLocations;
+static DynArray_T commentTexts;
+
 /**
  * Called at the beginning of each file before parsing begins.
  */
 void beginningOfFile(char* filename) {
 	
 }
+
+void myFree(void* element, void* extra) { free(element); }
 
 /**
  * Called at the end of each file. Location.first_line = last_line.
@@ -33,14 +42,21 @@ void endOfFile(YYLTYPE location) {
  * Called at the beginning of the program execution before parsing begins.
  */
 void beginningOfProgram(char* filename) {
-
+	commentTexts = DynArray_new(10);
+	commentLocations = DynArray_new(10);
 }
 
 /**
  * Called at the end of the program execution.
  */
 void endOfProgram(YYLTYPE location) {
-
+	assert(commentTexts != NULL);
+	assert(commentLocations != NULL);
+	// Free the comment arrays
+	DynArray_map(commentLocations, myFree, NULL);
+	DynArray_free(commentLocations);
+	DynArray_map(commentTexts, myFree, NULL);
+	DynArray_free(commentTexts);
 }
 
 /**
@@ -95,20 +111,21 @@ void CPlusPlusComments(YYLTYPE location) {
 	lyyerror(location, "Don't use C++ style comments");
 }
 
-#define MAX_COMMENT_LENGTH 2000
-static char lastCommentText[MAX_COMMENT_LENGTH];
-static YYLTYPE lastCommentLocation;
-
 /**
  * Collects the last comment. Progress should equal 1 if true, 0 if in the 
  * middle of a comment, and -1 if starting a comment.
  */
 void registerComment(char* text, YYLTYPE location, int progress) {
+	//lyyerror(location, "registering comment");
 	enum PROGRESS {
 		END = 1,
 		MIDDLE = 0,
 		BEGIN = -1
 	};
+	
+#define MAX_COMMENT_LENGTH 2000
+	static char lastCommentText[MAX_COMMENT_LENGTH];
+	static YYLTYPE lastCommentLocation;
 
 	static int hasEnded = 0;
 	
@@ -142,8 +159,25 @@ void registerComment(char* text, YYLTYPE location, int progress) {
 }
 
 void checkForComment(YYLTYPE location) {
-	//lyyerror(location, "Checking for comment");
-	if (strcmp(lastCommentLocation.filename,location.filename) == 0) {
-		// last comment is in same file as current function
+/*	lyyerror(location, "Checking for comment");
+	if (!lastCommentLocation.filename) {
+		//lyyerror(location,"nonexistant location\n");
+		return;
 	}
+	if (!lastCommentText) {
+		printf("nonexistant text\n");
+	}
+	if (strcmp(lastCommentLocation.filename, location.filename) == 0) {
+		// last comment is in same file as current function
+		printf("comment is in same file\n");
+		int distance = abs(lastCommentLocation.last_line - location.first_line);
+		printf("comment last = %d, location first = %d, distance = %d\n",
+			   lastCommentLocation.last_line, location.first_line, distance);
+		//lyyerror(lastCommentLocation, "lastComment");
+		if (distance <= 5) {
+			// comment ends within 5 lines of the function
+			printf("For function on %s:%d, found %s\n", location.filename, location.first_line,
+				   lastCommentText);
+		}
+	} */
 }
