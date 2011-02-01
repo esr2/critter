@@ -210,7 +210,8 @@ void checkForComment(YYLTYPE location) {
 	int index = DynArray_backwardsSearch(commentLocations, &location, compareLocations);
 	if (index == -1) {
 		// comment not found
+		lyyerror(location, "Please include a descriptive comment above each function");
 	} else {
-		printf("comment is %s\n", (char*)DynArray_get(commentTexts, index));
+		//printf("comment is %s\n", (char*)DynArray_get(commentTexts, index));
 	}
 }
