@@ -232,3 +232,31 @@ void checkForComment(YYLTYPE location) {
 		printf("comment is %s\n", (char*)DynArray_get(commentTexts, index));
 	}
 }
+
+void switchHasDefault(YYLTYPE location, int progress) {
+	enum PROGRESS {
+		END = 1,
+		MIDDLE = 0,
+		BEGIN = -1
+	};
+	
+	static int started = 0;
+	static int found = 0;
+	
+	switch (progress) {
+		case BEGIN:
+			started = 1;
+			found = 0;
+			break;
+		case MIDDLE:
+			found = 1;
+			break;
+		case END:
+			if (!found && started) {
+				lyyerror(location, "Always include a default in switch statements");
+			}
+			started = 0;
+			break;
+		default: break;
+	}
+}

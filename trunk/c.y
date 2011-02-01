@@ -412,7 +412,7 @@ statement
 labeled_statement
 	: IDENTIFIER ':' statement
 	| CASE constant_expression ':' statement
-	| DEFAULT ':' statement
+	| DEFAULT ':' statement {switchHasDefault(@$, 0);}
 	;
 
 compound_statement
@@ -442,7 +442,7 @@ selection_statement
 	| IF '(' expression ')' statement ELSE statement {$$ = IF_ELSE_SELECTION,
 													  ifHasBraces($5, @$);
 													  ifHasBraces($7, @$);}
-	| SWITCH '(' expression ')' statement
+	| SWITCH '(' expression ')' {switchHasDefault(@1, -1);} statement {switchHasDefault(@$, 1);}
 	;
 
 iteration_statement
