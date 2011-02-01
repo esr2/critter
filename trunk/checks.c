@@ -61,6 +61,7 @@ void endOfFile(YYLTYPE location) {
  * Called at the beginning of the program execution before parsing begins.
  */
 void beginningOfProgram(char* filename) {
+	// These have to be managed on a program level because files are nested
 	commentTexts = DynArray_new(0);
 	commentLocations = DynArray_new(0);
 }
