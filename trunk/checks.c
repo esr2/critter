@@ -111,7 +111,6 @@ void registerComment(char* text, YYLTYPE location, int progress) {
 	};
 
 	static int hasEnded = 0;
-	static YYLTYPE lastCommentLocation;	
 	
 	if (!text) {
 		// We've encountered an error that should never happen, for now just return
