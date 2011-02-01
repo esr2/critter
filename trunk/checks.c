@@ -203,12 +203,17 @@ int compareLocations(const void *element1, const void *element2) {
 	int COMPARE_DISTANCE = 5;
 	
 	if (strcmp(commentLocation->filename, functionLocation->filename) == 0) {
-		int distance = abs(commentLocation->last_line - functionLocation->first_line);
-		if (distance <= COMPARE_DISTANCE) {
+		// Comment before function call
+		int distance = functionLocation->first_line - commentLocation->last_line;
+		if (distance <= COMPARE_DISTANCE && distance > 0) {
 			return 0;
 		}
-		// TRY checking function last line to comment first line to find comments after
-		// but very likely that you'll find some inferior comment
+		
+		// Comment inside function body
+		distance = commentLocation->first_line - functionLocation->first_line;
+		if (distance <= COMPARE_DISTANCE && distance > 0) {
+			return 0;
+		}
 	}
 	
 	return 1;
@@ -218,7 +223,7 @@ int compareLocations(const void *element1, const void *element2) {
  * Checks for comments before functions.
  */
 void checkForComment(YYLTYPE location) {
-	int index = DynArray_backwardsSearch(commentLocations, &location, compareLocations);
+	int index = DynArray_search(commentLocations, &location, compareLocations);
 	if (index == -1) {
 		// comment not found
 		lyyerror(location, "Please include a descriptive comment above each function");
