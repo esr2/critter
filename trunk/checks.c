@@ -24,7 +24,13 @@ void beginningOfFile(char* filename) {
 	
 }
 
-void myFree(void* element, void* extra) { free(element); }
+void freeLocations(void* element, void* extra) { 
+	assert(element != NULL);
+	YYLTYPE *location = (YYLTYPE *)element;
+	if (location->filename != NULL) { free(location->filename); }
+	free(element); 
+}
+void freeComments(void* element, void* extra) { free(element); }
 
 /**
  * Called at the end of each file. Location.first_line = last_line.
@@ -42,8 +48,8 @@ void endOfFile(YYLTYPE location) {
  * Called at the beginning of the program execution before parsing begins.
  */
 void beginningOfProgram(char* filename) {
-	commentTexts = DynArray_new(10);
-	commentLocations = DynArray_new(10);
+	commentTexts = DynArray_new(0);
+	commentLocations = DynArray_new(0);
 }
 
 /**
@@ -53,9 +59,9 @@ void endOfProgram(YYLTYPE location) {
 	assert(commentTexts != NULL);
 	assert(commentLocations != NULL);
 	// Free the comment arrays
-	DynArray_map(commentLocations, myFree, NULL);
+	DynArray_map(commentLocations, freeLocations, NULL);
 	DynArray_free(commentLocations);
-	DynArray_map(commentTexts, myFree, NULL);
+	DynArray_map(commentTexts, freeComments, NULL);
 	DynArray_free(commentTexts);
 }
 
@@ -168,26 +174,43 @@ void registerComment(char* text, YYLTYPE location, int progress) {
 	
 }
 
-void checkForComment(YYLTYPE location) {
-/*	lyyerror(location, "Checking for comment");
-	if (!lastCommentLocation.filename) {
-		//lyyerror(location,"nonexistant location\n");
-		return;
-	}
-	if (!lastCommentText) {
-		printf("nonexistant text\n");
-	}
-	if (strcmp(lastCommentLocation.filename, location.filename) == 0) {
-		// last comment is in same file as current function
-		printf("comment is in same file\n");
-		int distance = abs(lastCommentLocation.last_line - location.first_line);
-		printf("comment last = %d, location first = %d, distance = %d\n",
-			   lastCommentLocation.last_line, location.first_line, distance);
-		//lyyerror(lastCommentLocation, "lastComment");
-		if (distance <= 5) {
-			// comment ends within 5 lines of the function
-			printf("For function on %s:%d, found %s\n", location.filename, location.first_line,
-				   lastCommentText);
+/**
+ * Compare two locations - meant to be used by Dynarray_search. Returns 0 if
+ * equal and 1 if not.
+ */
+int compareLocations(const void *element1, const void *element2) {
+	// taking advantage of how dynarray compares elements
+	YYLTYPE *commentLocation = (YYLTYPE*)element1;
+	YYLTYPE *functionLocation = (YYLTYPE*)element2;
+		
+	assert(commentLocation != NULL);
+	assert(functionLocation != NULL);
+	
+	assert(commentLocation->filename != NULL);
+	assert(functionLocation->filename != NULL);
+	
+	int COMPARE_DISTANCE = 5;
+	
+	if (strcmp(commentLocation->filename, functionLocation->filename) == 0) {
+		int distance = abs(commentLocation->last_line - functionLocation->first_line);
+		if (distance <= COMPARE_DISTANCE) {
+			return 0;
 		}
-	} */
+		// TRY checking function last line to comment first line to find comments after
+		// but very likely that you'll find some inferior comment
+	}
+	
+	return 1;
+}
+
+/**
+ * Checks for comments before functions.
+ */
+void checkForComment(YYLTYPE location) {
+	int index = DynArray_backwardsSearch(commentLocations, &location, compareLocations);
+	if (index == -1) {
+		// comment not found
+	} else {
+		printf("comment is %s\n", (char*)DynArray_get(commentTexts, index));
+	}
 }
