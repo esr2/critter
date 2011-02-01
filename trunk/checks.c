@@ -21,7 +21,7 @@ static DynArray_T commentTexts;
  * Called at the beginning of each file before parsing begins.
  */
 void beginningOfFile(char* filename) {
-	
+
 }
 
 void freeLocations(void* element, void* extra) { 
@@ -36,6 +36,8 @@ void freeComments(void* element, void* extra) { free(element); }
  * Called at the end of each file. Location.first_line = last_line.
  */
 void endOfFile(YYLTYPE location) {
+	isFileTooLong(location);
+	
 	/* Make one last call to tooManyParameters to make sure that if the last
 	 * function has an error, the error actually gets displayed. */
 	location.first_line++;
@@ -63,6 +65,17 @@ void endOfProgram(YYLTYPE location) {
 	DynArray_free(commentLocations);
 	DynArray_map(commentTexts, freeComments, NULL);
 	DynArray_free(commentTexts);
+}
+
+/**
+ * Check if the file is above a maximum length
+ */
+void isFileTooLong(YYLTYPE location) {
+	int MAX_FILE_LENGTH = 100;
+	
+	if (location.first_line > MAX_FILE_LENGTH) {
+		lyyerror(location, "File is too long");
+	}
 }
 
 /**
