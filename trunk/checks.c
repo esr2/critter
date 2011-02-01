@@ -33,6 +33,17 @@ void freeLocations(void* element, void* extra) {
 void freeComments(void* element, void* extra) { free(element); }
 
 /**
+ * Check if the file is above a maximum length
+ */
+void isFileTooLong(YYLTYPE location) {
+	int MAX_FILE_LENGTH = 100;
+	
+	if (location.first_line > MAX_FILE_LENGTH) {
+		lyyerror(location, "File is too long");
+	}
+}
+
+/**
  * Called at the end of each file. Location.first_line = last_line.
  */
 void endOfFile(YYLTYPE location) {
@@ -65,17 +76,6 @@ void endOfProgram(YYLTYPE location) {
 	DynArray_free(commentLocations);
 	DynArray_map(commentTexts, freeComments, NULL);
 	DynArray_free(commentTexts);
-}
-
-/**
- * Check if the file is above a maximum length
- */
-void isFileTooLong(YYLTYPE location) {
-	int MAX_FILE_LENGTH = 100;
-	
-	if (location.first_line > MAX_FILE_LENGTH) {
-		lyyerror(location, "File is too long");
-	}
 }
 
 /**
@@ -145,8 +145,6 @@ void registerComment(char* text, YYLTYPE location, int progress) {
 #define MAX_COMMENT_LENGTH 2000
 	static char lastCommentText[MAX_COMMENT_LENGTH];
 	static YYLTYPE lastCommentLocation;
-
-	static int hasEnded = 0;
 	
 	if (!text) {
 		// We've encountered an error that should never happen, for now just return
@@ -225,6 +223,6 @@ void checkForComment(YYLTYPE location) {
 		// comment not found
 		lyyerror(location, "Please include a descriptive comment above each function");
 	} else {
-		//printf("comment is %s\n", (char*)DynArray_get(commentTexts, index));
+		printf("comment is %s\n", (char*)DynArray_get(commentTexts, index));
 	}
 }
