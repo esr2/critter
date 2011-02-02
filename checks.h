@@ -18,11 +18,11 @@ void endOfFile(YYLTYPE location);
 void beginningOfProgram();
 void endOfProgram(YYLTYPE location);
 
-void ifHasBraces(enum tree_code statementValue, YYLTYPE location);
+void hasBraces(YYLTYPE location, enum tree_code statementValue);
 void isFunctionTooLong(YYLTYPE location);
 void tooManyParameters(YYLTYPE location);
 void CPlusPlusComments(YYLTYPE location);
-void registerComment(char* text, YYLTYPE location, int progress);
+void registerComment(YYLTYPE location, char* text, int progress);
 void checkForComment(YYLTYPE location);
 void switchHasDefault(YYLTYPE location, int progress);
 

@@ -82,7 +82,7 @@ void endOfProgram(YYLTYPE location) {
 /**
  * Checks if there are braces surrounding an if statement.
  */
-void ifHasBraces(enum tree_code statementValue, YYLTYPE location) {
+void hasBraces(YYLTYPE location, enum tree_code statementValue) {
 	if (statementValue != COMPOUND_STATEMENT) {
 		lyyerror(location, "Please use braces after all if statements");
 	}
@@ -135,7 +135,7 @@ void CPlusPlusComments(YYLTYPE location) {
  * Collects the last comment. Progress should equal 1 if true, 0 if in the 
  * middle of a comment, and -1 if starting a comment.
  */
-void registerComment(char* text, YYLTYPE location, int progress) {
+void registerComment(YYLTYPE location, char* text, int progress) {
 	//lyyerror(location, "registering comment");
 	enum PROGRESS {
 		END = 1,
