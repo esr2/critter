@@ -446,10 +446,10 @@ selection_statement
 	;
 
 iteration_statement
-	: WHILE '(' expression ')' statement
-	| DO statement WHILE '(' expression ')' ';'
-	| FOR '(' expression_statement expression_statement ')' statement
-	| FOR '(' expression_statement expression_statement expression ')' statement
+	: WHILE '(' expression ')' statement	{hasBraces(@$, $5);}
+	| DO statement WHILE '(' expression ')' ';'		{hasBraces(@$, $2);}
+	| FOR '(' expression_statement expression_statement ')' statement		{hasBraces(@$, $6);}
+	| FOR '(' expression_statement expression_statement expression ')' statement	{hasBraces(@$, $7);}
 	;
 
 jump_statement
