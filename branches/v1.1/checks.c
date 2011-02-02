@@ -233,6 +233,9 @@ void checkForComment(YYLTYPE location) {
 	}
 }
 
+/**
+ * Checks if each switch statment has a default case.
+ */
 void switchHasDefault(YYLTYPE location, int progress) {
 	enum PROGRESS {
 		END = 1,
