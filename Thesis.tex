@@ -232,10 +232,11 @@ page \pageref{chap:FinalVersion}.}
 This version represents the basic implementation of my goal: a customizable style checker for C code.
 It is built off of Flex and Bison which create a lexical analyzer and a parser from a set of source 
 files. These two elements combine into one larger program, \programName, which takes a .c file as 
-input.  \programName parses the input file by recognizing each code construction as part of the valid C 
-grammar (these possible constructions are known as a grammar rules). While parsing the code, 
+input.  \programName parses the input file by recognizing each code construction as part of the valid 
+C grammar (these possible constructions are known as a grammar rules). While parsing the code, 
 \programName executes any function associated with the grammar rule. These functions are the 
-checks which are stored in a different file (see \refCode \ref{grammar1.0}).
+checks which are stored in a different file (see \refCode \ref{grammar1.0}). Additionally, checks can be 
+called from the beginning or end of each file or the entire program.
 
 \begin{figure}
 \caption{Excerpt of the Grammar File from v1.0}
