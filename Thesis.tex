@@ -33,7 +33,7 @@
 %project name
 \usepackage{xspace}
 \newcommand{\projectname}{Project Name\xspace}
-\newcommand{\programname}{PROGRAM\_NAME\xspace}
+\newcommand{\programName}{PROGRAM\_NAME\xspace}
 
 \usepackage{booktabs} %pretty tables
 \usepackage[pdfauthor={ErinRosenbaum},pagebackref=true,pdftex]{hyperref}
@@ -231,10 +231,10 @@ page \pageref{chap:FinalVersion}.}
 
 This version represents the basic implementation of my goal: a customizable style checker for C code.
 It is built off of Flex and Bison which create a lexical analyzer and a parser from a set of source 
-files. These two elements combine into one larger program, \programname, which takes a .c file as 
-input.  \programname parses the input file by recognizing each code construction as part of the valid C 
+files. These two elements combine into one larger program, \programName, which takes a .c file as 
+input.  \programName parses the input file by recognizing each code construction as part of the valid C 
 grammar (these possible constructions are known as a grammar rules). While parsing the code, 
-\programname executes any function associated with the grammar rule. These functions are the 
+\programName executes any function associated with the grammar rule. These functions are the 
 checks which are stored in a different file (see \refCode \ref{grammar1.0}).
 
 \begin{figure}
@@ -337,7 +337,33 @@ itself. The second limitation is that all macros except \lstinline{#include} are
 unfortunate, this implementation is far easier than the alternative:\ effectively compiling and tracking 
 all definitions, expressions and \lstinline{#ifndef}s. Includes are parsed only so far as to include any 
 local file -- all standard files are ignored because they rely on types that were defined as macros. To 
-make this system work for normal C files, the lexer has the \lstinline{size_t} type built in.
+make this system work for normal C files, the lexer has the \lstinline{size_t} type built in. A minor issue 
+is \programName does not follow the paths of files -- meaning that it will not run on code residing in a 
+subfolder of the working directory.
+
+\section{Version 1.1}
+This version simply adds more functionality (checks) to version 1.0 without changing the overall structure of \programName.
+
+\subsection{Checks}
+Version 1.1 changes Function \tablerow{1} from Version 1.0 as well as adds several new checks (see 
+Table \ref{implementedChecks1.1}). This version also stores comment text and locations for the 
+duration of the program. The appropriate comment is found by searching through the stored location-
+comment pairs for locations within a certain range of a specified location. For example, in Function 
+\tablerow{5}, each function definition results in a search for any comment within 5 lines of the 
+declaration. Comments and their locations are stored in two dynamically sized global arrays.
+
+\begin{table}
+\caption{Additional Checks in 1.1}
+\label{implementedChecks1.1}
+	\begin{tabular}{l l p{10cm}}
+		\toprule
+		& Function & Purpose \\
+		\midrule
+		1 & hasBraces & Determines if the statement following an \lstinline!if!, \lstinline$for$, or \lstinline$while$ is surrounded by \{\} \\
+		5 & checkForComment & Throws an error if a function does not have an associated comment \\
+		6 & switchHasDefault & Throws an error if a switch statement does not include a \lstinline$default$ case \\
+	\end{tabular}
+\end{table}
 
 \chapter{Final Product aka Version X}
 \label{chap:FinalVersion}
