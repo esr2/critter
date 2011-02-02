@@ -53,9 +53,9 @@ int column = 1;
 
 %%
 
-"/*" 				{registerComment(yytext, yylloc, -1); BEGIN(COMMENT); }
-<COMMENT>"*/"				{registerComment(yytext, yylloc, 1); BEGIN(INITIAL); }
-<COMMENT>([^*]|\n)+|.		{registerComment(yytext, yylloc, 0);}
+"/*" 				{registerComment(yylloc, yytext, -1); BEGIN(COMMENT); }
+<COMMENT>"*/"				{registerComment(yylloc, yytext, 1); BEGIN(INITIAL); }
+<COMMENT>([^*]|\n)+|.		{registerComment(yylloc, yytext, 0);}
 <COMMENT><<EOF>>			{ printf("%s:%d: Unterminated comment\n",
 									 curfilename, yylineno); return 0; }
 "//".*\n			{CPlusPlusComments(yylloc);}
