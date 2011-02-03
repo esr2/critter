@@ -12,6 +12,8 @@
 #include <strings.h>
 #include <assert.h>
 #include <stdlib.h>
+#include "dynarray.h"
+#include "comments.h"
 
 /**
  * Check if the file is above a maximum length
@@ -80,7 +82,7 @@ void CPlusPlusComments(YYLTYPE location) {
  * Collects the last comment. Progress should equal 1 if true, 0 if in the 
  * middle of a comment, and -1 if starting a comment.
  */
-void registerComment(YYLTYPE location, char* text, int progress) {
+/*void registerComment(YYLTYPE location, char* text, int progress) {
 	//lyyerror(location, "registering comment");
 	enum PROGRESS {
 		END = 1,
@@ -129,7 +131,7 @@ void registerComment(YYLTYPE location, char* text, int progress) {
 		// PROFESSOR ERROR!!!
 	}
 	
-}
+}*/
 
 /**
  * Compare two locations - meant to be used by Dynarray_search. Returns 0 if

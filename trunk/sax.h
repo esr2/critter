@@ -14,8 +14,12 @@
 
 void beginFile(char* filename);
 void endFile(YYLTYPE location);
+
 void beginProgram();
 void endProgram(YYLTYPE location);
 
+void beginComment(YYLTYPE location);
+void registerComment(char* text);
+void endComment(YYLTYPE location);
 
 #endif
