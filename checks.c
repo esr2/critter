@@ -79,61 +79,6 @@ void CPlusPlusComments(YYLTYPE location) {
 }
 
 /**
- * Collects the last comment. Progress should equal 1 if true, 0 if in the 
- * middle of a comment, and -1 if starting a comment.
- */
-/*void registerComment(YYLTYPE location, char* text, int progress) {
-	//lyyerror(location, "registering comment");
-	enum PROGRESS {
-		END = 1,
-		MIDDLE = 0,
-		BEGIN = -1
-	};
-	
-#define MAX_COMMENT_LENGTH 2000
-	static char lastCommentText[MAX_COMMENT_LENGTH];
-	static YYLTYPE lastCommentLocation;
-	
-	if (!text) {
-		// We've encountered an error that should never happen, for now just return
-		return;
-	}
-	
-	if (progress == END) {
-		lastCommentLocation.last_line = location.last_line;
-		lastCommentLocation.last_column = location.last_column;
-		
-		// add the latest comment to the arrays
-		char *text = malloc(sizeof(char) * strlen(lastCommentText));
-		strcpy(text, lastCommentText);
-		YYLTYPE *loc = malloc(sizeof(YYLTYPE));
-		loc->filename = malloc(sizeof(char) * strlen(lastCommentLocation.filename));
-		strcpy(loc->filename, lastCommentLocation.filename);
-		loc->first_line = lastCommentLocation.first_line;
-		loc->first_column = lastCommentLocation.first_column;
-		loc->last_line = lastCommentLocation.last_line;
-		loc->last_column = lastCommentLocation.last_column;
-		
-		DynArray_add(commentTexts, text);
-		DynArray_add(commentLocations, loc);
-	} else if (progress == MIDDLE) {
-		size_t size = MAX_COMMENT_LENGTH - strlen(lastCommentText);
-		strncat(lastCommentText, text, size);
-		
-	} else if (progress == BEGIN) {
-		int i;
-		for (i = 0; i < MAX_COMMENT_LENGTH; i++) {
-			lastCommentText[i] = '\0';
-		}
-		
-		lastCommentLocation = location;
-	} else {
-		// PROFESSOR ERROR!!!
-	}
-	
-}*/
-
-/**
  * Compare two locations - meant to be used by Dynarray_search. Returns 0 if
  * equal and 1 if not.
  */
