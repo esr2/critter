@@ -59,3 +59,15 @@ void registerComment(char* text) {
 void endComment(YYLTYPE location) {
 	comment_endComment(location);
 }
+
+void beginSwitch(YYLTYPE location) {
+	switchHasDefault(location, -1);
+}
+
+void registerDefault(YYLTYPE location) {
+	switchHasDefault(location, 0);
+}
+
+void endSwitch(YYLTYPE location) {
+	switchHasDefault(location, 1);
+}

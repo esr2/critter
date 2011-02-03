@@ -22,4 +22,8 @@ void beginComment(YYLTYPE location);
 void registerComment(char* text);
 void endComment(YYLTYPE location);
 
+void beginSwitch(YYLTYPE location);
+void registerDefault(YYLTYPE location);
+void endSwitch(YYLTYPE location);
+
 #endif
