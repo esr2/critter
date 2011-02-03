@@ -62,6 +62,7 @@ void comment_endComment(YYLTYPE location) {
 	// add the latest comment to the arrays
 	char *text = malloc(sizeof(char) * strlen(lastCommentText));
 	strcpy(text, lastCommentText);
+	
 	YYLTYPE *loc = malloc(sizeof(YYLTYPE));
 	loc->filename = malloc(sizeof(char) * strlen(lastCommentLocation.filename));
 	strcpy(loc->filename, lastCommentLocation.filename);

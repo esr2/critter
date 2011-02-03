@@ -17,7 +17,6 @@ void hasBraces(YYLTYPE location, enum tree_code statementValue);
 void isFunctionTooLong(YYLTYPE location);
 void tooManyParameters(YYLTYPE location);
 void CPlusPlusComments(YYLTYPE location);
-//void registerComment(YYLTYPE location, char* text, int progress);
 void checkForComment(YYLTYPE location);
 void switchHasDefault(YYLTYPE location, int progress);
 
