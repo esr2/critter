@@ -4,8 +4,8 @@ run:
 	a.out test.c
 
 
-all: generate main.c checks.c tree.c dynarray.c
-	gcc main.c c.tab.c checks.c tree.c dynarray.c
+all: generate main.c checks.c tree.c dynarray.c sax.c
+	gcc main.c c.tab.c checks.c tree.c dynarray.c sax.c
 
 generate: c.y c.l tree.txt tree.h checks.h
 	bison c.y

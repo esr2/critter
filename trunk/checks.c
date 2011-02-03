@@ -10,27 +10,8 @@
 #include "checks.h"
 #include <stdio.h>
 #include <strings.h>
-#include "dynarray.h"
 #include <assert.h>
 #include <stdlib.h>
-
-static DynArray_T commentLocations;
-static DynArray_T commentTexts;
-
-/**
- * Called at the beginning of each file before parsing begins.
- */
-void beginningOfFile(char* filename) {
-
-}
-
-void freeLocations(void* element, void* extra) { 
-	assert(element != NULL);
-	YYLTYPE *location = (YYLTYPE *)element;
-	if (location->filename != NULL) { free(location->filename); }
-	free(element); 
-}
-void freeComments(void* element, void* extra) { free(element); }
 
 /**
  * Check if the file is above a maximum length
@@ -41,42 +22,6 @@ void isFileTooLong(YYLTYPE location) {
 	if (location.first_line > MAX_FILE_LENGTH) {
 		lyyerror(location, "File is too long");
 	}
-}
-
-/**
- * Called at the end of each file. Location.first_line = last_line.
- */
-void endOfFile(YYLTYPE location) {
-	isFileTooLong(location);
-	
-	/* Make one last call to tooManyParameters to make sure that if the last
-	 * function has an error, the error actually gets displayed. */
-	location.first_line++;
-	location.last_line++;
-	tooManyParameters(location);
-	
-}
-
-/**
- * Called at the beginning of the program execution before parsing begins.
- */
-void beginningOfProgram(char* filename) {
-	// These have to be managed on a program level because files are nested
-	commentTexts = DynArray_new(0);
-	commentLocations = DynArray_new(0);
-}
-
-/**
- * Called at the end of the program execution.
- */
-void endOfProgram(YYLTYPE location) {
-	assert(commentTexts != NULL);
-	assert(commentLocations != NULL);
-	// Free the comment arrays
-	DynArray_map(commentLocations, freeLocations, NULL);
-	DynArray_free(commentLocations);
-	DynArray_map(commentTexts, freeComments, NULL);
-	DynArray_free(commentTexts);
 }
 
 /**
