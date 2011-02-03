@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "tree.h"
 #include "checks.h"
+#include "sax.h"
 }
 
 %code requires {

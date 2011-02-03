@@ -15,6 +15,7 @@ IS			(u|U|l|L)*
 #include <stdio.h>
 #include "c.tab.h"
 #include "checks.h"
+#include "sax.h"
 
 int column = 1;
 
