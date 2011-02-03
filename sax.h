@@ -12,10 +12,10 @@
 
 #include "c.tab.h"
 
-void beginningOfFile(char* filename);
-void endOfFile(YYLTYPE location);
-void beginningOfProgram();
-void endOfProgram(YYLTYPE location);
+void beginFile(char* filename);
+void endFile(YYLTYPE location);
+void beginProgram();
+void endProgram(YYLTYPE location);
 
 
 #endif

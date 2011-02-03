@@ -75,7 +75,7 @@ int column = 1;
 <IFILE>.|\n	{ fprintf(stderr, "%4d bad include line\n", yylineno);
 				yyterminate();
 			}
-<<EOF>>	{endOfFile(yylloc); if(!popfile()) {endOfProgram(yylloc); yyterminate();} }
+<<EOF>>	{endFile(yylloc); if(!popfile()) {endProgram(yylloc); yyterminate();} }
 
 "#"			{ directive(); }
 
@@ -284,7 +284,7 @@ int newfile(char *fn) {
 	curfilename = fn; 
 
 	/* perform any beginning of file checks */
-	beginningOfFile(curfilename);
+	beginFile(curfilename);
 
 	return 1;
 }

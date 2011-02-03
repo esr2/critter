@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
 	}
 	
 	if(newfile(argv[1])) {
-		beginningOfProgram();
+		beginProgram();
 		if (!yyparse()) {
 			/* Success */
 			return 0;

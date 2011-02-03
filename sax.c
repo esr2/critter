@@ -16,14 +16,14 @@
 /**
  * Called at the beginning of each file before parsing begins.
  */
-void beginningOfFile(char* filename) {
+void beginFile(char* filename) {
 	
 }
 
 /**
  * Called at the end of each file. Location.first_line = last_line.
  */
-void endOfFile(YYLTYPE location) {
+void endFile(YYLTYPE location) {
 	isFileTooLong(location);
 	
 	/* Make one last call to tooManyParameters to make sure that if the last
@@ -37,7 +37,7 @@ void endOfFile(YYLTYPE location) {
 /**
  * Called at the beginning of the program execution before parsing begins.
  */
-void beginningOfProgram(char* filename) {
+void beginProgram(char* filename) {
 	// These have to be managed on a program level because files are nested
 	commentTexts = DynArray_new(0);
 	commentLocations = DynArray_new(0);
@@ -54,7 +54,7 @@ static void freeComments(void* element, void* extra) { free(element); }
 /**
  * Called at the end of the program execution.
  */
-void endOfProgram(YYLTYPE location) {
+void endProgram(YYLTYPE location) {
 	assert(commentTexts != NULL);
 	assert(commentLocations != NULL);
 	// Free the comment arrays
