@@ -11,7 +11,7 @@
 #include "checks.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
+#include "comments.h"
 
 /**
  * Called at the beginning of each file before parsing begins.
@@ -38,28 +38,24 @@ void endFile(YYLTYPE location) {
  * Called at the beginning of the program execution before parsing begins.
  */
 void beginProgram(char* filename) {
-	// These have to be managed on a program level because files are nested
-	commentTexts = DynArray_new(0);
-	commentLocations = DynArray_new(0);
+	comment_intializeComments();
 }
-
-static void freeLocations(void* element, void* extra) { 
-	assert(element != NULL);
-	YYLTYPE *location = (YYLTYPE *)element;
-	if (location->filename != NULL) { free(location->filename); }
-	free(element); 
-}
-static void freeComments(void* element, void* extra) { free(element); }
 
 /**
  * Called at the end of the program execution.
  */
 void endProgram(YYLTYPE location) {
-	assert(commentTexts != NULL);
-	assert(commentLocations != NULL);
-	// Free the comment arrays
-	DynArray_map(commentLocations, freeLocations, NULL);
-	DynArray_free(commentLocations);
-	DynArray_map(commentTexts, freeComments, NULL);
-	DynArray_free(commentTexts);
+	comment_freeComments();
+}
+
+void beginComment(YYLTYPE location) {
+	comment_beginComment(location);
+}
+
+void registerComment(char* text) {
+	comment_registerComment(text);
+}
+
+void endComment(YYLTYPE location) {
+	comment_endComment(location);
 }
