@@ -65,7 +65,7 @@ void endComment(YYLTYPE location) {
 }
 
 void beginFunctionDefinition(YYLTYPE location) {
-	
+	checkForComment(location);
 }
 
 void endFunctionDefinition(YYLTYPE location) {
