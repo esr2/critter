@@ -14,7 +14,6 @@
 #include "c.tab.h"
 
 void hasBraces(YYLTYPE location, int progress);
-void hasBracesO(YYLTYPE location, enum tree_code statementValue);
 void isFunctionTooLong(YYLTYPE location);
 void tooManyParameters(YYLTYPE location);
 void CPlusPlusComments(YYLTYPE location);

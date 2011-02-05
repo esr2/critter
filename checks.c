@@ -52,11 +52,6 @@ void hasBraces(YYLTYPE location, int progress) {
 	}
 	
 }
-void hasBracesO(YYLTYPE location, enum tree_code statementValue) {
-	if (statementValue != COMPOUND_STATEMENT) {
-		lyyerror(location, "Please use braces after all if, for and while statements");
-	}
-}
 
 /**
  * Checks if a function is too long
