@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include "comments.h"
 
+/*--------- Overall -----------------------*/
 /**
  * Called at the beginning of each file before parsing 
  * begins.
@@ -52,6 +53,7 @@ void endProgram(YYLTYPE location) {
 	comment_freeComments();
 }
 
+/*--------- Comments -----------------------*/
 void beginComment(YYLTYPE location) {
 	comment_beginComment(location);
 }
@@ -64,6 +66,7 @@ void endComment(YYLTYPE location) {
 	comment_endComment(location);
 }
 
+/*--------- Function -----------------------*/
 void beginFunctionDefinition(YYLTYPE location) {
 	checkForComment(location);
 }
@@ -72,6 +75,7 @@ void endFunctionDefinition(YYLTYPE location) {
 	isFunctionTooLong(location);
 }
 
+/*--------- Iteration -----------------------*/
 void beginWhile(YYLTYPE location) {
 	hasBraces(location, BEGINNING);
 }
@@ -96,6 +100,7 @@ void endFor(YYLTYPE location) {
 	hasBraces(location, END);
 }
 
+/*--------- Selection -----------------------*/
 void beginIf(YYLTYPE location) {
 	hasBraces(location, BEGINNING);
 }
@@ -124,6 +129,7 @@ void endSwitch(YYLTYPE location) {
 	switchHasDefault(location, END);
 }
 
+/*--------- Statements -----------------------*/
 /* location points to first bracket */
 void beginCompoundStatement(YYLTYPE location) {
 	
