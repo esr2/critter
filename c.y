@@ -472,10 +472,10 @@ external_declaration
 	;
 
 function_definition
-	: declaration_specifiers declarator {beginFunctionDefinition(@2);} declaration_list compound_statement {endFunctionDefinition(@$); checkForComment(@$);}
-	| declaration_specifiers declarator {beginFunctionDefinition(@2); checkForComment(@1);} compound_statement {endFunctionDefinition(@$);}
-	| declarator {beginFunctionDefinition(@1);} declaration_list compound_statement {endFunctionDefinition(@$); checkForComment(@$);}
-	| declarator {beginFunctionDefinition(@1);} compound_statement {endFunctionDefinition(@$); checkForComment(@$);}
+	: declaration_specifiers declarator {beginFunctionDefinition(@1);} declaration_list compound_statement {endFunctionDefinition(@$);}
+	| declaration_specifiers declarator {beginFunctionDefinition(@1);} compound_statement {endFunctionDefinition(@$);}
+	| declarator {beginFunctionDefinition(@1);} declaration_list compound_statement {endFunctionDefinition(@$);}
+	| declarator {beginFunctionDefinition(@1);} compound_statement {endFunctionDefinition(@$);}
 	;
 
 %%
