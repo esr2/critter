@@ -72,6 +72,22 @@ void endFunctionDefinition(YYLTYPE location) {
 	isFunctionTooLong(location);
 }
 
+void beginIf(YYLTYPE location) {
+	
+}
+
+void endIf(YYLTYPE location) {
+	
+}
+
+void beginElse(YYLTYPE location) {
+	
+}
+
+void endElse(YYLTYPE location) {
+	
+}
+
 void beginSwitch(YYLTYPE location) {
 	switchHasDefault(location, -1);
 }
@@ -82,4 +98,14 @@ void registerDefault(YYLTYPE location) {
 
 void endSwitch(YYLTYPE location) {
 	switchHasDefault(location, 1);
+}
+
+/* location points to first bracket */
+void beginCompoundStatement(YYLTYPE location) {
+	
+}
+
+/* location points to the entire statement */
+void endCompoundStatement(YYLTYPE location) {
+	
 }

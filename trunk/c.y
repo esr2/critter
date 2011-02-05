@@ -49,7 +49,10 @@
 %token CHAR SHORT INT LONG SIGNED UNSIGNED FLOAT DOUBLE CONST VOLATILE VOID
 %token STRUCT UNION ENUM ELLIPSIS
 
-%token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
+%token CASE DEFAULT IF SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
+
+%nonassoc LOWER_THAN_ELSE
+%nonassoc ELSE
 
 %start translation_unit
 
@@ -416,11 +419,13 @@ labeled_statement
 	| DEFAULT ':' statement {registerDefault(@$);}
 	;
 
+beginCompound : /* empty */ { beginCompoundStatement(@$);}
+
 compound_statement
-	: '{' '}' {$$ = EMPTY_COMPOUND; }
-	| '{' statement_list '}' {$$ = STATEMENT_COMPOUND; }
-	| '{' declaration_list '} '
-	| '{' declaration_list statement_list '}'
+	: '{' beginCompound '}' {$$ = EMPTY_COMPOUND; endCompoundStatement(@$);}
+	| '{' beginCompound statement_list '}' {$$ = STATEMENT_COMPOUND; endCompoundStatement(@$);}
+	| '{' beginCompound declaration_list '} ' {endCompoundStatement(@$);}
+	| '{' beginCompound declaration_list statement_list '}' {endCompoundStatement(@$);}
 	;
 
 declaration_list
@@ -438,11 +443,13 @@ expression_statement
 	| expression ';'
 	;
 
+beginIF : /*empty*/ {beginIf(@$);}
+
 selection_statement
-	: IF '(' expression ')' statement 	{$$ = IF_SELECTION; hasBraces(@$, $5);}
-	| IF '(' expression ')' statement ELSE statement {$$ = IF_ELSE_SELECTION,
-													  hasBraces(@$, $5);
-													  hasBraces(@$, $7);}
+	: IF beginIF '(' expression ')' statement %prec LOWER_THAN_ELSE	{endIf(@$); hasBraces(@6, $6);}
+	| IF beginIF '(' expression ')' statement ELSE {beginElse(@7);} statement {endElse(@9); endIf(@$);
+													hasBraces(@6, $6);
+													hasBraces(@9, $9);}
 	| SWITCH {beginSwitch(@1);} '(' expression ')' statement {endSwitch(@$);}
 	;
 
