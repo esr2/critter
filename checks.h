@@ -13,6 +13,7 @@
 #include "tree.h"
 #include "c.tab.h"
 
+void isFileTooLong(YYLTYPE location);
 void hasBraces(YYLTYPE location, int progress);
 void isFunctionTooLong(YYLTYPE location);
 void tooManyParameters(YYLTYPE location);
