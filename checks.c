@@ -129,17 +129,11 @@ void checkForComment(YYLTYPE location) {
  * Checks if each switch statment has a default case.
  */
 void switchHasDefault(YYLTYPE location, int progress) {
-	enum PROGRESS {
-		END = 1,
-		MIDDLE = 0,
-		BEGIN = -1
-	};
-	
 	static int started = 0;
 	static int found = 0;
 	
 	switch (progress) {
-		case BEGIN:
+		case BEGINNING:
 			started = 1;
 			found = 0;
 			break;

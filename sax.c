@@ -89,15 +89,15 @@ void endElse(YYLTYPE location) {
 }
 
 void beginSwitch(YYLTYPE location) {
-	switchHasDefault(location, -1);
+	switchHasDefault(location, BEGINNING);
 }
 
 void registerDefault(YYLTYPE location) {
-	switchHasDefault(location, 0);
+	switchHasDefault(location, MIDDLE);
 }
 
 void endSwitch(YYLTYPE location) {
-	switchHasDefault(location, 1);
+	switchHasDefault(location, END);
 }
 
 /* location points to first bracket */

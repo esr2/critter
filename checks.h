@@ -20,4 +20,10 @@ void CPlusPlusComments(YYLTYPE location);
 void checkForComment(YYLTYPE location);
 void switchHasDefault(YYLTYPE location, int progress);
 
+enum {
+	END = 1,
+	MIDDLE = 0,
+	BEGINNING = -1
+};
+
 #endif
