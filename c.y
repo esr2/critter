@@ -443,7 +443,7 @@ selection_statement
 	| IF '(' expression ')' statement ELSE statement {$$ = IF_ELSE_SELECTION,
 													  hasBraces(@$, $5);
 													  hasBraces(@$, $7);}
-	| SWITCH '(' expression ')' {beginSwitch(@1);} statement {endSwitch(@$);}
+	| SWITCH {beginSwitch(@1);} '(' expression ')' statement {endSwitch(@$);}
 	;
 
 iteration_statement
