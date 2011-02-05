@@ -25,8 +25,16 @@ void endComment(YYLTYPE location);
 void beginFunctionDefinition(YYLTYPE location);
 void endFunctionDefinition(YYLTYPE location);
 
+void beginIf(YYLTYPE location);
+void endIf(YYLTYPE location);
+void beginElse(YYLTYPE location);
+void endElse(YYLTYPE location);
+
 void beginSwitch(YYLTYPE location);
 void registerDefault(YYLTYPE location);
 void endSwitch(YYLTYPE location);
+
+void beginCompoundStatement(YYLTYPE location);
+void endCompoundStatement(YYLTYPE location);
 
 #endif
