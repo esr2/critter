@@ -14,20 +14,23 @@
 #include "comments.h"
 
 /**
- * Called at the beginning of each file before parsing begins.
+ * Called at the beginning of each file before parsing 
+ * begins.
  */
 void beginFile(char* filename) {
 	
 }
 
 /**
- * Called at the end of each file. Location.first_line = last_line.
+ * Called at the end of each file. Location.first_line 
+ * = last_line.
  */
 void endFile(YYLTYPE location) {
 	isFileTooLong(location);
 	
-	/* Make one last call to tooManyParameters to make sure that if the last
-	 * function has an error, the error actually gets displayed. */
+	/* Make one last call to tooManyParameters to make 
+	 * sure that if the last function has an error, the 
+	 * error actually gets displayed. */
 	location.first_line++;
 	location.last_line++;
 	tooManyParameters(location);
@@ -35,7 +38,8 @@ void endFile(YYLTYPE location) {
 }
 
 /**
- * Called at the beginning of the program execution before parsing begins.
+ * Called at the beginning of the program execution before
+ * parsing begins.
  */
 void beginProgram(char* filename) {
 	comment_intializeComments();
