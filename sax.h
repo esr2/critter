@@ -12,19 +12,23 @@
 
 #include "c.tab.h"
 
+/*--------- Overall -----------------------*/
 void beginFile(char* filename);
 void endFile(YYLTYPE location);
 
 void beginProgram();
 void endProgram(YYLTYPE location);
 
+/*--------- Comments -----------------------*/
 void beginComment(YYLTYPE location);
 void registerComment(char* text);
 void endComment(YYLTYPE location);
 
+/*--------- Function -----------------------*/
 void beginFunctionDefinition(YYLTYPE location);
 void endFunctionDefinition(YYLTYPE location);
 
+/*--------- Iteration -----------------------*/
 void beginWhile(YYLTYPE location);
 void endWhile(YYLTYPE location);
 void beginDoWhile(YYLTYPE location);
@@ -33,6 +37,7 @@ void endDoWhile(YYLTYPE location);
 void beginFor(YYLTYPE location);
 void endFor(YYLTYPE location);
 
+/*--------- Selection -----------------------*/
 void beginIf(YYLTYPE location);
 void endIf(YYLTYPE location);
 void beginElse(YYLTYPE location);
@@ -42,6 +47,7 @@ void beginSwitch(YYLTYPE location);
 void registerDefault(YYLTYPE location);
 void endSwitch(YYLTYPE location);
 
+/*--------- Statements -----------------------*/
 void beginCompoundStatement(YYLTYPE location);
 void endCompoundStatement(YYLTYPE location);
 
