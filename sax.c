@@ -64,6 +64,14 @@ void endComment(YYLTYPE location) {
 	comment_endComment(location);
 }
 
+void beginFunctionDefinition(YYLTYPE location) {
+	
+}
+
+void endFunctionDefinition(YYLTYPE location) {
+	isFunctionTooLong(location);
+}
+
 void beginSwitch(YYLTYPE location) {
 	switchHasDefault(location, -1);
 }
