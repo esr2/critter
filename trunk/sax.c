@@ -72,6 +72,30 @@ void endFunctionDefinition(YYLTYPE location) {
 	isFunctionTooLong(location);
 }
 
+void beginWhile(YYLTYPE location) {
+	hasBraces(location, BEGINNING);
+}
+
+void endWhile(YYLTYPE location) {
+	hasBraces(location, END);
+}
+
+void beginDoWhile(YYLTYPE location) {
+	hasBraces(location, BEGINNING);
+}
+
+void endDoWhile(YYLTYPE location) {
+	hasBraces(location, END);
+}
+
+void beginFor(YYLTYPE location) {
+	hasBraces(location, BEGINNING);
+}
+
+void endFor(YYLTYPE location) {
+	hasBraces(location, END);
+}
+
 void beginIf(YYLTYPE location) {
 	hasBraces(location, BEGINNING);
 }
