@@ -25,6 +25,14 @@ void endComment(YYLTYPE location);
 void beginFunctionDefinition(YYLTYPE location);
 void endFunctionDefinition(YYLTYPE location);
 
+void beginWhile(YYLTYPE location);
+void endWhile(YYLTYPE location);
+void beginDoWhile(YYLTYPE location);
+void endDoWhile(YYLTYPE location);
+
+void beginFor(YYLTYPE location);
+void endFor(YYLTYPE location);
+
 void beginIf(YYLTYPE location);
 void endIf(YYLTYPE location);
 void beginElse(YYLTYPE location);

@@ -451,11 +451,13 @@ selection_statement
 	| SWITCH {beginSwitch(@1);} '(' expression ')' statement {endSwitch(@$);}
 	;
 
+beginFOR : /*empty*/ {beginFor(@$);}
+
 iteration_statement
-	: WHILE '(' expression ')' statement	{hasBracesO(@$, $5);}
-	| DO statement WHILE '(' expression ')' ';'		{hasBracesO(@$, $2);}
-	| FOR '(' expression_statement expression_statement ')' statement		{hasBracesO(@$, $6);}
-	| FOR '(' expression_statement expression_statement expression ')' statement	{hasBracesO(@$, $7);}
+	: WHILE {beginWhile(@1);} '(' expression ')' statement	{endWhile(@$);}
+	| DO {beginDoWhile(@1);} statement WHILE '(' expression ')' ';'	{endDoWhile(@$);}
+	| FOR beginFOR '(' expression_statement expression_statement ')' statement {endFor(@$);}
+	| FOR beginFOR '(' expression_statement expression_statement expression ')' statement {endFor(@$);}
 	;
 
 jump_statement
