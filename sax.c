@@ -73,11 +73,11 @@ void endFunctionDefinition(YYLTYPE location) {
 }
 
 void beginIf(YYLTYPE location) {
-	
+	hasBraces(location, BEGINNING);
 }
 
 void endIf(YYLTYPE location) {
-	
+	hasBraces(location, END);
 }
 
 void beginElse(YYLTYPE location) {
@@ -107,5 +107,5 @@ void beginCompoundStatement(YYLTYPE location) {
 
 /* location points to the entire statement */
 void endCompoundStatement(YYLTYPE location) {
-	
+	hasBraces(location, MIDDLE);
 }

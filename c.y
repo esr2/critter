@@ -446,18 +446,16 @@ expression_statement
 beginIF : /*empty*/ {beginIf(@$);}
 
 selection_statement
-	: IF beginIF '(' expression ')' statement %prec LOWER_THAN_ELSE	{endIf(@$); hasBraces(@6, $6);}
-	| IF beginIF '(' expression ')' statement ELSE {beginElse(@7);} statement {endElse(@9); endIf(@$);
-													hasBraces(@6, $6);
-													hasBraces(@9, $9);}
+	: IF beginIF '(' expression ')' statement %prec LOWER_THAN_ELSE	{endIf(@$);}
+	| IF beginIF '(' expression ')' statement ELSE {beginElse(@7);} statement {endElse(@9); endIf(@$);}
 	| SWITCH {beginSwitch(@1);} '(' expression ')' statement {endSwitch(@$);}
 	;
 
 iteration_statement
-	: WHILE '(' expression ')' statement	{hasBraces(@$, $5);}
-	| DO statement WHILE '(' expression ')' ';'		{hasBraces(@$, $2);}
-	| FOR '(' expression_statement expression_statement ')' statement		{hasBraces(@$, $6);}
-	| FOR '(' expression_statement expression_statement expression ')' statement	{hasBraces(@$, $7);}
+	: WHILE '(' expression ')' statement	{hasBracesO(@$, $5);}
+	| DO statement WHILE '(' expression ')' ';'		{hasBracesO(@$, $2);}
+	| FOR '(' expression_statement expression_statement ')' statement		{hasBracesO(@$, $6);}
+	| FOR '(' expression_statement expression_statement expression ')' statement	{hasBracesO(@$, $7);}
 	;
 
 jump_statement
