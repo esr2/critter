@@ -26,7 +26,7 @@
 			(Current).first_column	= YYRHSLOC (Rhs, 1).first_column;	\
 			(Current).last_line		= YYRHSLOC (Rhs, N).last_line;		\
 			(Current).last_column	= YYRHSLOC (Rhs, N).last_column;	\
-			(Current).filename		= YYRHSLOC (Rhs, 1).filename;		\
+			(Current).filename		= YYRHSLOC (Rhs, N).filename;		\
 		}																\
 		else															\
 		{																\
