@@ -67,26 +67,37 @@ void isFunctionTooLong(YYLTYPE location) {
 /**
  * Checks if there are too many parameters in the function declaration.
  */
-void tooManyParameters(YYLTYPE location) {
+void tooManyParameters(YYLTYPE location, int progress) {
 	int MAX_NUM_PARAMETERS = 7;
 	
 	static int numParameters = -1;
-	static YYLTYPE prevLoc;
+	static int nestedListLevel = -1; /* should = 0 normally */
 	
-	if (location.first_line != prevLoc.first_line || numParameters == -1) {
-		if (numParameters != -1 && numParameters >= MAX_NUM_PARAMETERS) {
-			char string[200];
-			sprintf(string,
-					"Please use less than %d function parameters, you used %d",
-					MAX_NUM_PARAMETERS, numParameters);
-			lyyerror(prevLoc, string);
-		}
-		
-		numParameters = 1;
+	switch (progress) {
+		case BEGINNING:
+			nestedListLevel++;
+			if (nestedListLevel == 0) { 
+				numParameters = 0; 
+			}
+			break;
+		case MIDDLE: 
+			if (nestedListLevel == 0) {
+				numParameters++;
+			}
+			break;
+		case END:
+			if (numParameters >= MAX_NUM_PARAMETERS && nestedListLevel == 0) {
+				char string[200];
+				sprintf(string,
+						"Please use less than %d function parameters, you used %d",
+						MAX_NUM_PARAMETERS, numParameters);
+				lyyerror(location, string);
+			}
+			nestedListLevel--;
+			break;
+		default:
+			break;
 	}
-	
-	numParameters++;
-	prevLoc = location;
 }
 
 /**
