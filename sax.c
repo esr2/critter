@@ -28,14 +28,6 @@ void beginFile(char* filename) {
  */
 void endFile(YYLTYPE location) {
 	isFileTooLong(location);
-	
-	/* Make one last call to tooManyParameters to make 
-	 * sure that if the last function has an error, the 
-	 * error actually gets displayed. */
-	location.first_line++;
-	location.last_line++;
-	tooManyParameters(location);
-	
 }
 
 /**
@@ -73,6 +65,18 @@ void beginFunctionDefinition(YYLTYPE location) {
 
 void endFunctionDefinition(YYLTYPE location) {
 	isFunctionTooLong(location);
+}
+
+void beginParameterList(YYLTYPE location) {
+	tooManyParameters(location, BEGINNING);
+}
+
+void registerParameter(YYLTYPE location) {
+	tooManyParameters(location, MIDDLE);
+}
+
+void endParameterList(YYLTYPE location) {
+	tooManyParameters(location, END);
 }
 
 /*--------- Iteration -----------------------*/

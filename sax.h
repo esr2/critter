@@ -28,6 +28,10 @@ void endComment(YYLTYPE location);
 void beginFunctionDefinition(YYLTYPE location);
 void endFunctionDefinition(YYLTYPE location);
 
+void beginParameterList(YYLTYPE location);
+void registerParameter(YYLTYPE location);
+void endParameterList(YYLTYPE location);
+
 /*--------- Iteration -----------------------*/
 void beginWhile(YYLTYPE location);
 void endWhile(YYLTYPE location);

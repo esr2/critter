@@ -16,7 +16,7 @@
 void isFileTooLong(YYLTYPE location);
 void hasBraces(YYLTYPE location, int progress);
 void isFunctionTooLong(YYLTYPE location);
-void tooManyParameters(YYLTYPE location);
+void tooManyParameters(YYLTYPE location, int progress);
 void CPlusPlusComments(YYLTYPE location);
 void checkForComment(YYLTYPE location);
 void switchHasDefault(YYLTYPE location, int progress);
