@@ -57,8 +57,7 @@ int column = 1;
 "/*" 				{beginComment(yylloc); BEGIN(COMMENT); }
 <COMMENT>"*/"				{endComment(yylloc); BEGIN(INITIAL); }
 <COMMENT>([^*]|\n)+|.		{registerComment(yytext);}
-<COMMENT><<EOF>>			{ printf("%s:%d: Unterminated comment\n",
-									 curfilename, yylineno); return 0; }
+<COMMENT><<EOF>>			{yyerror("Unterminated comment"); return 0; }
 "//".*\n			{CPlusPlusComments(yylloc);}
 
 
