@@ -20,6 +20,7 @@ void tooManyParameters(YYLTYPE location, int progress);
 void CPlusPlusComments(YYLTYPE location);
 void checkForComment(YYLTYPE location);
 void switchHasDefault(YYLTYPE location, int progress);
+void switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase);
 
 enum {
 	END = 1,
