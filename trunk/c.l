@@ -8,6 +8,7 @@ IS			(u|U|l|L)*
 
 %x IFILE
 %x COMMENT
+%x CPP
 
 %option yylineno
 
@@ -58,7 +59,9 @@ int column = 1;
 <COMMENT>"*/"				{endComment(yylloc); BEGIN(INITIAL); }
 <COMMENT>([^*]|\n)+|.		{registerComment(yytext);}
 <COMMENT><<EOF>>			{yyerror("Unterminated comment"); return 0; }
-"//".*\n			{CPlusPlusComments(yylloc);}
+"//"			{CPlusPlusComments(yylloc); beginComment(yylloc); BEGIN(CPP);}
+<CPP>.*			{registerComment(yytext);}
+<CPP>\n			{endComment(yylloc); BEGIN(INITIAL);}
 
 
 ^"#"[ \t]*include[ \t]*[\"] {BEGIN IFILE;}
