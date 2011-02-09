@@ -34,7 +34,7 @@
 				YYRHSLOC (Rhs, 0).last_line;							\
 			(Current).first_column = (Current).last_column =			\
 				YYRHSLOC (Rhs, 0).last_column;							\
-			(Current).filename	= NULL;									\
+			(Current).filename	= YYRHSLOC (Rhs, 0).filename;			\
 		}																\
 	while (0)
 }
