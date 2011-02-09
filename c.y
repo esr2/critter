@@ -416,8 +416,8 @@ statement
 
 labeled_statement
 	: IDENTIFIER ':' statement
-	| CASE constant_expression ':' statement
-	| DEFAULT ':' statement {registerDefault(@$);}
+	| CASE {registerCase(@1);} constant_expression ':' statement
+	| DEFAULT {registerDefault(@$);} ':' statement
 	;
 
 beginCompound : /* empty */ { beginCompoundStatement(@$);}
@@ -464,7 +464,7 @@ iteration_statement
 jump_statement
 	: GOTO IDENTIFIER ';'
 	| CONTINUE ';'
-	| BREAK ';'
+	| BREAK ';' {registerBreak(@$);}
 	| RETURN ';'
 	| RETURN expression ';'
 	;

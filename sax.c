@@ -123,14 +123,25 @@ void endElse(YYLTYPE location) {
 
 void beginSwitch(YYLTYPE location) {
 	switchHasDefault(location, BEGINNING);
+	switchCasesHaveBreaks(location, BEGINNING, -1);
 }
 
 void registerDefault(YYLTYPE location) {
 	switchHasDefault(location, MIDDLE);
+	switchCasesHaveBreaks(location, MIDDLE, 1);
+}
+
+void registerCase(YYLTYPE location) {
+	switchCasesHaveBreaks(location, MIDDLE, 1);
+}
+
+void registerBreak(YYLTYPE location) {
+	switchCasesHaveBreaks(location, MIDDLE, 0);
 }
 
 void endSwitch(YYLTYPE location) {
 	switchHasDefault(location, END);
+	switchCasesHaveBreaks(location, END, -1);
 }
 
 /*--------- Statements -----------------------*/

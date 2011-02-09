@@ -178,3 +178,41 @@ void switchHasDefault(YYLTYPE location, int progress) {
 		default: break;
 	}
 }
+
+/**
+ * Checks if each switch case statment has a break statement.
+ */
+void switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase) {
+	static int numCases = 0;
+	static int numBreaks = 0;
+
+	
+	switch (progress) {
+		case BEGINNING:
+			numCases = 0;
+			numBreaks = 0;
+			break;
+		case MIDDLE:
+			switch (isCase) {
+				case 0: /* break */
+					numBreaks++;
+					break;
+				case 1: /* case */
+					numCases++;
+				default:
+					break;
+			}
+			break;
+		case END:
+			if (numCases != numBreaks) {
+				int missing = numCases - numBreaks;
+				char errorMsg[200];
+				sprintf(errorMsg, "Each case in a switch statement should have a break statement, you're missing %d",
+						missing);
+				lyyerror(location, errorMsg);
+			}
+			break;
+		default:
+			break;
+	}
+}
