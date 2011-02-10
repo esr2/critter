@@ -147,10 +147,11 @@ void endSwitch(YYLTYPE location) {
 /*--------- Statements -----------------------*/
 /* location points to first bracket */
 void beginCompoundStatement(YYLTYPE location) {
-	
+	tooDeeplyNested(location, BEGINNING);
 }
 
 /* location points to the entire statement */
 void endCompoundStatement(YYLTYPE location) {
 	hasBraces(location, MIDDLE);
+	tooDeeplyNested(location, END);
 }

@@ -21,6 +21,7 @@ void CPlusPlusComments(YYLTYPE location);
 void checkForComment(YYLTYPE location);
 void switchHasDefault(YYLTYPE location, int progress);
 void switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase);
+void tooDeeplyNested(YYLTYPE location, int progress);
 
 enum {
 	END = 1,
