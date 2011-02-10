@@ -216,3 +216,28 @@ void switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase) {
 			break;
 	}
 }
+
+void tooDeeplyNested(YYLTYPE location, int progress) {
+	int MAX_NESTING_LEVEL = 2;
+	static int nestedLevel = -1;
+	static int lastLevel = -1;
+	
+	lastLevel = nestedLevel;
+	
+	switch (progress) {
+		case BEGINNING:
+			nestedLevel++;
+			break;
+		case END:
+			/* complain only at the highest point which is too deep -- i.e. 
+			 * avoid complaining on each further offense/level past the max */
+			if (nestedLevel == MAX_NESTING_LEVEL) {
+				lyyerror(location, "This area is too deeply nested, consider refactoring");
+			}
+			nestedLevel--;
+			break;
+		default:
+			break;
+	}
+
+}
