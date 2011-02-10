@@ -9,6 +9,7 @@ IS			(u|U|l|L)*
 %x IFILE
 %x COMMENT
 %x CPP
+%x MACRO
 
 %option yylineno
 
@@ -79,7 +80,9 @@ int column = 1;
 			}
 <<EOF>>	{endFile(yylloc); if(!popfile()) {endProgram(yylloc); yyterminate();} }
 
-"#"			{ directive(); }
+"#"				{ BEGIN(MACRO); }
+<MACRO>.*		
+<MACRO>\n		{ BEGIN(INITIAL); }
 
 "auto"			{ count(); return(AUTO); }
 "break"			{ count(); return(BREAK); }
@@ -181,21 +184,6 @@ L?\"(\\.|[^\\"])*\"	{ count(); return(STRING_LITERAL); }
 
 yywrap() {
 	return(1);
-}
-
-/**
- * Ignore macros.
- */
-directive() {
-	char c;
-
-	while ((c = input()) != '\n' && c != 0) {
-		if (c == '\\') {
-			c = input();
-		}
-		/*putchar(c);*/;
-	}
-
 }
 
 /**
