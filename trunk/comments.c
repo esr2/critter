@@ -42,12 +42,27 @@ static char lastCommentText[MAX_COMMENT_LENGTH];
 static YYLTYPE lastCommentLocation;
 
 void comment_beginComment(YYLTYPE location) {
-	int i;
-	for (i = 0; i < MAX_COMMENT_LENGTH; i++) {
-		lastCommentText[i] = '\0';
+	/* check if the comments are adjacent */
+	if (lastCommentLocation.filename &&
+			strcmp(lastCommentLocation.filename, location.filename) == 0 &&
+			location.first_line - lastCommentLocation.last_line <= 1) {
+		/* get and remove the last comment */
+		int len = DynArray_getLength(commentLocations) - 1;
+		char *text = DynArray_removeAt(commentTexts, len);
+		assert(text != NULL);
+		strcpy(lastCommentText, text);
+		free(text);
+		free(DynArray_removeAt(commentLocations, len));
+		
+	} else {
+		/* reset lastComment */
+		int i;
+		for (i = 0; i < MAX_COMMENT_LENGTH; i++) {
+			lastCommentText[i] = '\0';
+		}
+		
+		lastCommentLocation = location;
 	}
-	
-	lastCommentLocation = location;
 }
 
 void comment_registerComment(char* text) {
