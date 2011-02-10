@@ -217,6 +217,9 @@ void switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase) {
 	}
 }
 
+/**
+ * Checks whether a region of code (i.e. a compound statement) nests too deeply.
+ */
 void tooDeeplyNested(YYLTYPE location, int progress) {
 	int MAX_NESTING_LEVEL = 2;
 	static int nestedLevel = -1;
