@@ -69,6 +69,7 @@ void endFunctionDefinition(YYLTYPE location) {
 
 void beginParameterList(YYLTYPE location) {
 	tooManyParameters(location, BEGINNING);
+	useEnumNotConstOrDefine(location, BEGINNING);
 }
 
 void registerParameter(YYLTYPE location) {
@@ -77,6 +78,7 @@ void registerParameter(YYLTYPE location) {
 
 void endParameterList(YYLTYPE location) {
 	tooManyParameters(location, END);
+	useEnumNotConstOrDefine(location, END);
 }
 
 /*--------- Iteration -----------------------*/
@@ -154,4 +156,8 @@ void beginCompoundStatement(YYLTYPE location) {
 void endCompoundStatement(YYLTYPE location) {
 	hasBraces(location, MIDDLE);
 	tooDeeplyNested(location, END);
+}
+
+void registerConst(YYLTYPE location) {
+	useEnumNotConstOrDefine(location, MIDDLE);
 }
