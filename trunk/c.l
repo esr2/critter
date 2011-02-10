@@ -216,7 +216,7 @@ int check_type() {
 *
 *	it actually will only return IDENTIFIER
 */
-	if (strcmp(yytext, "size_t") == 0) {
+	if (strcmp(yytext, "size_t") == 0 || strcmp(yytext, "FILE") == 0) {
 		return TYPE_NAME;
 	}
 
