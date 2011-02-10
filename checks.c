@@ -244,3 +244,26 @@ void tooDeeplyNested(YYLTYPE location, int progress) {
 	}
 
 }
+
+/**
+ * Advices using enum instead of const for declarations. Actually just checks
+ * that 'const' doesn't appear inside a parameter list before outputting the error.
+ */
+void useEnumNotConstOrDefine(YYLTYPE location, int progress) {
+	static inParameterList = 0;
+	
+	switch (progress) {
+		case BEGINNING:
+			inParameterList = 1;
+			break;
+		case MIDDLE:
+			if (!inParameterList) {
+				lyyerror(location, "It would be better to use enum to define integral constants");
+			}
+			break;
+		case END:
+			inParameterList = 0;
+		default:
+			break;
+	}
+}

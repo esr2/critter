@@ -306,7 +306,7 @@ enumerator
 	;
 
 type_qualifier
-	: CONST
+	: CONST		{registerConst(@$);}
 	| VOLATILE
 	;
 
