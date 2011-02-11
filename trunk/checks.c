@@ -108,49 +108,16 @@ void CPlusPlusComments(YYLTYPE location) {
 }
 
 /**
- * Compare two locations - meant to be used by Dynarray_search. Returns 0 if
- * equal and 1 if not.
- */
-int compareLocations(const void *element1, const void *element2) {
-	// taking advantage of how dynarray compares elements
-	YYLTYPE *commentLocation = (YYLTYPE*)element1;
-	YYLTYPE *functionLocation = (YYLTYPE*)element2;
-		
-	assert(commentLocation != NULL);
-	assert(functionLocation != NULL);
-	
-	assert(commentLocation->filename != NULL);
-	assert(functionLocation->filename != NULL);
-	
-	int COMPARE_DISTANCE = 5;
-	
-	if (strcmp(commentLocation->filename, functionLocation->filename) == 0) {
-		// Comment before function call
-		int distance = functionLocation->first_line - commentLocation->last_line;
-		if (distance <= COMPARE_DISTANCE && distance > 0) {
-			return 0;
-		}
-		
-		// Comment inside function body
-		distance = commentLocation->first_line - functionLocation->first_line;
-		if (distance <= COMPARE_DISTANCE && distance > 0) {
-			return 0;
-		}
-	}
-	
-	return 1;
-}
-
-/**
  * Checks for comments before functions.
  */
 void checkForComment(YYLTYPE location) {
-	int index = DynArray_search(commentLocations, &location, compareLocations);
-	if (index == -1) {
+	char* text = comment_getCommentCloseTo(location, 5);
+
+	if (text == NULL) {
 		// comment not found
 		lyyerror(location, "Please include a descriptive comment above each function");
 	} else {
-		//printf("comment is %s\n", (char*)DynArray_get(commentTexts, index));
+		//printf("comment is %s\n", text);
 	}
 }
 
