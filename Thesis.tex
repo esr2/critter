@@ -16,7 +16,7 @@
 \usepackage{listings}
 %\lstset{language=C}
 \lstset{
-	basicstyle=\small,
+	basicstyle=\ttfamily,
 	tabsize=2,
 	frame=single,
 	breaklines=true,
@@ -84,16 +84,17 @@
 \end{table}
 
 When one writes, one encounters three different types of errors: syntactic, semantic and substantive.  
-In the case of writing literature, these errors take the form of spelling, grammar and logical mistakes. 
-When writing code, they form syntax errors, poorly written code and malfunctioning code. Both 
-spelling mistakes and syntax errors represent text that contains something outside the language (be it 
-English, C, etc.). A passage with bad grammar and poorly written code both denote text that is 
+In the case of writing literature, these errors take the form of spelling, grammar and substantive
+mistakes. When writing code, they form syntax errors, poorly written code and malfunctioning code. 
+Both spelling mistakes and syntax errors represent text that contains something outside the language 
+(be it English, C, etc.). A passage with bad grammar and poorly written code both denote text that is 
 technically valid but hard to understand. Finally, illogical arguments and malfunctioning code both 
 imply errors in the ideas behind the text. 
 There are tools to help one find these errors in both literature and code (see Table \ref
-{errorChecking}). Spelling and grammar check exist in nearly every text editor; the reader highlights 
-substantive errors in literature. With code, the compiler shows semantic errors and the user/testing 
-reveal substantive errors. Yet semantic error checking for code has yet to be automated fully.
+{errorChecking}). Spelling and grammar check exist in nearly every word processor; the reader 
+highlights substantive errors in literature. With code, the compiler shows semantic errors and the user/
+testing reveal substantive errors. Yet semantic error checking for code has been addressed by 
+relatively few tools.
 
 From a different point of view, this problem can be formulated in terms of software quality. 
 Namely, there are two perspectives on software quality: that of the user and that of the programmer. 
@@ -115,13 +116,15 @@ can immediately save work for professors by replacing the process of writing the
 comments to many students with a set of automated warnings.
 Students can also directly benefit by applying this tool to their code before submitting assignments --- 
 giving them the chance to improve their grades as well as their coding habits.
+\todoin{separate academia and industry and play up both}
 
 \chapter{Related Products}
 
 There are some tools that try to fill the semantic error checking gap. Each approaches the 
-problem differently, but all succeed in finding some semantic errors. The tools that I will be discussing 
-are Splint \cite{splint-manual} , PMD \cite{pmd}, and Checkstyle \cite{checkstyle}.
+problem differently, but all succeed in finding some semantic errors. Three such tools are Splint \cite
+{splint-manual} , PMD \cite{pmd}, and Checkstyle \cite{checkstyle}.
 
+ \todoin{add explicit comparison between these tools and my tool}
 \section{Splint}
 Splint is a tool for ``statically checking C programs for security vulnerabilities and programming 
 mistakes" \cite[p.\ 9]{splint-manual}. It works exactly as my program does from the students'
@@ -130,7 +133,7 @@ Splint displays warnings about basic semantic errors like assignments with misma
 ignored return values. With more effort, programmers can add annotations (i.e.\ fancy comments) that 
 give Splint a specification to check against. These annotations allow for stronger checks like memory 
 management, null pointers and ``violations of information hiding" \cite[p. 9]{splint-manual}. An 
-example of annotations in action are the following abstract type declarations (\refCode \ref{splint-annotations}). 
+example of annotations in action are the following abstract type declarations (\refCode \ref{splint-annotations}).
 
 \begin{figure}[h]
 \caption{Splint Annotations} 
@@ -146,7 +149,7 @@ While these annotations provide an extensive feature set, they are a huge inconv
 require programmers to specifically write their code to meet the specification, not only of the client, but 
 also of the tool. For new programmers (often the ones who need the most error checking), these 
 annotations are almost impossible to implement on top of learning to program as suggested by  
-David Evans (one of the authors) in an email. He states:
+David Evans (one of the authors) in a private email. He states:
 \begin{quote}
 One of the goals of the original design of 
 Splint was for programmers who add no annotations to start getting some useful warnings right away, 
@@ -218,7 +221,7 @@ regarding duplicate code, class design, whitespace, etc). It also uses the Visit
 provides ways to examine the beginning and ends of the tree as well as each node. New rules are 
 added through an XML file and similarly passed to Checkstyle at runtime.\cite{checkstyle}
 \todoin{pad this out into its own}
-
+\todoin{add example for Checkstyle}
 \nocite{framaC}
 
 
@@ -237,8 +240,12 @@ C grammar (these possible constructions are known as a grammar rules). While par
 \programName executes any function associated with the grammar rule. These functions are the 
 checks which are stored in a different file (see \refCode \ref{grammar1.0}). Additionally, checks can be 
 called from the beginning or end of each file or the entire program.
+\todoin{assume readers know about context free grammars -- explicitly use that term and add a footnote to explain it}
+\todoin{reword so grammar points to grammar figure and then reference checks inside that figure which need to be boldfaced}
+\todoin{explain locations somewhere (maybe final version?)}
 
-\begin{figure}
+\todo{try to show grammar excerpts with each check}
+\begin{figure} 
 \caption{Excerpt of the Grammar File from v1.0}
 \label{grammar1.0}
 \begin{lstlisting}[language=Caml]
@@ -270,10 +277,10 @@ function_definition
 To check a stylistic issue, one must first figure out how the issue is represented in the grammar and 
 then add a function call inside that grammar rule. Each check can not only take advantage of the type 
 of construction being formed (like Function \tablerow{1} in Table \ref{implementedChecks1.0}), it can 
-also look at the location of each construction. This allows checks to check the length of a construction 
-(like Function \tablerow{2} in Table \ref{implementedChecks1.0}). It also allows checks to determine if 
-they are still working with the same construction (like Function \tablerow{3} in Table 
-\ref{implementedChecks1.0}). Please see \refCode \ref{checks.c1.0} for examples of a check function.
+also look at the location of each construction. This allows checks to determine the length of a 
+construction (like Function \tablerow{2} in Table \ref{implementedChecks1.0}). It also allows checks to 
+determine if they are still working with the same construction (like Function \tablerow{3} in Table 
+\ref{implementedChecks1.0}). \refCode \ref{checks.c1.0} shows examples of a check function.
 
 \begin{table}
 	\caption{Implemented Checks in v1.0}
@@ -292,12 +299,13 @@ they are still working with the same construction (like Function \tablerow{3} in
 	\end{center}
 \end{table}
 
+\todo{add all the check code}
 \begin{figure}
 \caption{Excerpt of Checks.c from v1.0}
 \label{checks.c1.0}
 \begin{lstlisting}[language=C]
 void isFunctionTooLong(YYLTYPE location) {
-	int MAX_FUNCTION_LENGTH = 100;
+	int MAX_FUNCTION_LENGTH = 100; /*Arbitrary maximum */
 	
 	if (location.last_line - location.first_line + 1 >= MAX_FUNCTION_LENGTH) {
 		lyyerror(location, ``Function is too lengthy");
@@ -305,7 +313,7 @@ void isFunctionTooLong(YYLTYPE location) {
 }
 
 void tooManyParameters(YYLTYPE location) {
-	int MAX_NUM_PARAMETERS = 7;
+	int MAX_NUM_PARAMETERS = 7; /*Arbitrary maximum */
 	
 	static int numParameters = -1;
 	static YYLTYPE prevLoc;
@@ -331,16 +339,17 @@ void tooManyParameters(YYLTYPE location) {
 
 
 \section{Limitations}
-There are two main limitations to this version:\ adding a check is a hassle and macros are not 
-handled. As described above, adding a check is nontrivial because of the interaction with the 
-grammar file. It requires users to be reasonably familiar with not only grammar files but the C grammar 
-itself. The second limitation is that all macros except \lstinline{#include} are completely ignored. While 
-unfortunate, this implementation is far easier than the alternative:\ effectively compiling and tracking 
-all definitions, expressions and \lstinline{#ifndef}s. Includes are parsed only so far as to include any 
-local file -- all standard files are ignored because they rely on types that were defined as macros. To 
-make this system work for normal C files, the lexer has the \lstinline{size_t} type built in. A minor issue 
-is \programName does not follow the paths of files -- meaning that it will not run on code residing in a 
-subfolder of the working directory.
+There are two main limitations to this version:\ adding a check is a hassle and C preprocessor 
+directives are not handled. As described above, adding a check is nontrivial because of the 
+interaction with the grammar file. It requires users to be reasonably familiar with not only grammar files 
+but the C grammar itself. The second limitation is that all macros except \lstinline{#include} are 
+completely ignored. While unfortunate, this implementation is far easier than the alternative:\ 
+effectively compiling and tracking all definitions, expressions and \lstinline{#ifndef}s. Includes are 
+parsed only so far as to include any local file -- all standard files are ignored because they rely on 
+types that were defined as macros. To make this system work for average student C files, the lexer has 
+\todo{``average student C files'' -- reword?}
+the \lstinline{size_t} type built in. A minor issue is \programName does not follow the paths of files -- 
+meaning that it will not run on code residing in a subfolder of the working directory.
 
 \section{Version 1.1}
 This version simply adds more functionality (checks) to version 1.0 without changing the overall structure of \programName.
