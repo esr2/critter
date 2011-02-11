@@ -49,14 +49,10 @@ void endElse(YYLTYPE location);
 
 void beginSwitch(YYLTYPE location);
 void registerDefault(YYLTYPE location);
-void registerCase(YYLTYPE location);
-void registerBreak(YYLTYPE location);
 void endSwitch(YYLTYPE location);
 
 /*--------- Statements -----------------------*/
 void beginCompoundStatement(YYLTYPE location);
 void endCompoundStatement(YYLTYPE location);
-
-void registerConst(YYLTYPE location);
 
 #endif

@@ -9,7 +9,6 @@ IS			(u|U|l|L)*
 %x IFILE
 %x COMMENT
 %x CPP
-%x MACRO
 
 %option yylineno
 
@@ -80,9 +79,7 @@ int column = 1;
 			}
 <<EOF>>	{endFile(yylloc); if(!popfile()) {endProgram(yylloc); yyterminate();} }
 
-"#"				{ BEGIN(MACRO); }
-<MACRO>.*		
-<MACRO>\n		{ BEGIN(INITIAL); }
+"#"			{ directive(); }
 
 "auto"			{ count(); return(AUTO); }
 "break"			{ count(); return(BREAK); }
@@ -187,6 +184,21 @@ yywrap() {
 }
 
 /**
+ * Ignore macros.
+ */
+directive() {
+	char c;
+
+	while ((c = input()) != '\n' && c != 0) {
+		if (c == '\\') {
+			c = input();
+		}
+		/*putchar(c);*/;
+	}
+
+}
+
+/**
  * Keep track of the column number.
  */
 void count() {
@@ -216,7 +228,7 @@ int check_type() {
 *
 *	it actually will only return IDENTIFIER
 */
-	if (strcmp(yytext, "size_t") == 0 || strcmp(yytext, "FILE") == 0) {
+	if (strcmp(yytext, "size_t") == 0) {
 		return TYPE_NAME;
 	}
 

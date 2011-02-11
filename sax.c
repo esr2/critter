@@ -69,7 +69,6 @@ void endFunctionDefinition(YYLTYPE location) {
 
 void beginParameterList(YYLTYPE location) {
 	tooManyParameters(location, BEGINNING);
-	useEnumNotConstOrDefine(location, BEGINNING);
 }
 
 void registerParameter(YYLTYPE location) {
@@ -78,7 +77,6 @@ void registerParameter(YYLTYPE location) {
 
 void endParameterList(YYLTYPE location) {
 	tooManyParameters(location, END);
-	useEnumNotConstOrDefine(location, END);
 }
 
 /*--------- Iteration -----------------------*/
@@ -125,39 +123,23 @@ void endElse(YYLTYPE location) {
 
 void beginSwitch(YYLTYPE location) {
 	switchHasDefault(location, BEGINNING);
-	switchCasesHaveBreaks(location, BEGINNING, -1);
 }
 
 void registerDefault(YYLTYPE location) {
 	switchHasDefault(location, MIDDLE);
-	switchCasesHaveBreaks(location, MIDDLE, 1);
-}
-
-void registerCase(YYLTYPE location) {
-	switchCasesHaveBreaks(location, MIDDLE, 1);
-}
-
-void registerBreak(YYLTYPE location) {
-	switchCasesHaveBreaks(location, MIDDLE, 0);
 }
 
 void endSwitch(YYLTYPE location) {
 	switchHasDefault(location, END);
-	switchCasesHaveBreaks(location, END, -1);
 }
 
 /*--------- Statements -----------------------*/
 /* location points to first bracket */
 void beginCompoundStatement(YYLTYPE location) {
-	tooDeeplyNested(location, BEGINNING);
+	
 }
 
 /* location points to the entire statement */
 void endCompoundStatement(YYLTYPE location) {
 	hasBraces(location, MIDDLE);
-	tooDeeplyNested(location, END);
-}
-
-void registerConst(YYLTYPE location) {
-	useEnumNotConstOrDefine(location, MIDDLE);
 }

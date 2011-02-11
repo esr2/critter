@@ -306,7 +306,7 @@ enumerator
 	;
 
 type_qualifier
-	: CONST		{registerConst(@$);}
+	: CONST
 	| VOLATILE
 	;
 
@@ -416,8 +416,8 @@ statement
 
 labeled_statement
 	: IDENTIFIER ':' statement
-	| CASE {registerCase(@1);} constant_expression ':' statement
-	| DEFAULT {registerDefault(@$);} ':' statement
+	| CASE constant_expression ':' statement
+	| DEFAULT ':' statement {registerDefault(@$);}
 	;
 
 beginCompound : /* empty */ { beginCompoundStatement(@$);}
@@ -464,7 +464,7 @@ iteration_statement
 jump_statement
 	: GOTO IDENTIFIER ';'
 	| CONTINUE ';'
-	| BREAK ';' {registerBreak(@$);}
+	| BREAK ';'
 	| RETURN ';'
 	| RETURN expression ';'
 	;

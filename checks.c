@@ -108,16 +108,49 @@ void CPlusPlusComments(YYLTYPE location) {
 }
 
 /**
+ * Compare two locations - meant to be used by Dynarray_search. Returns 0 if
+ * equal and 1 if not.
+ */
+int compareLocations(const void *element1, const void *element2) {
+	// taking advantage of how dynarray compares elements
+	YYLTYPE *commentLocation = (YYLTYPE*)element1;
+	YYLTYPE *functionLocation = (YYLTYPE*)element2;
+		
+	assert(commentLocation != NULL);
+	assert(functionLocation != NULL);
+	
+	assert(commentLocation->filename != NULL);
+	assert(functionLocation->filename != NULL);
+	
+	int COMPARE_DISTANCE = 5;
+	
+	if (strcmp(commentLocation->filename, functionLocation->filename) == 0) {
+		// Comment before function call
+		int distance = functionLocation->first_line - commentLocation->last_line;
+		if (distance <= COMPARE_DISTANCE && distance > 0) {
+			return 0;
+		}
+		
+		// Comment inside function body
+		distance = commentLocation->first_line - functionLocation->first_line;
+		if (distance <= COMPARE_DISTANCE && distance > 0) {
+			return 0;
+		}
+	}
+	
+	return 1;
+}
+
+/**
  * Checks for comments before functions.
  */
 void checkForComment(YYLTYPE location) {
-	char* text = comment_getCommentCloseTo(location, 5);
-
-	if (text == NULL) {
+	int index = DynArray_search(commentLocations, &location, compareLocations);
+	if (index == -1) {
 		// comment not found
 		lyyerror(location, "Please include a descriptive comment above each function");
 	} else {
-		//printf("comment is %s\n", text);
+		//printf("comment is %s\n", (char*)DynArray_get(commentTexts, index));
 	}
 }
 
@@ -143,94 +176,5 @@ void switchHasDefault(YYLTYPE location, int progress) {
 			started = 0;
 			break;
 		default: break;
-	}
-}
-
-/**
- * Checks if each switch case statment has a break statement.
- */
-void switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase) {
-	static int numCases = 0;
-	static int numBreaks = 0;
-
-	
-	switch (progress) {
-		case BEGINNING:
-			numCases = 0;
-			numBreaks = 0;
-			break;
-		case MIDDLE:
-			switch (isCase) {
-				case 0: /* break */
-					numBreaks++;
-					break;
-				case 1: /* case */
-					numCases++;
-				default:
-					break;
-			}
-			break;
-		case END:
-			if (numCases != numBreaks) {
-				int missing = numCases - numBreaks;
-				char errorMsg[200];
-				sprintf(errorMsg, "Each case in a switch statement should have a break statement, you're missing %d",
-						missing);
-				lyyerror(location, errorMsg);
-			}
-			break;
-		default:
-			break;
-	}
-}
-
-/**
- * Checks whether a region of code (i.e. a compound statement) nests too deeply.
- */
-void tooDeeplyNested(YYLTYPE location, int progress) {
-	int MAX_NESTING_LEVEL = 2;
-	static int nestedLevel = -1;
-	static int lastLevel = -1;
-	
-	lastLevel = nestedLevel;
-	
-	switch (progress) {
-		case BEGINNING:
-			nestedLevel++;
-			break;
-		case END:
-			/* complain only at the highest point which is too deep -- i.e. 
-			 * avoid complaining on each further offense/level past the max */
-			if (nestedLevel == MAX_NESTING_LEVEL) {
-				lyyerror(location, "This area is too deeply nested, consider refactoring");
-			}
-			nestedLevel--;
-			break;
-		default:
-			break;
-	}
-
-}
-
-/**
- * Advices using enum instead of const for declarations. Actually just checks
- * that 'const' doesn't appear inside a parameter list before outputting the error.
- */
-void useEnumNotConstOrDefine(YYLTYPE location, int progress) {
-	static inParameterList = 0;
-	
-	switch (progress) {
-		case BEGINNING:
-			inParameterList = 1;
-			break;
-		case MIDDLE:
-			if (!inParameterList) {
-				lyyerror(location, "It would be better to use enum to define integral constants");
-			}
-			break;
-		case END:
-			inParameterList = 0;
-		default:
-			break;
 	}
 }
