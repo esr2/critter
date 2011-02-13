@@ -34,7 +34,7 @@ void endFile(YYLTYPE location) {
  * Called at the beginning of the program execution before
  * parsing begins.
  */
-void beginProgram(char* filename) {
+void beginProgram() {
 	comment_intializeComments();
 }
 
