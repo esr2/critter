@@ -12,6 +12,9 @@
 #include "assert.h"
 #include <stdlib.h>
 
+DynArray_T commentLocations;
+DynArray_T commentTexts;
+
 void comment_intializeComments() {
 	// These have to be managed on a program level because files are nested
 	commentTexts = DynArray_new(0);
