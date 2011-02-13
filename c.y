@@ -4,6 +4,7 @@
 #include "tree.h"
 #include "checks.h"
 #include "sax.h"
+#include "hooks.h"
 }
 
 %code requires {
@@ -59,6 +60,7 @@
 %error-verbose
 %locations
 %defines
+%verbose
 
 %%
 
@@ -237,18 +239,18 @@ storage_class_specifier
 	;
 
 type_specifier
-	: VOID
-	| CHAR
-	| SHORT
-	| INT
-	| LONG
-	| FLOAT
-	| DOUBLE
-	| SIGNED
-	| UNSIGNED
-	| struct_or_union_specifier
-	| enum_specifier
-	| TYPE_NAME
+	: VOID							{h_registerVoid(@$);}
+	| CHAR							{h_registerChar(@$);}
+	| SHORT							{h_registerShort(@$);}
+	| INT							{h_registerInt(@$);}
+	| LONG							{h_registerLong(@$);}
+	| FLOAT							{h_registerFloat(@$);}
+	| DOUBLE						{h_registerDouble(@$);}
+	| SIGNED						{h_registerSigned(@$);}
+	| UNSIGNED						{h_registerUnsigned(@$);}
+	| struct_or_union_specifier		{h_registerStructUnionSpecifier(@$);}
+	| enum_specifier				{h_registerEnumSpecifier(@$);}
+	| TYPE_NAME						{h_registerTypeName(@$);}
 	;
 
 struct_or_union_specifier
@@ -316,13 +318,13 @@ declarator
 	;
 
 direct_declarator
-	: IDENTIFIER
+	: IDENTIFIER {h_registerIdentifier(@$);}
 	| '(' declarator ')'
-	| direct_declarator '[' constant_expression ']'
-	| direct_declarator '[' ']'
-	| direct_declarator '(' parameter_type_list ')'
-	| direct_declarator '(' identifier_list ')'
-	| direct_declarator '(' ')'
+	| direct_declarator '[' {h_beginDirectDeclarator(@1);} constant_expression ']'  {h_endDirectDeclarator(@$);}
+	| direct_declarator '[' {h_beginDirectDeclarator(@1);} ']' {h_endDirectDeclarator(@$);}
+	| direct_declarator '(' {h_beginDirectDeclarator(@1);} parameter_type_list ')' {h_endDirectDeclarator(@$);}
+	| direct_declarator '(' {h_beginDirectDeclarator(@1);} identifier_list ')' {h_endDirectDeclarator(@$);}
+	| direct_declarator '(' {h_beginDirectDeclarator(@1);} ')' {h_endDirectDeclarator(@$);}
 	;
 
 type_direct_declarator
@@ -480,10 +482,10 @@ external_declaration
 	;
 
 function_definition
-	: declaration_specifiers declarator {beginFunctionDefinition(@1);} declaration_list compound_statement {endFunctionDefinition(@$);}
-	| declaration_specifiers declarator {beginFunctionDefinition(@1);} compound_statement {endFunctionDefinition(@$);}
-	| declarator {beginFunctionDefinition(@1);} declaration_list compound_statement {endFunctionDefinition(@$);}
-	| declarator {beginFunctionDefinition(@1);} compound_statement {endFunctionDefinition(@$);}
+	: declaration_specifiers declarator {h_beginFunctionDefinition(@1);} declaration_list compound_statement {endFunctionDefinition(@$);}
+	| declaration_specifiers declarator {h_beginFunctionDefinition(@1);} compound_statement {endFunctionDefinition(@$);}
+	| declarator {h_beginFunctionDefinition(@1);} declaration_list compound_statement {endFunctionDefinition(@$);}
+	| declarator {h_beginFunctionDefinition(@1);} compound_statement {endFunctionDefinition(@$);}
 	;
 
 %%

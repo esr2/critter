@@ -60,10 +60,12 @@ void endComment(YYLTYPE location) {
 
 /*--------- Function -----------------------*/
 void beginFunctionDefinition(YYLTYPE location) {
+	lyyerror(location, "begin function");
 	checkForComment(location);
 }
 
 void endFunctionDefinition(YYLTYPE location) {
+	lyyerror(location, "end function");
 	isFunctionTooLong(location);
 }
 
