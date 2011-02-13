@@ -13,9 +13,6 @@
 #include "c.tab.h"
 #include "dynarray.h"
 
-DynArray_T commentLocations;
-DynArray_T commentTexts;
-
 void comment_intializeComments();
 void comment_freeComments();
 void comment_beginComment(YYLTYPE location);
