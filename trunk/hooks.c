@@ -103,21 +103,55 @@ void h_endDirectDeclarator(YYLTYPE location) {
 }
 
 static void h_beginDeclarationSpecifiers(YYLTYPE location) {
-		
+	lyyerror(location, "begin declaration specifier");
 }
 
 static void h_endDeclarationSpecifiers(YYLTYPE location) {
 	
 }
 
+static int locationsAreEqual(YYLTYPE location, YYLTYPE* other) {
+	if (other == NULL) { 
+		return 0;
+	}
+	
+/*	fprintf(stderr, "%s vs %s\n", location.filename, (*other).filename);
+	
+	if (strcmp(location.filename, (*other).filename) != 0) {
+		fprintf(stderr, "bad filename\n");
+		return 0;
+	}
+*/	
+	if (location.first_line != other->first_line) {
+		return 0;
+	}
+	
+	if (location.first_column != other->first_column) {
+		return 0;
+	}
+	
+	if (location.last_line != other->last_line) {
+		return 0;
+	}
+	
+	if (location.last_column != other->last_column) {
+		return 0;
+	}
+	
+	return 1;
+}
+
 void h_beginFunctionDefinition(YYLTYPE location) {
 	beginFunctionDefinition(location);
-	int i;
+	int len;
 	void (*func)(YYLTYPE);
+	YYLTYPE* loc = NULL;
 	
-	for (i = 0; i < 10; i++) {
-		int len = DynArray_getLength(locationsArray) - 1;
-		YYLTYPE* loc = DynArray_removeAt(locationsArray, len);
+	/* pop off function/location pairs until location matches
+	   input location (the first declaration specifier) */
+	while (!locationsAreEqual(location, loc)) {
+		len = DynArray_getLength(locationsArray) - 1;
+		loc = DynArray_removeAt(locationsArray, len);
 		assert(loc != NULL);
 		
 		func = DynArray_removeAt(functionCallsArray, len);
@@ -134,7 +168,8 @@ void h_beginFunctionDefinition(YYLTYPE location) {
 
 /* Type specifiers: */
 static void h_registerTypeSpecifier(YYLTYPE location) {
-	
+	DynArray_add(functionCallsArray, (void*)h_beginDeclarationSpecifiers);
+	DynArray_add(locationsArray, allocateLocation(location));
 }
 
 void h_registerVoid(YYLTYPE location) {h_registerTypeSpecifier(location);}
