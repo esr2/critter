@@ -160,6 +160,14 @@ void endCompoundStatement(YYLTYPE location) {
 	tooDeeplyNested(location, END);
 }
 
+void beginDeclarator(YYLTYPE location) {
+	lyyerror(location, "begin declarator");
+}
+
+void endDeclarator(YYLTYPE location) {
+	lyyerror(location, "end declarator");
+}
+
 void registerConst(YYLTYPE location) {
 	useEnumNotConstOrDefine(location, MIDDLE);
 }

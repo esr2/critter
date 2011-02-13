@@ -78,7 +78,7 @@ int column = 1;
 <IFILE>.|\n	{ fprintf(stderr, "%4d bad include line\n", yylineno);
 				yyterminate();
 			}
-<<EOF>>	{endFile(yylloc); if(!popfile()) {endProgram(yylloc); yyterminate();} }
+<<EOF>>	{endFile(yylloc); if(!popfile()) {h_endProgram(yylloc); yyterminate();} }
 
 "#"				{ BEGIN(MACRO); }
 <MACRO>.*		
