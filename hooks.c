@@ -120,6 +120,8 @@ static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE
 	
 }
 
+static void doNothing(YYLTYPE location) {}
+
 /*------------ Overall ----------------------*/
 /**
  * Called at the beginning of each file before parsing 
@@ -210,7 +212,6 @@ void h_endParameterList(YYLTYPE location) {
 	addFunctionAndLocationToStacks(endParameterList, location);
 }
 /*------------ Typedef ----------------------*/
-static void doNothing(YYLTYPE location) {}
 
 void h_registerTypedef(YYLTYPE location) {
 	/* add a call to doNothing so declarations can match on the right
