@@ -18,68 +18,6 @@
 static DynArray_T functionCallsArray;
 static DynArray_T locationsArray;
 
-/**
- * Called at the beginning of each file before parsing 
- * begins.
- */
-void h_beginFile(char* filename) {
-	beginFile(filename);
-}
-
-/**
- * Called at the end of each file. Location.first_line 
- * = last_line.
- */
-void h_endFile(YYLTYPE location) {
-	endFile(location);
-}
-
-/**
- * Called at the beginning of the program execution before
- * parsing begins.
- */
-void h_beginProgram() {
-	functionCallsArray = DynArray_new(0);
-	locationsArray = DynArray_new(0);
-	
-	assert(functionCallsArray != NULL);
-	assert(locationsArray != NULL);
-	beginProgram();
-}
-
-static void freeLocations(void* element, void* extra) { 
-	YYLTYPE *location = (YYLTYPE *)element;
-	if (location->filename != NULL) { free(location->filename); }
-	free(element); 
-}
-
-static YYLTYPE* allocateLocation(YYLTYPE location) {
-	YYLTYPE *loc = malloc(sizeof(YYLTYPE));
-	loc->filename = malloc(sizeof(char) * strlen(location.filename));
-	strcpy(loc->filename, location.filename);
-	loc->first_line = location.first_line;
-	loc->first_column = location.first_column;
-	loc->last_line = location.last_line;
-	loc->last_column = location.last_column;
-	
-	return loc;
-}
-
-/**
- * Called at the end of the program execution.
- */
-void h_endProgram(YYLTYPE location) {
-	endProgram(location);
-	
-	assert(functionCallsArray != NULL);
-	assert(locationsArray != NULL);
-	
-	// Free the function arrays
-	DynArray_map(locationsArray, freeLocations, NULL);
-	DynArray_free(locationsArray);
-	DynArray_free(functionCallsArray);
-}
-
 /*---------------- Util -----------------------*/
 
 static int locationsAreEqual(YYLTYPE location, YYLTYPE* other, int checkAll) {
@@ -113,13 +51,75 @@ static int locationsAreEqual(YYLTYPE location, YYLTYPE* other, int checkAll) {
 	return 1;
 }
 
+static void freeLocations(void* element, void* extra) { 
+	YYLTYPE *location = (YYLTYPE *)element;
+	if (location->filename != NULL) { free(location->filename); }
+	free(element); 
+}
+
+static YYLTYPE* allocateLocation(YYLTYPE location) {
+	YYLTYPE *loc = malloc(sizeof(YYLTYPE));
+	loc->filename = malloc(sizeof(char) * strlen(location.filename));
+	strcpy(loc->filename, location.filename);
+	loc->first_line = location.first_line;
+	loc->first_column = location.first_column;
+	loc->last_line = location.last_line;
+	loc->last_column = location.last_column;
+	
+	return loc;
+}
+
 static void addFunctionAndLocationToStacks(void (*f)(YYLTYPE), YYLTYPE location) {
 	DynArray_add(functionCallsArray, (void*)f);
 	DynArray_add(locationsArray, allocateLocation(location));
 }
 
+/*------------ Overall ----------------------*/
+/**
+ * Called at the beginning of each file before parsing 
+ * begins.
+ */
+void h_beginFile(char* filename) {
+	beginFile(filename);
+}
 
-/*---------------------------------------------*/
+/**
+ * Called at the end of each file. Location.first_line 
+ * = last_line.
+ */
+void h_endFile(YYLTYPE location) {
+	endFile(location);
+}
+
+/**
+ * Called at the beginning of the program execution before
+ * parsing begins.
+ */
+void h_beginProgram() {
+	functionCallsArray = DynArray_new(0);
+	locationsArray = DynArray_new(0);
+	
+	assert(functionCallsArray != NULL);
+	assert(locationsArray != NULL);
+	beginProgram();
+}
+
+/**
+ * Called at the end of the program execution.
+ */
+void h_endProgram(YYLTYPE location) {
+	endProgram(location);
+	
+	assert(functionCallsArray != NULL);
+	assert(locationsArray != NULL);
+	
+	// Free the function arrays
+	DynArray_map(locationsArray, freeLocations, NULL);
+	DynArray_free(locationsArray);
+	DynArray_free(functionCallsArray);
+}
+
+/*------------ Declarations ----------------------*/
 static int inDeclarator = 0;
 
 void h_registerIdentifier(YYLTYPE location) {
@@ -178,10 +178,7 @@ void h_endDirectDeclarator(YYLTYPE location) {
 	addFunctionAndLocationToStacks(endDeclarator, location);
 }
 
-static void h_registerDeclarationSpecifiers(YYLTYPE location) {
-	
-}
-
+/*------------ Function ----------------------*/
 void h_beginFunctionDefinition(YYLTYPE location) {
 	beginFunctionDefinition(location);
 	
@@ -229,13 +226,19 @@ void h_registerParameter(YYLTYPE location) {
 void h_endParameterList(YYLTYPE location) {
 	addFunctionAndLocationToStacks(endParameterList, location);
 }
-
+/*------------ Typedef ----------------------*/
 static void doNothing(YYLTYPE location) {}
 
 void h_registerTypedef(YYLTYPE location) {
 	/* add a call to doNothing so declarations can match on the right
 	   beginning location (the typedef) */
 	addFunctionAndLocationToStacks(doNothing, location);
+}
+
+/*----- Declaration Specifiers --------------*/
+
+static void h_registerDeclarationSpecifiers(YYLTYPE location) {
+	
 }
 
 /* Type specifiers: */
