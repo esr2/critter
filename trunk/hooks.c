@@ -74,6 +74,52 @@ static void addFunctionAndLocationToStacks(void (*f)(YYLTYPE), YYLTYPE location)
 	DynArray_add(locationsArray, allocateLocation(location));
 }
 
+/**
+ * Pop functions/locations off the large stacks until a location on the stack
+ * matches the given location. MatchWhole controls whether it has to be a full
+ * match or just the first line/column. BeginCall is called on first location
+ * and can be null. All functions that are popped are called in the proper order.
+ */
+static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE)) {
+	int len, i;
+	void (*func)(YYLTYPE);
+	YYLTYPE* loc = NULL;
+	DynArray_T locations = DynArray_new(0);
+	DynArray_T functions = DynArray_new(0);
+	
+	/* pop off function/location pairs until location matches
+	 input location (the first declaration specifier) */
+	while (!locationsAreEqual(location, loc, matchWhole)) {
+		len = DynArray_getLength(locationsArray) - 1;
+		loc = DynArray_removeAt(locationsArray, len);
+		assert(loc != NULL);
+		
+		func = DynArray_removeAt(functionCallsArray, len);
+		assert(func != NULL);
+		
+		DynArray_add(locations, loc);
+		DynArray_add(functions, func);
+	}
+	
+	i = DynArray_getLength(locations) - 1;
+	if (beginCall) {
+		loc = DynArray_get(locations, i);
+		beginCall(*loc);
+	}
+	
+	for (; i >=0; i--) {
+		loc = DynArray_removeAt(locations, i);
+		func = DynArray_removeAt(functions, i);
+		
+		(*func)(*loc);
+		freeLocations(loc, NULL);
+	}
+	
+	DynArray_free(locations);
+	DynArray_free(functions);
+	
+}
+
 /*------------ Overall ----------------------*/
 /**
  * Called at the beginning of each file before parsing 
@@ -127,41 +173,7 @@ void h_registerIdentifier(YYLTYPE location) {
 }
 
 void h_endDeclaration(YYLTYPE location) {
-	int len, i;
-	void (*func)(YYLTYPE);
-	YYLTYPE* loc = NULL;
-	DynArray_T locations = DynArray_new(0);
-	DynArray_T functions = DynArray_new(0);
-	
-	/* pop off function/location pairs until location matches
-	 input location (the first declaration specifier) */
-	while (!locationsAreEqual(location, loc, 0)) {
-		len = DynArray_getLength(locationsArray) - 1;
-		loc = DynArray_removeAt(locationsArray, len);
-		assert(loc != NULL);
-		
-		func = DynArray_removeAt(functionCallsArray, len);
-		assert(func != NULL);
-		
-		DynArray_add(locations, loc);
-		DynArray_add(functions, func);
-	}
-	
-	i = DynArray_getLength(locations) - 1;
-	loc = DynArray_get(locations, i);
-	beginDeclaration(*loc);
-	
-	for (; i >=0; i--) {
-		loc = DynArray_removeAt(locations, i);
-		func = DynArray_removeAt(functions, i);
-		
-		(*func)(*loc);
-		freeLocations(loc, NULL);
-	}
-	
-	DynArray_free(locations);
-	DynArray_free(functions);
-	
+	popUntil(location, 0, beginDeclaration);
 	endDeclaration(location);
 }
 
@@ -183,36 +195,7 @@ void h_beginFunctionDefinition(YYLTYPE location) {
 	beginFunctionDefinition(location);
 	
 	/* send appropriate calls for declaration_specifier, declarator etc */
-	int len, i;
-	void (*func)(YYLTYPE);
-	YYLTYPE* loc = NULL;
-	DynArray_T locations = DynArray_new(0);
-	DynArray_T functions = DynArray_new(0);
-	
-	/* pop off function/location pairs until location matches
-	   input location (the first declaration specifier) */
-	while (!locationsAreEqual(location, loc, 1)) {
-		len = DynArray_getLength(locationsArray) - 1;
-		loc = DynArray_removeAt(locationsArray, len);
-		assert(loc != NULL);
-		
-		func = DynArray_removeAt(functionCallsArray, len);
-		assert(func != NULL);
-	
-		DynArray_add(locations, loc);
-		DynArray_add(functions, func);
-	}
-	
-	for (i = DynArray_getLength(locations) - 1; i >=0 ; i--) {
-		loc = DynArray_removeAt(locations, i);
-		func = DynArray_removeAt(functions, i);
-		
-		(*func)(*loc);
-		freeLocations(loc, NULL);
-	}
-	
-	DynArray_free(locations);
-	DynArray_free(functions);
+	popUntil(location, 1, NULL);
 }
 
 void h_beginParameterList(YYLTYPE location) {
