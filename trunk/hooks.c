@@ -173,6 +173,8 @@ void h_beginFunctionDefinition(YYLTYPE location) {
 		freeLocations(loc, NULL);
 	}
 	
+	DynArray_free(locations);
+	DynArray_free(functions);
 }
 
 
