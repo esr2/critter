@@ -232,10 +232,10 @@ type_init_declarator
 	;
 
 storage_class_specifier
-	: EXTERN
-	| STATIC
-	| AUTO
-	| REGISTER
+	: EXTERN		{h_registerExtern(@$);}
+	| STATIC		{h_registerStatic(@$);}
+	| AUTO			{h_registerAuto(@$);}
+	| REGISTER		{h_registerRegister(@$);}
 	;
 
 type_specifier
@@ -309,7 +309,7 @@ enumerator
 
 type_qualifier
 	: CONST		{h_registerConst(@$);}
-	| VOLATILE
+	| VOLATILE	{h_registerVolatile(@$);}
 	;
 
 declarator
