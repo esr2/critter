@@ -160,15 +160,22 @@ void endCompoundStatement(YYLTYPE location) {
 	tooDeeplyNested(location, END);
 }
 
+void beginDeclaration(YYLTYPE location) {
+	
+}
+
+void endDeclaration(YYLTYPE location) {
+	
+}
+
 void beginDeclarator(YYLTYPE location) {
-	lyyerror(location, "begin declarator");
+	
 }
 
 void endDeclarator(YYLTYPE location) {
-	lyyerror(location, "end declarator");
+	
 }
 
 void registerConst(YYLTYPE location) {
-	lyyerror(location, "sax register const");
 	useEnumNotConstOrDefine(location, MIDDLE);
 }

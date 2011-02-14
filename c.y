@@ -202,9 +202,9 @@ constant_expression
 	;
 
 declaration
-	: declaration_specifiers ';'
-	| declaration_specifiers init_declarator_list ';'
-	| TYPEDEF declaration_specifiers type_init_declarator ';'
+	: declaration_specifiers ';'														{h_endDeclaration(@$);}
+	| declaration_specifiers init_declarator_list ';'									{h_endDeclaration(@$);}
+	| TYPEDEF {h_registerTypedef(@1);} declaration_specifiers type_init_declarator ';'	{h_endDeclaration(@$);}
 	;
 
 declaration_specifiers

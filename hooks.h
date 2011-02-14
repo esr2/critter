@@ -13,6 +13,7 @@
 #include "c.tab.h"
 
 void h_registerIdentifier(YYLTYPE location);
+void h_endDeclaration(YYLTYPE location);
 void h_beginDirectDeclarator(YYLTYPE location);
 void h_endDirectDeclarator(YYLTYPE location);
 
