@@ -169,5 +169,6 @@ void endDeclarator(YYLTYPE location) {
 }
 
 void registerConst(YYLTYPE location) {
+	lyyerror(location, "sax register const");
 	useEnumNotConstOrDefine(location, MIDDLE);
 }

@@ -32,5 +32,11 @@ void h_registerEnumSpecifier(YYLTYPE location);
 void h_registerTypeName(YYLTYPE location);
 
 void h_registerConst(YYLTYPE location);
+void h_registerVolatile(YYLTYPE location);
+
+void h_registerExtern(YYLTYPE location);
+void h_registerStatic(YYLTYPE location);
+void h_registerAuto(YYLTYPE location);
+void h_registerRegister(YYLTYPE location);
 
 #endif HOOKS_INCLUDED

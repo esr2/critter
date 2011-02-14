@@ -139,12 +139,8 @@ void h_endDirectDeclarator(YYLTYPE location) {
 	addFunctionAndLocationToStacks(endDeclarator, location);
 }
 
-static void h_beginDeclarationSpecifiers(YYLTYPE location) {
-	lyyerror(location, "begin declaration specifier");
-}
-
-static void h_endDeclarationSpecifiers(YYLTYPE location) {
-	
+static void h_registerDeclarationSpecifiers(YYLTYPE location) {
+	lyyerror(location, "registering declaration specifier");
 }
 
 void h_beginFunctionDefinition(YYLTYPE location) {
@@ -186,7 +182,7 @@ void h_beginFunctionDefinition(YYLTYPE location) {
 
 /* Type specifiers: */
 static void h_registerTypeSpecifier(YYLTYPE location) {
-	addFunctionAndLocationToStacks(h_beginDeclarationSpecifiers, location);
+	addFunctionAndLocationToStacks(h_registerDeclarationSpecifiers, location);
 }
 
 void h_registerVoid(YYLTYPE location) {h_registerTypeSpecifier(location);}
@@ -202,7 +198,28 @@ void h_registerStructUnionSpecifier(YYLTYPE location) {h_registerTypeSpecifier(l
 void h_registerEnumSpecifier(YYLTYPE location) {h_registerTypeSpecifier(location);}
 void h_registerTypeName(YYLTYPE location) {h_registerTypeSpecifier(location);}
 
-/* Type qualifier */
+/* Type qualifiers */
+static void h_registerTypeQualifier(YYLTYPE location) {
+	addFunctionAndLocationToStacks(h_registerDeclarationSpecifiers, location);
+}
+
 void h_registerConst(YYLTYPE location) { 
+	h_registerTypeQualifier(location);
 	registerConst(location);
 }
+
+void h_registerVolatile(YYLTYPE location) {
+	h_registerTypeQualifier(location);
+}
+
+
+/* Storage class specifiers */
+static void h_registerStorageClass(YYLTYPE location) {
+	//h_registerDeclarationSpecifiers(location);
+	addFunctionAndLocationToStacks(h_registerDeclarationSpecifiers, location);
+}
+
+void h_registerExtern(YYLTYPE location) {h_registerStorageClass(location);}
+void h_registerStatic(YYLTYPE location) {h_registerStorageClass(location);}
+void h_registerAuto(YYLTYPE location) {h_registerStorageClass(location);}
+void h_registerRegister(YYLTYPE location) {h_registerStorageClass(location);}
