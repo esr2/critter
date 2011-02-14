@@ -143,9 +143,13 @@ static int locationsAreEqual(YYLTYPE location, YYLTYPE* other) {
 
 void h_beginFunctionDefinition(YYLTYPE location) {
 	beginFunctionDefinition(location);
-	int len;
+	
+	/* send appropriate calls for declaration_specifier, declarator etc */
+	int len, i;
 	void (*func)(YYLTYPE);
 	YYLTYPE* loc = NULL;
+	DynArray_T locations = DynArray_new(0);
+	DynArray_T functions = DynArray_new(0);
 	
 	/* pop off function/location pairs until location matches
 	   input location (the first declaration specifier) */
@@ -157,11 +161,17 @@ void h_beginFunctionDefinition(YYLTYPE location) {
 		func = DynArray_removeAt(functionCallsArray, len);
 		assert(func != NULL);
 	
+		DynArray_add(locations, loc);
+		DynArray_add(functions, func);
+	}
+	
+	for (i = DynArray_getLength(locations) - 1; i >=0 ; i--) {
+		loc = DynArray_removeAt(locations, i);
+		func = DynArray_removeAt(functions, i);
+		
 		(*func)(*loc);
 		freeLocations(loc, NULL);
 	}
-	
-	/* send appropriate calls for declaration_specifier, declarator etc */
 	
 }
 
