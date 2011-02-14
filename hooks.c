@@ -80,48 +80,20 @@ void h_endProgram(YYLTYPE location) {
 	DynArray_free(functionCallsArray);
 }
 
-/*---------------------------------------------*/
-static int inDeclarator = 0;
-
-void h_registerIdentifier(YYLTYPE location) {
-	
-}
-
-void h_beginDirectDeclarator(YYLTYPE location) {
-	assert(functionCallsArray != NULL);
-	assert(locationsArray != NULL);
-	
-	inDeclarator++;
-	DynArray_add(functionCallsArray, (void*)beginDeclarator);
-	DynArray_add(locationsArray, allocateLocation(location));
-}
-
-void h_endDirectDeclarator(YYLTYPE location) {
-	inDeclarator--;
-	DynArray_add(functionCallsArray, (void*)endDeclarator);
-	DynArray_add(locationsArray, allocateLocation(location));
-}
-
-static void h_beginDeclarationSpecifiers(YYLTYPE location) {
-	lyyerror(location, "begin declaration specifier");
-}
-
-static void h_endDeclarationSpecifiers(YYLTYPE location) {
-	
-}
+/*---------------- Util -----------------------*/
 
 static int locationsAreEqual(YYLTYPE location, YYLTYPE* other) {
 	if (other == NULL) { 
 		return 0;
 	}
 	
-/*	fprintf(stderr, "%s vs %s\n", location.filename, (*other).filename);
-	
-	if (strcmp(location.filename, (*other).filename) != 0) {
-		fprintf(stderr, "bad filename\n");
-		return 0;
-	}
-*/	
+	/*	fprintf(stderr, "%s vs %s\n", location.filename, (*other).filename);
+	 
+	 if (strcmp(location.filename, (*other).filename) != 0) {
+	 fprintf(stderr, "bad filename\n");
+	 return 0;
+	 }
+	 */	
 	if (location.first_line != other->first_line) {
 		return 0;
 	}
@@ -139,6 +111,40 @@ static int locationsAreEqual(YYLTYPE location, YYLTYPE* other) {
 	}
 	
 	return 1;
+}
+
+static void addFunctionAndLocationToStacks(void (*f)(YYLTYPE), YYLTYPE location) {
+	DynArray_add(functionCallsArray, (void*)f);
+	DynArray_add(locationsArray, allocateLocation(location));
+}
+
+
+/*---------------------------------------------*/
+static int inDeclarator = 0;
+
+void h_registerIdentifier(YYLTYPE location) {
+	
+}
+
+void h_beginDirectDeclarator(YYLTYPE location) {
+	assert(functionCallsArray != NULL);
+	assert(locationsArray != NULL);
+	
+	inDeclarator++;
+	addFunctionAndLocationToStacks(beginDeclarator,location);
+}
+
+void h_endDirectDeclarator(YYLTYPE location) {
+	inDeclarator--;
+	addFunctionAndLocationToStacks(endDeclarator, location);
+}
+
+static void h_beginDeclarationSpecifiers(YYLTYPE location) {
+	lyyerror(location, "begin declaration specifier");
+}
+
+static void h_endDeclarationSpecifiers(YYLTYPE location) {
+	
 }
 
 void h_beginFunctionDefinition(YYLTYPE location) {
@@ -180,8 +186,7 @@ void h_beginFunctionDefinition(YYLTYPE location) {
 
 /* Type specifiers: */
 static void h_registerTypeSpecifier(YYLTYPE location) {
-	DynArray_add(functionCallsArray, (void*)h_beginDeclarationSpecifiers);
-	DynArray_add(locationsArray, allocateLocation(location));
+	addFunctionAndLocationToStacks(h_beginDeclarationSpecifiers, location);
 }
 
 void h_registerVoid(YYLTYPE location) {h_registerTypeSpecifier(location);}
