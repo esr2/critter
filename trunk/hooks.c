@@ -201,3 +201,8 @@ void h_registerUnsigned(YYLTYPE location) {h_registerTypeSpecifier(location);}
 void h_registerStructUnionSpecifier(YYLTYPE location) {h_registerTypeSpecifier(location);}
 void h_registerEnumSpecifier(YYLTYPE location) {h_registerTypeSpecifier(location);}
 void h_registerTypeName(YYLTYPE location) {h_registerTypeSpecifier(location);}
+
+/* Type qualifier */
+void h_registerConst(YYLTYPE location) { 
+	registerConst(location);
+}
