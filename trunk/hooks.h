@@ -12,6 +12,11 @@
 
 #include "c.tab.h"
 
+void h_beginFile(char* filename);
+void h_endFile(YYLTYPE location);
+void h_beginProgram();
+void h_endProgram(YYLTYPE location);
+
 void h_registerIdentifier(YYLTYPE location);
 void h_endDeclaration(YYLTYPE location);
 void h_beginDirectDeclarator(YYLTYPE location);
