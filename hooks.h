@@ -31,4 +31,6 @@ void h_registerStructUnionSpecifier(YYLTYPE location);
 void h_registerEnumSpecifier(YYLTYPE location);
 void h_registerTypeName(YYLTYPE location);
 
+void h_registerConst(YYLTYPE location);
+
 #endif HOOKS_INCLUDED
