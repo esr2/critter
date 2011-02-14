@@ -82,7 +82,7 @@ void h_endProgram(YYLTYPE location) {
 
 /*---------------- Util -----------------------*/
 
-static int locationsAreEqual(YYLTYPE location, YYLTYPE* other) {
+static int locationsAreEqual(YYLTYPE location, YYLTYPE* other, int checkAll) {
 	if (other == NULL) { 
 		return 0;
 	}
@@ -102,11 +102,11 @@ static int locationsAreEqual(YYLTYPE location, YYLTYPE* other) {
 		return 0;
 	}
 	
-	if (location.last_line != other->last_line) {
+	if (checkAll && location.last_line != other->last_line) {
 		return 0;
 	}
 	
-	if (location.last_column != other->last_column) {
+	if (checkAll && location.last_column != other->last_column) {
 		return 0;
 	}
 	
@@ -126,6 +126,45 @@ void h_registerIdentifier(YYLTYPE location) {
 	
 }
 
+void h_endDeclaration(YYLTYPE location) {
+	int len, i;
+	void (*func)(YYLTYPE);
+	YYLTYPE* loc = NULL;
+	DynArray_T locations = DynArray_new(0);
+	DynArray_T functions = DynArray_new(0);
+	
+	/* pop off function/location pairs until location matches
+	 input location (the first declaration specifier) */
+	while (!locationsAreEqual(location, loc, 0)) {
+		len = DynArray_getLength(locationsArray) - 1;
+		loc = DynArray_removeAt(locationsArray, len);
+		assert(loc != NULL);
+		
+		func = DynArray_removeAt(functionCallsArray, len);
+		assert(func != NULL);
+		
+		DynArray_add(locations, loc);
+		DynArray_add(functions, func);
+	}
+	
+	i = DynArray_getLength(locations) - 1;
+	loc = DynArray_get(locations, i);
+	beginDeclaration(*loc);
+	
+	for (; i >=0; i--) {
+		loc = DynArray_removeAt(locations, i);
+		func = DynArray_removeAt(functions, i);
+		
+		(*func)(*loc);
+		freeLocations(loc, NULL);
+	}
+	
+	DynArray_free(locations);
+	DynArray_free(functions);
+	
+	endDeclaration(location);
+}
+
 void h_beginDirectDeclarator(YYLTYPE location) {
 	assert(functionCallsArray != NULL);
 	assert(locationsArray != NULL);
@@ -140,7 +179,7 @@ void h_endDirectDeclarator(YYLTYPE location) {
 }
 
 static void h_registerDeclarationSpecifiers(YYLTYPE location) {
-	lyyerror(location, "registering declaration specifier");
+	
 }
 
 void h_beginFunctionDefinition(YYLTYPE location) {
@@ -155,7 +194,7 @@ void h_beginFunctionDefinition(YYLTYPE location) {
 	
 	/* pop off function/location pairs until location matches
 	   input location (the first declaration specifier) */
-	while (!locationsAreEqual(location, loc)) {
+	while (!locationsAreEqual(location, loc, 1)) {
 		len = DynArray_getLength(locationsArray) - 1;
 		loc = DynArray_removeAt(locationsArray, len);
 		assert(loc != NULL);
@@ -179,6 +218,13 @@ void h_beginFunctionDefinition(YYLTYPE location) {
 	DynArray_free(functions);
 }
 
+static void doNothing(YYLTYPE location) {}
+
+void h_registerTypedef(YYLTYPE location) {
+	/* add a call to doNothing so declarations can match on the right
+	   beginning location (the typedef) */
+	addFunctionAndLocationToStacks(doNothing, location);
+}
 
 /* Type specifiers: */
 static void h_registerTypeSpecifier(YYLTYPE location) {

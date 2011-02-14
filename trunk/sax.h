@@ -57,6 +57,9 @@ void endSwitch(YYLTYPE location);
 void beginCompoundStatement(YYLTYPE location);
 void endCompoundStatement(YYLTYPE location);
 
+void beginDeclaration(YYLTYPE location);
+void endDeclaration(YYLTYPE location);
+
 void beginDeclarator(YYLTYPE location);
 void endDeclarator(YYLTYPE location);
 
