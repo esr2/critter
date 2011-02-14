@@ -218,6 +218,18 @@ void h_beginFunctionDefinition(YYLTYPE location) {
 	DynArray_free(functions);
 }
 
+void h_beginParameterList(YYLTYPE location) {
+	addFunctionAndLocationToStacks(beginParameterList, location);
+}
+
+void h_registerParameter(YYLTYPE location) {
+	addFunctionAndLocationToStacks(registerParameter, location);
+}
+
+void h_endParameterList(YYLTYPE location) {
+	addFunctionAndLocationToStacks(endParameterList, location);
+}
+
 static void doNothing(YYLTYPE location) {}
 
 void h_registerTypedef(YYLTYPE location) {

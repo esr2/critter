@@ -350,16 +350,16 @@ type_qualifier_list
 	| type_qualifier_list type_qualifier
 	;
 
-beginParamList : /*empty*/ {beginParameterList(@$)};
+beginParamList : /*empty*/ {h_beginParameterList(@$)};
 
 parameter_type_list
-	: beginParamList parameter_list {endParameterList(@$);}
-	| beginParamList parameter_list ',' ELLIPSIS {endParameterList(@$);}
+	: beginParamList parameter_list {h_endParameterList(@$);}
+	| beginParamList parameter_list ',' ELLIPSIS {h_endParameterList(@$);}
 	;
 
 parameter_list
-	: parameter_declaration {registerParameter(@$);}
-	| parameter_list ',' parameter_declaration {registerParameter(@$);}
+	: parameter_declaration {h_registerParameter(@$);}
+	| parameter_list ',' parameter_declaration {h_registerParameter(@$);}
 	;
 
 parameter_declaration
