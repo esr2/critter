@@ -205,7 +205,7 @@ static void h_registerTypeQualifier(YYLTYPE location) {
 
 void h_registerConst(YYLTYPE location) { 
 	h_registerTypeQualifier(location);
-	registerConst(location);
+	addFunctionAndLocationToStacks(registerConst, location);
 }
 
 void h_registerVolatile(YYLTYPE location) {
