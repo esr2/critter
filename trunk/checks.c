@@ -225,7 +225,7 @@ void useEnumNotConstOrDefine(YYLTYPE location, int progress) {
 			break;
 		case MIDDLE:
 			if (!inParameterList) {
-				lyyerror(location, "It would be better to use enum to define integral constants");
+				//lyyerror(location, "It would be better to use enum to define integral constants");
 			}
 			break;
 		case END:
