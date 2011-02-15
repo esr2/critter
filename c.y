@@ -60,7 +60,6 @@
 %error-verbose
 %locations
 %defines
-%verbose
 
 %%
 
