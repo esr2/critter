@@ -184,12 +184,12 @@ void h_beginDirectDeclarator(YYLTYPE location) {
 	assert(locationsArray != NULL);
 	
 	inDeclarator++;
-	addFunctionAndLocationToStacks(beginDeclarator,location);
+	addFunctionAndLocationToStacks(doNothing,location);
 }
 
 void h_endDirectDeclarator(YYLTYPE location) {
 	inDeclarator--;
-	addFunctionAndLocationToStacks(endDeclarator, location);
+	addFunctionAndLocationToStacks(doNothing, location);
 }
 
 /*------------ Function ----------------------*/
