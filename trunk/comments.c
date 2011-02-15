@@ -45,7 +45,8 @@ static char lastCommentText[MAX_COMMENT_LENGTH];
 static YYLTYPE lastCommentLocation;
 
 void comment_beginComment(YYLTYPE location) {
-	/* check if the comments are adjacent */
+	/* check if the comments are adjacent, if they are concatenate this
+	   to the old comment */
 	if (lastCommentLocation.filename &&
 			strcmp(lastCommentLocation.filename, location.filename) == 0 &&
 			location.first_line - lastCommentLocation.last_line <= 1) {
@@ -53,10 +54,14 @@ void comment_beginComment(YYLTYPE location) {
 		int len = DynArray_getLength(commentLocations) - 1;
 		char *text = DynArray_removeAt(commentTexts, len);
 		assert(text != NULL);
+		
+		/* copy lastCommentText and then free */
 		strcpy(lastCommentText, text);
 		free(text);
 		free(DynArray_removeAt(commentLocations, len));
 		
+		/* add a new line to the end of the comment */
+		strcat(lastCommentText, "\n");
 	} else {
 		/* reset lastComment */
 		int i;
