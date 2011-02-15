@@ -80,9 +80,10 @@ int column = 1;
 			}
 <<EOF>>	{endFile(yylloc); if(!popfile()) {h_endProgram(yylloc); yyterminate();} }
 
-"#"				{ BEGIN(MACRO); }
-<MACRO>.*		
-<MACRO>\n		{ BEGIN(INITIAL); }
+"#"							{ BEGIN(MACRO); }
+<MACRO>"define".*{D}+		{ h_registerDefineIntegralType(yylloc); }
+<MACRO>.*
+<MACRO>\n					{ BEGIN(INITIAL); }
 
 "auto"			{ count(); return(AUTO); }
 "break"			{ count(); return(BREAK); }

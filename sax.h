@@ -59,6 +59,8 @@ void endCompoundStatement(YYLTYPE location);
 void beginDeclaration(YYLTYPE location);
 void endDeclaration(YYLTYPE location);
 
+void registerDefineIntegralType(YYLTYPE location);
+
 void registerConst(YYLTYPE location);
 
 void registerGoto(YYLTYPE location);

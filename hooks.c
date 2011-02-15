@@ -166,6 +166,10 @@ void h_endProgram(YYLTYPE location) {
 	DynArray_free(locationsArray);
 	DynArray_free(functionCallsArray);
 }
+/*------------------------------------------------*/
+void h_registerDefineIntegralType(YYLTYPE location) {
+	registerDefineIntegralType(location);
+}
 
 /*------------ Declarations ----------------------*/
 static int inDeclarator = 0;
