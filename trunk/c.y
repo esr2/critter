@@ -463,11 +463,11 @@ iteration_statement
 	;
 
 jump_statement
-	: GOTO IDENTIFIER ';'
-	| CONTINUE ';'
-	| BREAK ';' {registerBreak(@$);}
-	| RETURN ';'
-	| RETURN expression ';'
+	: GOTO IDENTIFIER ';'	{registerGoto(@$);}
+	| CONTINUE ';'			{registerContinue(@$);}
+	| BREAK ';'				{registerBreak(@$);}
+	| RETURN ';'			{registerReturn(@$);}
+	| RETURN expression ';'	{registerReturn(@$);}
 	;
 
 translation_unit
