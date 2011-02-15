@@ -50,7 +50,6 @@ void endElse(YYLTYPE location);
 void beginSwitch(YYLTYPE location);
 void registerDefault(YYLTYPE location);
 void registerCase(YYLTYPE location);
-void registerBreak(YYLTYPE location);
 void endSwitch(YYLTYPE location);
 
 /*--------- Statements -----------------------*/
@@ -61,5 +60,10 @@ void beginDeclaration(YYLTYPE location);
 void endDeclaration(YYLTYPE location);
 
 void registerConst(YYLTYPE location);
+
+void registerGoto(YYLTYPE location);
+void registerContinue(YYLTYPE location);
+void registerBreak(YYLTYPE location);
+void registerReturn(YYLTYPE location);
 
 #endif

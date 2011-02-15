@@ -137,10 +137,6 @@ void registerCase(YYLTYPE location) {
 	switchCasesHaveBreaks(location, MIDDLE, 1);
 }
 
-void registerBreak(YYLTYPE location) {
-	switchCasesHaveBreaks(location, MIDDLE, 0);
-}
-
 void endSwitch(YYLTYPE location) {
 	switchHasDefault(location, END);
 	switchCasesHaveBreaks(location, END, -1);
@@ -168,4 +164,21 @@ void endDeclaration(YYLTYPE location) {
 
 void registerConst(YYLTYPE location) {
 	useEnumNotConstOrDefine(location, MIDDLE);
+}
+
+/* Jump Statements */
+void registerGoto(YYLTYPE location) {
+	neverUseGotos(location);
+}
+
+void registerContinue(YYLTYPE location) {
+	
+}
+
+void registerBreak(YYLTYPE location) {
+	switchCasesHaveBreaks(location, MIDDLE, 0);
+}
+
+void registerReturn(YYLTYPE location) {
+	
 }

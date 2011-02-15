@@ -234,3 +234,10 @@ void useEnumNotConstOrDefine(YYLTYPE location, int progress) {
 			break;
 	}
 }
+
+/**
+ * Error on any use of a GOTO
+ */
+void neverUseGotos(YYLTYPE location) {
+	lyyerror(location, "Never use GOTO statements");
+}
