@@ -278,21 +278,21 @@ It is built off of Flex and Bison which create a lexical analyzer and a parser f
 files. These two elements combine into one larger program, \programName, which takes a .c file as 
 input.  \programName parses the input file by recognizing each code construction as part of the valid 
 C grammar (these possible constructions are known as a grammar rules). While parsing the code, 
-\programName executes any function associated with the grammar rule. These functions are the 
-checks which are stored in a different file (see \refCode \ref{grammar1.0}). Additionally, checks can be 
-called from the beginning or end of each file or the entire program.
+\programName executes any function associated with the grammar rule (see \refCode \ref{grammar1.0}, 
+where functions are underlined). These functions are the checks which are stored in a different file. 
+Additionally, checks can be called from the beginning or end of each file or the entire program.
 \todoin{assume readers know about context free grammars -- explicitly use that term and add a footnote to explain it}
-\todoin{reword so grammar points to grammar figure and then reference checks inside that figure which need to be boldfaced}
 \todoin{explain locations somewhere (maybe final version?)}
 
 \todo{try to show grammar excerpts with each check}
 \begin{figure} 
 \caption{Excerpt of the Grammar File from v1.0}
 \label{grammar1.0}
-\begin{lstlisting}[language=Caml]
+\begin{lstlisting}[language=Caml, escapechar=\%]
 selection_statement
-	: IF `(' expression `)' statement 	{$$ = IF_SELECTION; ifHasBraces($5, @$);}
-	| IF `(' expression `)' statement ELSE statement {$$ = IF_ELSE_SELECTION, ifHasBraces($5, @$);  ifHasBraces($7, @$);}
+	: IF `(' expression `)' statement 	%\underline{\{\$\$ = IF\_SELECTION; ifHasBraces(\$5, @\$);\}}%
+	| IF `(' expression `)' statement ELSE statement %\underline{\{\$\$ = IF\_ELSE\_SELECTION, ifHasBraces(\$5, @\$); }%
+			%\underline{ ifHasBraces(\$7, @\$);\}}%
 	| SWITCH `(' expression `)' statement
 	;
 
@@ -304,10 +304,10 @@ iteration_statement
 	;
 
 function_definition
-	: declaration_specifiers declarator declaration_list compound_statement {isFunctionTooLong(@$);}
-	| declaration_specifiers declarator compound_statement {isFunctionTooLong(@$);}
-	| declarator declaration_list compound_statement {isFunctionTooLong(@$);}
-	| declarator compound_statement {isFunctionTooLong(@$);}
+	: declaration_specifiers declarator declaration_list compound_statement %\underline{\{isFunctionTooLong(@\$);\}}%
+	| declaration_specifiers declarator compound_statement %\underline{\{isFunctionTooLong(@\$);\}}%
+	| declarator declaration_list compound_statement %\underline{\{isFunctionTooLong(@\$);\}}%
+	| declarator compound_statement %\underline{\{isFunctionTooLong(@\$);\}}%
 	;
 \end{lstlisting}
 \end{figure} 
@@ -349,7 +349,7 @@ void isFunctionTooLong(YYLTYPE location) {
 	int MAX_FUNCTION_LENGTH = 100; /*Arbitrary maximum */
 	
 	if (location.last_line - location.first_line + 1 >= MAX_FUNCTION_LENGTH) {
-		lyyerror(location, ``Function is too lengthy");
+		lyyerror(location, ``Function is too lengthy'');
 	}
 }
 
@@ -364,7 +364,7 @@ void tooManyParameters(YYLTYPE location) {
 		if (numParameters != -1 && numParameters >= 
 		    MAX_NUM_PARAMETERS) {
 			char string[200];
-			sprintf(string, ``Please use less than %d function parameters, you used %d", MAX_NUM_PARAMETERS, numParameters);
+			sprintf(string, ``Please use less than %d function parameters, you used %d'', MAX_NUM_PARAMETERS, numParameters);
 			lyyerror(prevLoc, string);
 		}
 		
