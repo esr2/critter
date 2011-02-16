@@ -43,6 +43,8 @@
 %pdftitle={\projectname}
 
 \newcommand{\tablerow}[1]{#1}
+\newcounter{checkCounter}
+\newcommand{\cnum}{\refstepcounter{checkCounter} \arabic{checkCounter}}
 
 \usepackage{color}
 
@@ -344,10 +346,10 @@ examples of check functions.
 		\toprule
 		& Function & Purpose \\
 		\midrule
-		1 & ifHasBraces & Determines if the statement following an \lstinline!if! is surrounded by \{\} \\
-		2 & isFunctionTooLong & Determines if a function's length exceeds the maximum number of lines\\
-		3 & tooManyParameters & Determines if there a function exceeds the maximum number of input parameters \\
-		4 & CPlusPlusComments & Throws an error on finding C++ style single-line comments \\
+		\cnum & ifHasBraces & Determines if the statement following an \lstinline!if! is surrounded by \{\} \\
+		\cnum & isFunctionTooLong & Determines if a function's length exceeds the maximum number of lines\\
+		\cnum & tooManyParameters & Determines if there a function exceeds the maximum number of input parameters \\
+		\cnum & CPlusPlusComments & Throws an error on finding C++ style single-line comments \\
 		\bottomrule
 	\end{tabular}
 	\end{center}
@@ -430,8 +432,8 @@ declaration. Comments and their locations are stored in two dynamically sized gl
 		& Function & Purpose \\
 		\midrule
 		1 & hasBraces & Determines if the statement following an \lstinline!if!, \lstinline$for$, or \lstinline$while$ is surrounded by \lstinline!{}! \\
-		5 & checkForComment & Throws an error if a function does not have an associated comment \\
-		6 & switchHasDefault & Throws an error if a switch statement does not include a \lstinline$default$ case \\
+		\cnum & checkForComment & Throws an error if a function does not have an associated comment \\
+		\cnum & switchHasDefault & Throws an error if a switch statement does not include a \lstinline$default$ case \\
 	\end{tabular}
 \end{table}
 
@@ -451,9 +453,9 @@ actual beginning of the construct.
 		\toprule
 		& Function & Purpose \\
 		\midrule
-		7 & switchCasesHaveBreaks & Make sure all cases (including the \lstinline$default$) have a \lstinline$break$ statement \\
-		8 & tooDeeplyNested & Throws error if a region is too deeply nested \\
-		9 & useEnumNotConstOrDefine & Throws error for using \lstinline$const$ or \lstinline$#define$ to define integral constants \\
+		\cnum & switchCasesHaveBreaks & Make sure all cases (including the \lstinline$default$) have a \lstinline$break$ statement \\
+		\cnum & tooDeeplyNested & Throws error if a region is too deeply nested \\
+		\cnum & useEnumNotConstOrDefine & Throws error for using \lstinline$const$ or \lstinline$#define$ to define integral constants \\
 		\bottomrule
 	\end{tabular}
 \end{table}
