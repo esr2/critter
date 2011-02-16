@@ -219,10 +219,48 @@ public class CountRule extends AbstractJavaRule {
 Checkstyle mimics PMD in function but provides different checks out of the box (namely those 
 regarding duplicate code, class design, whitespace, etc). It also uses the Visitor Pattern and 
 provides ways to examine the beginning and ends of the tree as well as each node. New rules are 
-added through an XML file and similarly passed to Checkstyle at runtime.
+added through an XML file and similarly passed to Checkstyle at runtime. Here is example check 
+which determines how many methods are in a class (see \refCode \ref{checkstyle-rule}).
 \todoin{pad this out into its own}
-\todoin{add example for Checkstyle}
 \nocite{framaC}
+
+\begin{figure}
+\label{checkstyle-rule}
+\caption[Example Checkstyle Check]{Example Checkstyle Check counting the number of methods in 
+a class}
+\begin{lstlisting}[language=Java]
+package com.mycompany.checks;
+import com.puppycrawl.tools.checkstyle.api.*;
+
+public class MethodLimitCheck extends Check
+{
+    private static final int DEFAULT_MAX = 30;
+    private int max = DEFAULT_MAX;
+
+    @Override
+    public int[] getDefaultTokens()
+    {
+        return new int[]{TokenTypes.CLASS_DEF, TokenTypes.INTERFACE_DEF};
+    }
+
+    @Override
+    public void visitToken(DetailAST ast)
+    {
+        // find the OBJBLOCK node below the 
+        // CLASS_DEF/INTERFACE_DEF
+        DetailAST objBlock = ast.findFirstToken(TokenTypes.OBJBLOCK);
+        // count the number of direct children of the
+        // OBJBLOCK that are METHOD_DEFS
+        int methodDefs = objBlock.getChildCount(TokenTypes.METHOD_DEF);
+        // report error if limit is reached
+        if (methodDefs > this.max) {
+            log(ast.getLineNo(),
+                "too many methods, only " + this.max + " are allowed");
+        }
+   }
+}
+\end{lstlisting}
+\end{figure}
 
 
 \chapter{Version 1}
