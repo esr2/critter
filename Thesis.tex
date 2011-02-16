@@ -312,8 +312,7 @@ parameter_declaration
 
 selection_statement
 	: IF `(' expression `)' statement 	%\underline{\{\$\$ = IF\_SELECTION; ifHasBraces(\$5, @\$);\}}%
-	| IF `(' expression `)' statement ELSE statement %\underline{\{\$\$ = IF\_ELSE\_SELECTION, ifHasBraces(\$5, @\$); }%
-			%\underline{ ifHasBraces(\$7, @\$);\}}%
+	| IF `(' expression `)' statement ELSE statement %\underline{\{\$\$ = IF\_ELSE\_SELECTION, ifHasBraces(\$5, @\$); ifHasBraces(\$7, @\$);\}}%
 	| SWITCH `(' expression `)' statement
 	;
 
