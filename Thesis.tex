@@ -44,7 +44,14 @@
 
 \newcommand{\tablerow}[1]{#1}
 \newcounter{checkCounter}
-\newcommand{\cnum}{\refstepcounter{checkCounter} \arabic{checkCounter}}
+\newcommand{\cnum}{\refstepcounter{checkCounter} \thecheckCounter}
+\usepackage{ifthen}
+\newcommand\chk[2][default]{
+  \ifthenelse{\equal{#1}{default}}{
+    #2 \label{#2} }{
+    #2 \label{#1}
+  }
+}
 
 \usepackage{color}
 
@@ -346,10 +353,10 @@ examples of check functions.
 		\toprule
 		& Function & Purpose \\
 		\midrule
-		\cnum & ifHasBraces & Determines if the statement following an \lstinline!if! is surrounded by \{\} \\
-		\cnum & isFunctionTooLong & Determines if a function's length exceeds the maximum number of lines\\
-		\cnum & tooManyParameters & Determines if there a function exceeds the maximum number of input parameters \\
-		\cnum & CPlusPlusComments & Throws an error on finding C++ style single-line comments \\
+		\cnum & \chk[hasBraces]{ifHasBraces} & Determines if the statement following an \lstinline!if! is surrounded by \{\} \\
+		\cnum & \chk{isFunctionTooLong} & Determines if a function's length exceeds the maximum number of lines\\
+		\cnum & \chk{tooManyParameters} & Determines if there a function exceeds the maximum number of input parameters \\
+		\cnum & \chk{CPlusPlusComments} & Throws an error on finding C++ style single-line comments \\
 		\bottomrule
 	\end{tabular}
 	\end{center}
