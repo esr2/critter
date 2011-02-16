@@ -172,7 +172,7 @@ The RuleSet is an XML file that can be edited to augment the functionality of PM
 rules. Rules are written in their own classes and extend a base implementation. The rule itself can 
 override three functions (start, visit and end) to perform various checks against the source code based 
 on the nodes in the AST. Here is the ``dummy" example from the PMD website which counts how 
-many expressions are in the source code (see \refCode \ref{pmd-rule}).\cite{pmd} 
+many expressions are in the source code (see \refCode \ref{pmd-rule}).
 \todoin{why PMD doesn't work}
 
 \begin{figure}
@@ -219,7 +219,7 @@ public class CountRule extends AbstractJavaRule {
 Checkstyle mimics PMD in function but provides different checks out of the box (namely those 
 regarding duplicate code, class design, whitespace, etc). It also uses the Visitor Pattern and 
 provides ways to examine the beginning and ends of the tree as well as each node. New rules are 
-added through an XML file and similarly passed to Checkstyle at runtime.\cite{checkstyle}
+added through an XML file and similarly passed to Checkstyle at runtime.
 \todoin{pad this out into its own}
 \todoin{add example for Checkstyle}
 \nocite{framaC}
