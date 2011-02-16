@@ -191,7 +191,7 @@ import net.sourceforge.pmd.ast.ASTExpression;
 
 public class CountRule extends AbstractJavaRule {
 
-	private static final String COUNT = ``count";
+	private static final String COUNT = "count";
 
 	@Override
 	public void start(RuleContext ctx) {
@@ -249,12 +249,13 @@ public class MethodLimitCheck extends Check
     @Override
     public void visitToken(DetailAST ast)
     {
-        // find the OBJBLOCK node below the 
-        // CLASS_DEF/INTERFACE_DEF
+        // find the OBJBLOCK node below the CLASS_DEF/INTERFACE_DEF
         DetailAST objBlock = ast.findFirstToken(TokenTypes.OBJBLOCK);
-        // count the number of direct children of the
-        // OBJBLOCK that are METHOD_DEFS
+        
+        // count the number of direct children of the OBJBLOCK that 
+        // are METHOD_DEFS
         int methodDefs = objBlock.getChildCount(TokenTypes.METHOD_DEF);
+        
         // report error if limit is reached
         if (methodDefs > this.max) {
             log(ast.getLineNo(),
@@ -291,7 +292,7 @@ Additionally, checks can be called from the beginning or end of each file or the
 \begin{lstlisting}[language=Caml, escapechar=\%]
 parameter_list
 	: parameter_declaration
-	| parameter_list ',' parameter_declaration %\underline{\{tooManyParameters(@1);\}}%
+	| parameter_list `,' parameter_declaration %\underline{\{tooManyParameters(@1);\}}%
 	;
 
 parameter_declaration
@@ -358,7 +359,7 @@ examples of check functions.
 \begin{lstlisting}[language=C]
 void ifHasBraces(enum tree_code statementValue, YYLTYPE location) {
 	if (statementValue != COMPOUND_STATEMENT) {
-		lyyerror(location, ``Please use braces after all if statements'');
+		lyyerror(location, "Please use braces after all if statements");
 	}
 }
 
@@ -366,7 +367,7 @@ void isFunctionTooLong(YYLTYPE location) {
 	int MAX_FUNCTION_LENGTH = 100; /* Arbitrary Maximum */
 	
 	if (location.last_line - location.first_line + 1 >= MAX_FUNCTION_LENGTH) {
-		lyyerror(location, ``Function is too lengthy'');
+		lyyerror(location, "Function is too lengthy");
 	}
 }
 
@@ -379,7 +380,7 @@ void tooManyParameters(YYLTYPE location) {
 		if (numParameters != -1 && numParameters >= MAX_NUM_PARAMETERS) {
 			char string[200];
 			sprintf(string,
-					``Please use less than %d function parameters, you used %d'',
+					"Please use less than %d function parameters, you used %d",
 					MAX_NUM_PARAMETERS, numParameters);
 			lyyerror(prevLoc, string);
 		}
@@ -390,7 +391,7 @@ void tooManyParameters(YYLTYPE location) {
 }
 
 void CPlusPlusComments(YYLTYPE location) {
-	lyyerror(location, ``Don't use C++ style comments'');
+	lyyerror(location, "Don't use C++ style comments");
 }
 
 \end{lstlisting}
@@ -428,7 +429,7 @@ declaration. Comments and their locations are stored in two dynamically sized gl
 		\toprule
 		& Function & Purpose \\
 		\midrule
-		1 & hasBraces & Determines if the statement following an \lstinline!if!, \lstinline$for$, or \lstinline$while$ is surrounded by \{\} \\
+		1 & hasBraces & Determines if the statement following an \lstinline!if!, \lstinline$for$, or \lstinline$while$ is surrounded by \lstinline!{}! \\
 		5 & checkForComment & Throws an error if a function does not have an associated comment \\
 		6 & switchHasDefault & Throws an error if a switch statement does not include a \lstinline$default$ case \\
 	\end{tabular}
