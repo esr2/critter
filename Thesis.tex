@@ -443,7 +443,20 @@ because of the ambiguous nature of the grammar its impossible to get some of the
 actual beginning of the construct.
 
 \section{Version 2.1}
-made additions to 2.0 with 3?
+
+\begin{table}[h]
+\caption{Additional Checks in 2.1}
+\label{implementedChecks2.1}
+	\begin{tabular}{l l p{10cm}}
+		\toprule
+		& Function & Purpose \\
+		\midrule
+		7 & switchCasesHaveBreaks & Make sure all cases (including the \lstinline$default$) have a \lstinline$break$ statement \\
+		8 & tooDeeplyNested & Throws error if a region is too deeply nested \\
+		9 & useEnumNotConstOrDefine & Throws error for using \lstinline$const$ or \lstinline$#define$ to define integral constants \\
+		\bottomrule
+	\end{tabular}
+\end{table}
 
 \chapter{Final Product aka Version X}
 \label{chap:FinalVersion}
