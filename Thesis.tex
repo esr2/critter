@@ -285,11 +285,21 @@ Additionally, checks can be called from the beginning or end of each file or the
 \todoin{explain locations somewhere (maybe final version?)}
 \todoin{mention begin/end of file/program calls}
 
-\todo{try to show grammar excerpts with each check}
 \begin{figure} 
 \caption{Excerpt of the Grammar File from v1.0}
 \label{grammar1.0}
 \begin{lstlisting}[language=Caml, escapechar=\%]
+parameter_list
+	: parameter_declaration
+	| parameter_list ',' parameter_declaration %\underline{\{tooManyParameters(@1);\}}%
+	;
+
+parameter_declaration
+	: declaration_specifiers declarator
+	| declaration_specifiers abstract_declarator
+	| declaration_specifiers
+	;
+
 selection_statement
 	: IF `(' expression `)' statement 	%\underline{\{\$\$ = IF\_SELECTION; ifHasBraces(\$5, @\$);\}}%
 	| IF `(' expression `)' statement ELSE statement %\underline{\{\$\$ = IF\_ELSE\_SELECTION, ifHasBraces(\$5, @\$); }%
@@ -320,9 +330,10 @@ To check a stylistic issue, one must first figure out how the issue is represent
 then add a function call inside that grammar rule. Each check can not only take advantage of the type 
 of construction being formed (like Function \tablerow{1} in Table \ref{implementedChecks1.0}), it can 
 also look at the location of each construction. This allows checks to determine the length of a 
-construction (like Function \tablerow{2} in Table \ref{implementedChecks1.0}). It also allows checks to 
-determine if they are still working with the same construction (like Function \tablerow{3} in Table 
-\ref{implementedChecks1.0}). \refCode \ref{checks.c1.0} shows examples of a check function.
+construction (like Function \tablerow{2}). It also allows checks to determine if they are still working with 
+the same construction (like Function \tablerow{3}). Function \tablerow{4} is actually implemented 
+through the lexer and is called on recognition of ``\lstinline{\\}''. \refCode \ref{checks.c1.0} shows 
+examples of check functions.
 
 \begin{table}
 	\caption{Implemented Checks in v1.0}
