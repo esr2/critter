@@ -28,7 +28,7 @@
 %\def\lstlistlistingname{Code Excerpts}
 \def\lstlistingname{Figure}
 \newcommand{\refCode}{\lstlistingname \hspace{1mm}}
-\usepackage[scaled]{luximono}
+\usepackage[scaled=.8]{luximono}
    \usepackage[T1]{fontenc}
    \usepackage{textcomp}
 %%%
@@ -283,6 +283,7 @@ where functions are underlined). These functions are the checks which are stored
 Additionally, checks can be called from the beginning or end of each file or the entire program.
 \todoin{assume readers know about context free grammars -- explicitly use that term and add a footnote to explain it}
 \todoin{explain locations somewhere (maybe final version?)}
+\todoin{mention begin/end of file/program calls}
 
 \todo{try to show grammar excerpts with each check}
 \begin{figure} 
@@ -340,13 +341,18 @@ determine if they are still working with the same construction (like Function \t
 	\end{center}
 \end{table}
 
-\todo{add all the check code}
 \begin{figure}
 \caption{Excerpt of Checks.c from v1.0}
 \label{checks.c1.0}
 \begin{lstlisting}[language=C]
+void ifHasBraces(enum tree_code statementValue, YYLTYPE location) {
+	if (statementValue != COMPOUND_STATEMENT) {
+		lyyerror(location, ``Please use braces after all if statements'');
+	}
+}
+
 void isFunctionTooLong(YYLTYPE location) {
-	int MAX_FUNCTION_LENGTH = 100; /*Arbitrary maximum */
+	int MAX_FUNCTION_LENGTH = 100; /* Arbitrary Maximum */
 	
 	if (location.last_line - location.first_line + 1 >= MAX_FUNCTION_LENGTH) {
 		lyyerror(location, ``Function is too lengthy'');
@@ -354,25 +360,26 @@ void isFunctionTooLong(YYLTYPE location) {
 }
 
 void tooManyParameters(YYLTYPE location) {
-	int MAX_NUM_PARAMETERS = 7; /*Arbitrary maximum */
-	
+	int MAX_NUM_PARAMETERS = 7; /* Arbitrary Maximum */
 	static int numParameters = -1;
 	static YYLTYPE prevLoc;
 	
-	if (location.first_line != prevLoc.first_line ||
-	    numParameters == -1) {
-		if (numParameters != -1 && numParameters >= 
-		    MAX_NUM_PARAMETERS) {
+	if (location.first_line != prevLoc.first_line || numParameters == -1) {
+		if (numParameters != -1 && numParameters >= MAX_NUM_PARAMETERS) {
 			char string[200];
-			sprintf(string, ``Please use less than %d function parameters, you used %d'', MAX_NUM_PARAMETERS, numParameters);
+			sprintf(string,
+					``Please use less than %d function parameters, you used %d'',
+					MAX_NUM_PARAMETERS, numParameters);
 			lyyerror(prevLoc, string);
 		}
-		
 		numParameters = 1;
 	}
-	
 	numParameters++;
 	prevLoc = location;
+}
+
+void CPlusPlusComments(YYLTYPE location) {
+	lyyerror(location, ``Don't use C++ style comments'');
 }
 
 \end{lstlisting}
