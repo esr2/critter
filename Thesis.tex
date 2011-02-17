@@ -42,16 +42,16 @@
 \usepackage[pdfauthor={ErinRosenbaum},pagebackref=true,pdftex]{hyperref}
 %pdftitle={\projectname}
 
-\newcommand{\tablerow}[1]{#1}
 \newcounter{checkCounter}
-\newcommand{\cnum}{\refstepcounter{checkCounter} \thecheckCounter}
 \usepackage{ifthen}
 \newcommand\chk[2][default]{
+  \refstepcounter{checkCounter} \thecheckCounter \hspace{1mm}
   \ifthenelse{\equal{#1}{default}}{
     #2 \label{#2} }{
     #2 \label{#1}
   }
 }
+\newcommand\chkref[1]{\ref{#1} \hspace{1mm}#1}
 
 \usepackage{color}
 
@@ -337,25 +337,25 @@ function_definition
 
 To check a stylistic issue, one must first figure out how the issue is represented in the grammar and 
 then add a function call inside that grammar rule. Each check can not only take advantage of the type 
-of construction being formed (like Function \tablerow{1} in Table \ref{implementedChecks1.0}), it can 
-also look at the location of each construction. This allows checks to determine the length of a 
-construction (like Function \tablerow{2}). It also allows checks to determine if they are still working with 
-the same construction (like Function \tablerow{3}). Function \tablerow{4} is actually implemented 
-through the lexer and is called on recognition of ``\lstinline{\\}''. \refCode \ref{checks.c1.0} shows 
-examples of check functions.
+of construction being formed (like Function \ref{hasBraces} in Table \ref{implementedChecks1.0}), it 
+can also look at the location of each construction. This allows checks to determine the length of a 
+construction (like Function \ref{isFunctionTooLong}). It also allows checks to determine if they are still 
+working with the same construction (like Function \ref{tooManyParameters}). Function \ref{CPlusPlusComments} 
+is actually implemented through the lexer and is called on recognition of ``\lstinline{\\}''. \refCode \ref{checks.c1.0} 
+shows examples of check functions.
 
 \begin{table}
 	\caption{Implemented Checks in v1.0}
 	\label{implementedChecks1.0}
 	\begin{center}
-	\begin{tabular}{l l p{10cm}}
+	\begin{tabular}{l p{10cm}}
 		\toprule
-		& Function & Purpose \\
+		Function & Purpose \\
 		\midrule
-		\cnum & \chk[hasBraces]{ifHasBraces} & Determines if the statement following an \lstinline!if! is surrounded by \{\} \\
-		\cnum & \chk{isFunctionTooLong} & Determines if a function's length exceeds the maximum number of lines\\
-		\cnum & \chk{tooManyParameters} & Determines if there a function exceeds the maximum number of input parameters \\
-		\cnum & \chk{CPlusPlusComments} & Throws an error on finding C++ style single-line comments \\
+		\chk[hasBraces]{ifHasBraces} & Determines if the statement following an \lstinline!if! is surrounded by \{\} \\
+		\chk{isFunctionTooLong} & Determines if a function's length exceeds the maximum number of lines\\
+		\chk{tooManyParameters} & Determines if there a function exceeds the maximum number of input parameters \\
+		\chk{CPlusPlusComments} & Throws an error on finding C++ style single-line comments \\
 		\bottomrule
 	\end{tabular}
 	\end{center}
@@ -423,23 +423,23 @@ meaning that it will not run on code residing in a subfolder of the working dire
 This version simply adds more functionality (checks) to version 1.0 without changing the overall structure of \programName.
 
 \subsection{Checks}
-Version 1.1 changes Function \tablerow{1} from Version 1.0 as well as adds several new checks (see 
+Version 1.1 changes Function \ref{hasBraces} from Version 1.0 as well as adds several new checks (see 
 Table \ref{implementedChecks1.1}). This version also stores comment text and locations for the 
 duration of the program. The appropriate comment is found by searching through the stored location-
 comment pairs for locations within a certain range of a specified location. For example, in Function 
-\tablerow{5}, each function definition results in a search for any comment within 5 lines of the 
+\ref{checkForComment}, each function definition results in a search for any comment within 5 lines of the 
 declaration. Comments and their locations are stored in two dynamically sized global arrays.
 
 \begin{table}
 \caption{Additional Checks in 1.1}
 \label{implementedChecks1.1}
-	\begin{tabular}{l l p{10cm}}
+	\begin{tabular}{l p{10cm}}
 		\toprule
-		& Function & Purpose \\
+		Function & Purpose \\
 		\midrule
-		1 & hasBraces & Determines if the statement following an \lstinline!if!, \lstinline$for$, or \lstinline$while$ is surrounded by \lstinline!{}! \\
-		\cnum & checkForComment & Throws an error if a function does not have an associated comment \\
-		\cnum & switchHasDefault & Throws an error if a switch statement does not include a \lstinline$default$ case \\
+		\chkref{hasBraces} & Determines if the statement following an \lstinline!if!, \lstinline$for$, or \lstinline$while$ is surrounded by \lstinline!{}! \\
+		\chk{checkForComment} & Throws an error if a function does not have an associated comment \\
+		\chk{switchHasDefault} & Throws an error if a switch statement does not include a \lstinline$default$ case \\
 	\end{tabular}
 \end{table}
 
@@ -455,13 +455,13 @@ actual beginning of the construct.
 \begin{table}[h]
 \caption{Additional Checks in 2.1}
 \label{implementedChecks2.1}
-	\begin{tabular}{l l p{10cm}}
+	\begin{tabular}{l p{10cm}}
 		\toprule
-		& Function & Purpose \\
+		Function & Purpose \\
 		\midrule
-		\cnum & switchCasesHaveBreaks & Make sure all cases (including the \lstinline$default$) have a \lstinline$break$ statement \\
-		\cnum & tooDeeplyNested & Throws error if a region is too deeply nested \\
-		\cnum & useEnumNotConstOrDefine & Throws error for using \lstinline$const$ or \lstinline$#define$ to define integral constants \\
+		\chk{switchCasesHaveBreaks} & Make sure all cases (including the \lstinline$default$) have a \lstinline$break$ statement \\
+		\chk{tooDeeplyNested} & Throws error if a region is too deeply nested \\
+		\chk{useEnumNotConstOrDefine} & Throws error for using \lstinline$const$ or \lstinline$#define$ to define integral constants \\
 		\bottomrule
 	\end{tabular}
 \end{table}
