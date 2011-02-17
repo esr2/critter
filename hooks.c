@@ -25,13 +25,10 @@ static int locationsAreEqual(YYLTYPE location, YYLTYPE* other, int checkAll) {
 		return 0;
 	}
 	
-	/*	fprintf(stderr, "%s vs %s\n", location.filename, (*other).filename);
-	 
-	 if (strcmp(location.filename, (*other).filename) != 0) {
-	 fprintf(stderr, "bad filename\n");
-	 return 0;
-	 }
-	 */	
+	if (strcmp(location.filename, (*other).filename) != 0) {
+		return 0;
+	}
+	
 	if (location.first_line != other->first_line) {
 		return 0;
 	}
