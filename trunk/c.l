@@ -78,7 +78,7 @@ int column = 1;
 <IFILE>.|\n	{ fprintf(stderr, "%4d bad include line\n", yylineno);
 				yyterminate();
 			}
-<<EOF>>	{endFile(yylloc); if(!popfile()) {h_endProgram(yylloc); yyterminate();} }
+<<EOF>>	{h_endFile(yylloc); if(!popfile()) {h_endProgram(yylloc); yyterminate();} }
 
 "#"							{ BEGIN(MACRO); }
 <MACRO>"define".*{D}+		{ h_registerDefineIntegralType(yylloc); }
@@ -275,7 +275,7 @@ int newfile(char *fn) {
 	curfilename = fn; 
 
 	/* perform any beginning of file checks */
-	beginFile(curfilename);
+	h_beginFile(curfilename);
 
 	return 1;
 }
