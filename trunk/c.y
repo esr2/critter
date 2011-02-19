@@ -358,7 +358,7 @@ parameter_type_list
 
 parameter_list
 	: parameter_declaration {h_registerParameter(@$);}
-	| parameter_list ',' parameter_declaration {h_registerParameter(@$);}
+	| parameter_list ',' parameter_declaration {h_registerParameter(@3);}
 	;
 
 parameter_declaration
