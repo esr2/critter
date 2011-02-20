@@ -4,10 +4,10 @@ run:
 	a.out test.c
 
 
-all: generate main.c checks.c tree.c dynarray.c sax.c comments.c hooks.c
-	gcc main.c c.tab.c checks.c tree.c dynarray.c sax.c comments.c hooks.c
+all: generate main.c checks.c dynarray.c sax.c comments.c hooks.c
+	gcc main.c c.tab.c checks.c dynarray.c sax.c comments.c hooks.c
 
-generate: c.y c.l tree.txt tree.h checks.h
+generate: c.y c.l checks.h
 	bison c.y
 	flex c.l
 

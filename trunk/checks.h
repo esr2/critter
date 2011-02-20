@@ -10,7 +10,6 @@
 #ifndef CHECKS_INCLUDED
 #define CHECKS_INCLUDED
 
-#include "tree.h"
 #include "c.tab.h"
 
 void isFileTooLong(YYLTYPE location);
