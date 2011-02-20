@@ -17,6 +17,7 @@
 
 static DynArray_T functionCallsArray;
 static DynArray_T locationsArray;
+static DynArray_T identifiersArray;
 
 /*---------------- Util -----------------------*/
 
@@ -52,6 +53,11 @@ static void freeLocations(void* element, void* extra) {
 	YYLTYPE *location = (YYLTYPE *)element;
 	if (location->filename != NULL) { free(location->filename); }
 	free(element); 
+}
+
+static void freeIdentifiers(void* element, void* extra) {
+	char *identifier = (char*)element;
+	free(identifier);
 }
 
 static YYLTYPE* allocateLocation(YYLTYPE location) {
@@ -143,9 +149,11 @@ void h_endFile(YYLTYPE location) {
 void h_beginProgram() {
 	functionCallsArray = DynArray_new(0);
 	locationsArray = DynArray_new(0);
+	identifiersArray = DynArray_new(0);
 	
 	assert(functionCallsArray != NULL);
 	assert(locationsArray != NULL);
+	assert(identifiersArray != NULL);
 	beginProgram();
 }
 
@@ -162,6 +170,8 @@ void h_endProgram(YYLTYPE location) {
 	DynArray_map(locationsArray, freeLocations, NULL);
 	DynArray_free(locationsArray);
 	DynArray_free(functionCallsArray);
+	DynArray_map(identifiersArray, freeIdentifiers, NULL);
+	DynArray_free(identifiersArray);
 }
 /*------------------------------------------------*/
 void h_registerDefineIntegralType(YYLTYPE location) {
@@ -171,8 +181,22 @@ void h_registerDefineIntegralType(YYLTYPE location) {
 /*------------ Declarations ----------------------*/
 static int inDeclarator = 0;
 
-void h_registerIdentifier(YYLTYPE location) {
+void popIdentifier() {
+	int len = DynArray_getLength(identifiersArray) - 1;
+	char *text = DynArray_removeAt(identifiersArray, len);
+	assert(text != NULL);
 	
+	fprintf(stderr, "%s\n", text);
+}
+
+void h_registerIdentifier(YYLTYPE location) {
+	addFunctionAndLocationToStacks(popIdentifier,location);
+}
+
+void h_registerIdentifierText(char* identifier) {
+	char *text = (char*)malloc(strlen(identifier)*sizeof(char));
+	strcpy(text, identifier);
+	DynArray_add(identifiersArray, text);
 }
 
 void h_endDeclaration(YYLTYPE location) {
@@ -181,9 +205,6 @@ void h_endDeclaration(YYLTYPE location) {
 }
 
 void h_beginDirectDeclarator(YYLTYPE location) {
-	assert(functionCallsArray != NULL);
-	assert(locationsArray != NULL);
-	
 	inDeclarator++;
 	addFunctionAndLocationToStacks(doNothing,location);
 }

@@ -64,7 +64,7 @@
 %%
 
 primary_expression
-	: IDENTIFIER
+	: IDENTIFIER	{h_registerIdentifier(@$);}
 	| CONSTANT
 	| STRING_LITERAL
 	| '(' expression ')'
@@ -75,8 +75,8 @@ postfix_expression
 	| postfix_expression '[' expression ']'
 	| postfix_expression '(' ')'
 	| postfix_expression '(' argument_expression_list ')'
-	| postfix_expression '.' IDENTIFIER
-	| postfix_expression PTR_OP IDENTIFIER
+	| postfix_expression '.' IDENTIFIER 	{h_registerIdentifier(@3);}
+	| postfix_expression PTR_OP IDENTIFIER	{h_registerIdentifier(@3);}
 	| postfix_expression INC_OP
 	| postfix_expression DEC_OP
 	;
@@ -253,9 +253,9 @@ type_specifier
 	;
 
 struct_or_union_specifier
-	: struct_or_union IDENTIFIER '{' struct_declaration_list '}'
+	: struct_or_union IDENTIFIER '{' {h_registerIdentifier(@2);} struct_declaration_list '}'
 	| struct_or_union '{' struct_declaration_list '}'
-	| struct_or_union IDENTIFIER
+	| struct_or_union IDENTIFIER	{h_registerIdentifier(@2);}
 	;
 
 struct_or_union
@@ -292,8 +292,8 @@ struct_declarator
 
 enum_specifier
 	: ENUM '{' enumerator_list '}'
-	| ENUM IDENTIFIER '{' enumerator_list '}'
-	| ENUM IDENTIFIER
+	| ENUM IDENTIFIER '{' {h_registerIdentifier(@2);} enumerator_list '}'
+	| ENUM IDENTIFIER	{h_registerIdentifier(@2);}
 	;
 
 enumerator_list
@@ -302,8 +302,8 @@ enumerator_list
 	;
 
 enumerator
-	: IDENTIFIER
-	| IDENTIFIER '=' constant_expression
+	: IDENTIFIER 	{h_registerIdentifier(@$);}
+	| IDENTIFIER '=' constant_expression	{h_registerIdentifier(@1);}
 	;
 
 type_qualifier
@@ -368,8 +368,8 @@ parameter_declaration
 	;
 
 identifier_list
-	: IDENTIFIER
-	| identifier_list ',' IDENTIFIER
+	: IDENTIFIER 	{h_registerIdentifier(@$);}
+	| identifier_list ',' IDENTIFIER 	{h_registerIdentifier(@3);}
 	;
 
 type_name
@@ -416,7 +416,7 @@ statement
 	;
 
 labeled_statement
-	: IDENTIFIER ':' statement
+	: IDENTIFIER ':' {h_registerIdentifier(@1);} statement
 	| CASE {registerCase(@1);} constant_expression ':' statement
 	| DEFAULT {registerDefault(@$);} ':' statement
 	;
@@ -463,7 +463,7 @@ iteration_statement
 	;
 
 jump_statement
-	: GOTO IDENTIFIER ';'	{registerGoto(@$);}
+	: GOTO IDENTIFIER ';'	{registerGoto(@$); h_registerIdentifier(@2);}
 	| CONTINUE ';'			{registerContinue(@$);}
 	| BREAK ';'				{registerBreak(@$);}
 	| RETURN ';'			{registerReturn(@$);}
