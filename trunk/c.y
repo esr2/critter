@@ -406,12 +406,12 @@ initializer_list
 	;
 
 statement
-	: labeled_statement {$$ = LABELED_STATEMENT; }
-	| compound_statement {$$ = COMPOUND_STATEMENT; }
-	| expression_statement {$$ = EXPRESSION_STATEMENT; }
-	| selection_statement {$$ = SELECTION_STATEMENT; }
-	| iteration_statement {$$ = ITERATION_STATEMENT; }
-	| jump_statement {$$ = JUMP_STATEMENT; }
+	: labeled_statement
+	| compound_statement
+	| expression_statement
+	| selection_statement
+	| iteration_statement
+	| jump_statement
 	;
 
 labeled_statement
@@ -423,8 +423,8 @@ labeled_statement
 beginCompound : /* empty */ { beginCompoundStatement(@$);}
 
 compound_statement
-	: '{' beginCompound '}' {$$ = EMPTY_COMPOUND; endCompoundStatement(@$);}
-	| '{' beginCompound statement_list '}' {$$ = STATEMENT_COMPOUND; endCompoundStatement(@$);}
+	: '{' beginCompound '}' {endCompoundStatement(@$);}
+	| '{' beginCompound statement_list '}' {endCompoundStatement(@$);}
 	| '{' beginCompound declaration_list '} ' {endCompoundStatement(@$);}
 	| '{' beginCompound declaration_list statement_list '}' {endCompoundStatement(@$);}
 	;
