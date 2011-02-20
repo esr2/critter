@@ -25,6 +25,9 @@ int main(int argc, char* argv[]) {
 			return 1;
 		}
 	}
+	
+	/* should never get here */
+	return 1;
 }
 
 

@@ -18,6 +18,7 @@ IS			(u|U|l|L)*
 #include "c.tab.h"
 #include "checks.h"
 #include "sax.h"
+#include "hooks.h"
 
 int column = 1;
 
@@ -52,6 +53,9 @@ int column = 1;
 	struct symbol *addSymbol(char* text);
 	void printSymTable();
 
+	int newfile(char *fn);
+	int popfile();
+	int check_type();
 %}
 
 %%
@@ -286,7 +290,7 @@ int newfile(char *fn) {
  *
  * @returns 0 on failure and 1 on success
  */
-int popfile(void) {
+int popfile() {
 	struct bufstack *bs = curbs;
 	struct bufstack *prevbs;
 	if(!bs) return 0;
@@ -314,7 +318,6 @@ int popfile(void) {
  */ 
 static unsigned symhash(const char *sym) {
 	unsigned int hash = 0U; 
-	int i = 0;
 	unsigned c;
 	
 	while(c = *sym++) { 
