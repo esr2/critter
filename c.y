@@ -1,7 +1,6 @@
 %code {
 #include <stdio.h>
 #include <stdlib.h>
-#include "tree.h"
 #include "checks.h"
 #include "sax.h"
 #include "hooks.h"
@@ -507,32 +506,3 @@ void lyyerror(YYLTYPE t, char *s)
 	} 
 	fprintf(stderr, "%s\n", s);
 }
-
-printMe(int value, struct YYLTYPE param, enum tree_code field) {
-	if (value == IF_SELECTION) {
-		printf("using an if statement (as opposed to if-else)");
-	}
-	
-	if (value == IF_ELSE_SELECTION) {
-		printf("using an if-else statement");
-	}
-	
-	if (value == EMPTY_COMPOUND) {
-		printf("using brackets");
-	}
-	
-	if (value == STATEMENT_COMPOUND) {
-		printf("using compound statement");
-	}
-	
-	if (param.first_line) {
-		printf(" at %s: %d,%d - %d,%d\n", param.filename,
-			   param.first_line, param.first_column,
-			   param.last_line, param.last_column);
-	}
-	
-	printf("field is %s\n\n", treeCodeLabels[field]);
-}
-
-
-
