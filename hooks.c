@@ -20,6 +20,7 @@ static DynArray_T locationsArray;
 static DynArray_T identifiersArray;
 
 /*---------------- Util -----------------------*/
+static void popIdentifier() { }
 
 static int locationsAreEqual(YYLTYPE location, YYLTYPE* other, int checkAll) {
 	if (other == NULL) { 
@@ -87,8 +88,10 @@ static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE
 	int len, i;
 	void (*func)(YYLTYPE);
 	YYLTYPE* loc = NULL;
+	char *text = NULL;
 	DynArray_T locations = DynArray_new(0);
 	DynArray_T functions = DynArray_new(0);
+	DynArray_T identifiers = DynArray_new(0);
 	
 	/* pop off function/location pairs until location matches
 	 input location (the first declaration specifier) */
@@ -99,6 +102,14 @@ static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE
 		
 		func = DynArray_removeAt(functionCallsArray, len);
 		assert(func != NULL);
+		
+		if (func == popIdentifier) { 
+			len = DynArray_getLength(identifiersArray) - 1;
+			text = DynArray_removeAt(identifiersArray, len);
+			assert(text != NULL);
+			
+			DynArray_add(identifiers, text);
+		}
 		
 		DynArray_add(locations, loc);
 		DynArray_add(functions, func);
@@ -115,12 +126,21 @@ static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE
 		func = DynArray_removeAt(functions, i);
 		
 		(*func)(*loc);
+		
+		if (func == popIdentifier) { 
+			len = DynArray_getLength(identifiers) - 1;
+			text = DynArray_removeAt(identifiers, len);
+			
+			registerIdentifier(*loc, text);
+			free(text);
+		}
+		
 		freeLocations(loc, NULL);
 	}
 	
 	DynArray_free(locations);
 	DynArray_free(functions);
-	
+	DynArray_free(identifiers);
 }
 
 static void doNothing(YYLTYPE location) {}
@@ -180,14 +200,6 @@ void h_registerDefineIntegralType(YYLTYPE location) {
 
 /*------------ Declarations ----------------------*/
 static int inDeclarator = 0;
-
-void popIdentifier() {
-	int len = DynArray_getLength(identifiersArray) - 1;
-	char *text = DynArray_removeAt(identifiersArray, len);
-	assert(text != NULL);
-	
-	fprintf(stderr, "%s\n", text);
-}
 
 void h_registerIdentifier(YYLTYPE location) {
 	addFunctionAndLocationToStacks(popIdentifier,location);
