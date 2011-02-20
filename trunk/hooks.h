@@ -32,6 +32,8 @@ void h_beginParameterList(YYLTYPE location);
 void h_registerParameter(YYLTYPE location);
 void h_endParameterList(YYLTYPE location);
 
+void h_registerTypedef(YYLTYPE location);
+
 void h_registerVoid(YYLTYPE location);
 void h_registerChar(YYLTYPE location);
 void h_registerShort(YYLTYPE location);

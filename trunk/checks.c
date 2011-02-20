@@ -30,8 +30,8 @@ void isFileTooLong(YYLTYPE location) {
  * Checks if there are braces surrounding an if statement.
  */
 void hasBraces(YYLTYPE location, int progress) {
-	static foundCompound = 0;
-	static started = 0;
+	static int foundCompound = 0;
+	static int started = 0;
 	
 	switch (progress) {
 		case BEGINNING:
@@ -217,7 +217,7 @@ void tooDeeplyNested(YYLTYPE location, int progress) {
  * that 'const' doesn't appear inside a parameter list before outputting the error.
  */
 void useEnumNotConstOrDefine(YYLTYPE location, int progress) {
-	static inParameterList = 0;
+	static int inParameterList = 0;
 	
 	switch (progress) {
 		case BEGINNING:
