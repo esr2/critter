@@ -143,6 +143,10 @@ void endSwitch(YYLTYPE location) {
 }
 
 /*--------- Statements -----------------------*/
+void registerIdentifier(YYLTYPE location, char* identifier) {
+	
+}
+
 /* location points to first bracket */
 void beginCompoundStatement(YYLTYPE location) {
 	tooDeeplyNested(location, BEGINNING);

@@ -53,6 +53,8 @@ void registerCase(YYLTYPE location);
 void endSwitch(YYLTYPE location);
 
 /*--------- Statements -----------------------*/
+void registerIdentifier(YYLTYPE location, char* identifier);
+
 void beginCompoundStatement(YYLTYPE location);
 void endCompoundStatement(YYLTYPE location);
 
