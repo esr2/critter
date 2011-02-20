@@ -236,8 +236,19 @@ void useEnumNotConstOrDefine(YYLTYPE location, int progress) {
 }
 
 /**
- * Error on any use of a GOTO
+ * Error on any use of a GOTO.
  */
 void neverUseGotos(YYLTYPE location) {
 	lyyerror(location, "Never use GOTO statements");
+}
+
+/**
+ * Error if a variable name is less than a certain minimum length. 
+ */
+void isVariableNameTooShort(YYLTYPE location, char* identifier) {
+	int MINIMUM_VARIABLE_NAME_LENGTH = 1;
+	
+	if (strlen(identifier) < MINIMUM_VARIABLE_NAME_LENGTH) {
+		lyyerror(location, "Variable/function name is too short");
+	}
 }

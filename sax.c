@@ -144,7 +144,7 @@ void endSwitch(YYLTYPE location) {
 
 /*--------- Statements -----------------------*/
 void registerIdentifier(YYLTYPE location, char* identifier) {
-	
+	isVariableNameTooShort(location, identifier);
 }
 
 /* location points to first bracket */
