@@ -227,6 +227,7 @@ int check_type() {
 		return (TYPE_NAME);
 	}
 
+	h_registerIdentifierText(yytext);
 	return(IDENTIFIER); 
 }
 
