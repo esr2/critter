@@ -1,4 +1,5 @@
 \documentclass[12pt]{report}
+\usepackage{setspace}
 \usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
 \geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
 %\geometry{landscape}                % Activate for for rotated page geometry
@@ -61,6 +62,8 @@
 \title{Customizable Style Checking for C Programs}
 \author{Erin Rosenbaum}
 %\date{}                                           % Activate to display a given date or no date
+
+%\doublespacing			% Ask per individual, also remove extra space in section headings
 
 \begin{document}
 %\maketitle
@@ -165,7 +168,7 @@ require programmers to specifically write their code to meet the specification, 
 also of the tool. For new programmers (often the ones who need the most error checking), these 
 annotations are almost impossible to implement on top of learning to program as suggested by  
 David Evans (one of the authors) in a private email. He states:
-\begin{quote}
+\begin{quote} \singlespacing
 One of the goals of the original design of 
 Splint was for programmers who add no annotations to start getting some useful warnings right away, 
 including warnings that encourage them to start adding annotations.  For some aspects, such as 
@@ -240,9 +243,9 @@ which determines how many methods are in a class (see \refCode \ref{checkstyle-r
 \nocite{framaC}
 
 \begin{figure}
-\label{checkstyle-rule}
 \caption[Example Checkstyle Check]{Example Checkstyle Check counting the number of methods in 
 a class}
+\label{checkstyle-rule}
 \begin{lstlisting}[language=Java]
 package com.mycompany.checks;
 import com.puppycrawl.tools.checkstyle.api.*;
@@ -281,9 +284,10 @@ public class MethodLimitCheck extends Check
 
 \chapter{Version 1}
 
+\begin{singlespace}
 \textit{Note: the following chapters describe my progress in creating \projectname by looking at each 
 successive version. If you would like to skip ahead please go to Chapter \ref{chap:FinalVersion} on 
-page \pageref{chap:FinalVersion}.}
+page \pageref{chap:FinalVersion}.} \end{singlespace}
 \vspace{3mm} 
 
 This version represents the basic implementation of my goal: a customizable style checker for C code.
