@@ -252,3 +252,41 @@ void isVariableNameTooShort(YYLTYPE location, char* identifier) {
 		lyyerror(location, "Variable/function name is too short");
 	}
 }
+
+/**
+ * Error on encountering a magic number outside of a declaration (presumably, inside a
+ * declaration a variable will be initialized to a magic number and then used throughout
+ * the rest of the code).
+ */
+void isMagicNumber(YYLTYPE location, int progress, char* constant) {
+	int acceptableNumbers[2] = {0, 1};
+	int numAcceptable = sizeof(acceptableNumbers)/sizeof(int);
+	
+	static int inDeclaration = 0;
+	
+	switch (progress) {
+		case BEGINNING:
+			inDeclaration++;
+			break;
+		case MIDDLE:
+			if (inDeclaration == 0) {
+				int number = (int)strtol(constant, (char**)NULL, 0);
+				int i;
+
+				/* see if number is within the acceptableNumbers array */
+				for (i = 0; i < numAcceptable; i++) {
+					if (number == acceptableNumbers[i]) {
+						return;
+					}
+				}
+				
+				lyyerror(location, "Do not use magic numbers");
+			}
+			break;
+		case END:
+			inDeclaration--;
+			break;
+		default:
+			break;
+	}
+}
