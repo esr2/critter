@@ -58,7 +58,7 @@ void comment_beginComment(YYLTYPE location) {
 		/* copy lastCommentText and then free */
 		strcpy(lastCommentText, text);
 		free(text);
-		free(DynArray_removeAt(commentLocations, len));
+		freeLocations(DynArray_removeAt(commentLocations, len), NULL);
 		
 		/* add a new line to the end of the comment */
 		strcat(lastCommentText, "\n");
