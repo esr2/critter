@@ -148,7 +148,7 @@ void registerIdentifier(YYLTYPE location, char* identifier) {
 }
 
 void registerConstant(YYLTYPE location, char* constant) {
-	
+	isMagicNumber(location, MIDDLE, constant);
 }
 
 /* location points to first bracket */
@@ -163,11 +163,11 @@ void endCompoundStatement(YYLTYPE location) {
 }
 
 void beginDeclaration(YYLTYPE location) {
-	
+	isMagicNumber(location, BEGINNING, NULL);
 }
 
 void endDeclaration(YYLTYPE location) {
-	
+	isMagicNumber(location, END, NULL);
 }
 
 void beginStatement(YYLTYPE location) {

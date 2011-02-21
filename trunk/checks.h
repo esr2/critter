@@ -24,6 +24,7 @@ void tooDeeplyNested(YYLTYPE location, int progress);
 void useEnumNotConstOrDefine(YYLTYPE location, int progress);
 void neverUseGotos(YYLTYPE location);
 void isVariableNameTooShort(YYLTYPE location, char* identifier);
+void isMagicNumber(YYLTYPE location, int progress, char* constant);
 
 enum {
 	END = 1,
