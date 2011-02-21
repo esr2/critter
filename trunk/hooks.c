@@ -52,7 +52,7 @@ static int locationsAreEqual(YYLTYPE location, YYLTYPE* other, int checkAll) {
 	return 1;
 }
 
-static int locationIsStrictlyLess(YYLTYPE location, YYLTYPE* other, int checkAll) {
+static int locationIsLessOrEqual(YYLTYPE location, YYLTYPE* other, int checkAll) {
 	if (strcmp(location.filename, (*other).filename) != 0) {
 		return 0;
 	}
@@ -89,8 +89,10 @@ static void freeText(void* element, void* extra) {
 
 static YYLTYPE* allocateLocation(YYLTYPE location) {
 	YYLTYPE *loc = malloc(sizeof(YYLTYPE));
-	loc->filename = malloc(sizeof(char) * strlen(location.filename));
-	strncpy(loc->filename, location.filename, strlen(location.filename));
+	int length = strlen(location.filename);
+	loc->filename = malloc(sizeof(char) * length);
+	strncpy(loc->filename, location.filename, length);
+	loc->filename[length] = '\0';
 	loc->first_line = location.first_line;
 	loc->first_column = location.first_column;
 	loc->last_line = location.last_line;
@@ -129,9 +131,9 @@ static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE
 	/* pop off function/location pairs until location matches
 	 input location (the first declaration specifier) */
 	len = DynArray_getLength(locationsArray) - 1;
-	while (len >= 0 && locationIsStrictlyLess(location, 
-											  DynArray_get(locationsArray, len),
-											  matchWhole)) {
+	while (len >= 0 && locationIsLessOrEqual(location, 
+											 DynArray_get(locationsArray, len),
+											 matchWhole)) {
 		loc = DynArray_removeAt(locationsArray, len);
 		assert(loc != NULL);
 		
@@ -261,8 +263,10 @@ void h_registerIdentifier(YYLTYPE location) {
 }
 
 void h_registerIdentifierText(char* identifier) {
-	char *text = (char*)malloc(strlen(identifier)*sizeof(char));
-	strncpy(text, identifier, strlen(identifier));
+	int length = strlen(identifier);
+	char *text = (char*)malloc(length * sizeof(char));
+	strncpy(text, identifier, length);
+	text[length] = '\0';
 	DynArray_add(identifiersArray, text);
 }
 
@@ -271,8 +275,10 @@ void h_registerConstant(YYLTYPE location) {
 }
 
 void h_registerConstantText(char* constant) {
-	char *text = (char*)malloc(strlen(constant)*sizeof(char));
-	strncpy(text, constant, strlen(constant));
+	int length = strlen(constant);
+	char *text = (char*)malloc(length * sizeof(char));
+	strncpy(text, constant, length);
+	text[length] = '\0';
 	DynArray_add(constantsArray, text);
 }
 
