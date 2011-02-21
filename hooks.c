@@ -18,9 +18,11 @@
 static DynArray_T functionCallsArray;
 static DynArray_T locationsArray;
 static DynArray_T identifiersArray;
+static DynArray_T constantsArray;
 
 /*---------------- Util -----------------------*/
 static void popIdentifier() { }
+static void popConstant() { }
 
 static int locationsAreEqual(YYLTYPE location, YYLTYPE* other, int checkAll) {
 	if (other == NULL) { 
@@ -51,10 +53,6 @@ static int locationsAreEqual(YYLTYPE location, YYLTYPE* other, int checkAll) {
 }
 
 static int locationIsStrictlyLess(YYLTYPE location, YYLTYPE* other, int checkAll) {
-/*	if (other == NULL) { 
-		return 0;
-	} */
-	
 	if (strcmp(location.filename, (*other).filename) != 0) {
 		return 0;
 	}
@@ -84,9 +82,9 @@ static void freeLocations(void* element, void* extra) {
 	free(element); 
 }
 
-static void freeIdentifiers(void* element, void* extra) {
-	char *identifier = (char*)element;
-	free(identifier);
+static void freeText(void* element, void* extra) {
+	char *text = (char*)element;
+	free(text);
 }
 
 static YYLTYPE* allocateLocation(YYLTYPE location) {
@@ -120,6 +118,7 @@ static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE
 	DynArray_T locations = DynArray_new(0);
 	DynArray_T functions = DynArray_new(0);
 	DynArray_T identifiers = DynArray_new(0);
+	DynArray_T constants = DynArray_new(0);
 	
 	/* pop off function/location pairs until location matches
 	 input location (the first declaration specifier) */
@@ -139,6 +138,12 @@ static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE
 			assert(text != NULL);
 			
 			DynArray_add(identifiers, text);
+		} else if (func == popConstant) {
+			l = DynArray_getLength(constantsArray) - 1;
+			text = DynArray_removeAt(constantsArray, l);
+			assert(text != NULL);
+			
+			DynArray_add(constants, text);
 		}
 		
 		DynArray_add(locations, loc);
@@ -164,6 +169,12 @@ static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE
 			
 			registerIdentifier(*loc, text);
 			free(text);
+		} else if (func == popConstant) {
+			len = DynArray_getLength(constants) - 1;
+			text = DynArray_removeAt(constants, len);
+			
+			registerConstant(*loc, text);
+			free(text);
 		}
 		
 		freeLocations(loc, NULL);
@@ -172,6 +183,7 @@ static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE
 	DynArray_free(locations);
 	DynArray_free(functions);
 	DynArray_free(identifiers);
+	DynArray_free(constants);
 }
 
 static void doNothing(YYLTYPE location) {}
@@ -201,10 +213,12 @@ void h_beginProgram() {
 	functionCallsArray = DynArray_new(0);
 	locationsArray = DynArray_new(0);
 	identifiersArray = DynArray_new(0);
+	constantsArray = DynArray_new(0);
 	
 	assert(functionCallsArray != NULL);
 	assert(locationsArray != NULL);
 	assert(identifiersArray != NULL);
+	assert(constantsArray != NULL);
 	beginProgram();
 }
 
@@ -221,8 +235,10 @@ void h_endProgram(YYLTYPE location) {
 	DynArray_map(locationsArray, freeLocations, NULL);
 	DynArray_free(locationsArray);
 	DynArray_free(functionCallsArray);
-	DynArray_map(identifiersArray, freeIdentifiers, NULL);
+	DynArray_map(identifiersArray, freeText, NULL);
 	DynArray_free(identifiersArray);
+	DynArray_map(constantsArray, freeText, NULL);
+	DynArray_free(constantsArray);
 }
 /*------------------------------------------------*/
 void h_registerDefineIntegralType(YYLTYPE location) {
@@ -242,15 +258,14 @@ void h_registerIdentifierText(char* identifier) {
 	DynArray_add(identifiersArray, text);
 }
 
-/* TEMPORARY!!!! */
-void constants(YYLTYPE location) { lyyerror(location, "CONSTANT"); }
-
 void h_registerConstant(YYLTYPE location) {
-	addFunctionAndLocationToStacks(constants, location);
+	addFunctionAndLocationToStacks(popConstant, location);
 }
 
 void h_registerConstantText(char* constant) {
-	
+	char *text = (char*)malloc(strlen(constant)*sizeof(char));
+	strcpy(text, constant);
+	DynArray_add(constantsArray, text);
 }
 
 void h_endDeclaration(YYLTYPE location) {
