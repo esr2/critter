@@ -170,6 +170,14 @@ void endDeclaration(YYLTYPE location) {
 	
 }
 
+void beginStatement(YYLTYPE location) {
+	
+}
+
+void endStatement(YYLTYPE location) {
+	
+}
+
 void registerDefineIntegralType(YYLTYPE location) {
 	useEnumNotConstOrDefine(location, MIDDLE);
 }
