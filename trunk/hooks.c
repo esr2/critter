@@ -242,8 +242,11 @@ void h_registerIdentifierText(char* identifier) {
 	DynArray_add(identifiersArray, text);
 }
 
+/* TEMPORARY!!!! */
+void constants(YYLTYPE location) { lyyerror(location, "CONSTANT"); }
+
 void h_registerConstant(YYLTYPE location) {
-	
+	addFunctionAndLocationToStacks(constants, location);
 }
 
 void h_registerConstantText(char* constant) {
@@ -263,6 +266,11 @@ void h_beginDirectDeclarator(YYLTYPE location) {
 void h_endDirectDeclarator(YYLTYPE location) {
 	inDeclarator--;
 	addFunctionAndLocationToStacks(doNothing, location);
+}
+
+void h_endExpressionStatement(YYLTYPE location) {
+	popUntil(location, 0, beginStatement);
+	endStatement(location);
 }
 
 /*------------ Function ----------------------*/

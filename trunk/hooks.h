@@ -28,6 +28,8 @@ void h_endDeclaration(YYLTYPE location);
 void h_beginDirectDeclarator(YYLTYPE location);
 void h_endDirectDeclarator(YYLTYPE location);
 
+void h_endExpressionStatement(YYLTYPE location);
+
 void h_beginFunctionDefinition(YYLTYPE location);
 
 void h_beginParameterList(YYLTYPE location);
