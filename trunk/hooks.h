@@ -21,6 +21,8 @@ void h_registerDefineIntegralType(YYLTYPE location);
 
 void h_registerIdentifier(YYLTYPE location);
 void h_registerIdentifierText(char* identifier);
+void h_registerConstant(YYLTYPE location);
+void h_registerConstantText(char* constant);
 
 void h_endDeclaration(YYLTYPE location);
 void h_beginDirectDeclarator(YYLTYPE location);
