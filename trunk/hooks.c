@@ -90,7 +90,7 @@ static void freeText(void* element, void* extra) {
 static YYLTYPE* allocateLocation(YYLTYPE location) {
 	YYLTYPE *loc = malloc(sizeof(YYLTYPE));
 	loc->filename = malloc(sizeof(char) * strlen(location.filename));
-	strcpy(loc->filename, location.filename);
+	strncpy(loc->filename, location.filename, strlen(location.filename));
 	loc->first_line = location.first_line;
 	loc->first_column = location.first_column;
 	loc->last_line = location.last_line;
@@ -100,8 +100,12 @@ static YYLTYPE* allocateLocation(YYLTYPE location) {
 }
 
 static void addFunctionAndLocationToStacks(void (*f)(YYLTYPE), YYLTYPE location) {
+	assert(DynArray_getLength(functionCallsArray) == DynArray_getLength(locationsArray));
+	
 	DynArray_add(functionCallsArray, (void*)f);
 	DynArray_add(locationsArray, allocateLocation(location));
+	
+	assert(DynArray_getLength(functionCallsArray) == DynArray_getLength(locationsArray));
 }
 
 /**
@@ -111,6 +115,8 @@ static void addFunctionAndLocationToStacks(void (*f)(YYLTYPE), YYLTYPE location)
  * and can be null. All functions that are popped are called in the proper order.
  */
 static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE)) {
+	assert(DynArray_getLength(functionCallsArray) == DynArray_getLength(locationsArray));
+	
 	int len, i, l;
 	void (*func)(YYLTYPE);
 	YYLTYPE* loc = NULL;
@@ -184,6 +190,8 @@ static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE
 	DynArray_free(functions);
 	DynArray_free(identifiers);
 	DynArray_free(constants);
+	
+	assert(DynArray_getLength(functionCallsArray) == DynArray_getLength(locationsArray));
 }
 
 static void doNothing(YYLTYPE location) {}
@@ -254,7 +262,7 @@ void h_registerIdentifier(YYLTYPE location) {
 
 void h_registerIdentifierText(char* identifier) {
 	char *text = (char*)malloc(strlen(identifier)*sizeof(char));
-	strcpy(text, identifier);
+	strncpy(text, identifier, strlen(identifier));
 	DynArray_add(identifiersArray, text);
 }
 
@@ -264,7 +272,7 @@ void h_registerConstant(YYLTYPE location) {
 
 void h_registerConstantText(char* constant) {
 	char *text = (char*)malloc(strlen(constant)*sizeof(char));
-	strcpy(text, constant);
+	strncpy(text, constant, strlen(constant));
 	DynArray_add(constantsArray, text);
 }
 
