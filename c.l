@@ -12,6 +12,7 @@ IS			(u|U|l|L)*
 %x MACRO
 
 %option yylineno
+%option noyywrap
 
 %{
 #include <stdio.h>
@@ -187,10 +188,6 @@ L?\"(\\.|[^\\"])*\"	{ count(); return(STRING_LITERAL); }
 
 %%
 
-yywrap() {
-	return(1);
-}
-
 /**
  * Keep track of the column number.
  */
@@ -292,7 +289,7 @@ int newfile(char *fn) {
  */
 int popfile() {
 	struct bufstack *bs = curbs;
-	struct bufstack *prevbs;
+	struct bufstack *prevbs = NULL;
 	if(!bs) return 0;
 
 	/* get rid of current entry */
@@ -303,7 +300,9 @@ int popfile() {
 	prevbs = bs->prev; 
 	free(bs);
 
-	if(!prevbs) return 0;
+	if(prevbs == NULL) {
+		return 0;
+	}
 
 	yy_switch_to_buffer(prevbs->bs); 
 	curbs = prevbs;
