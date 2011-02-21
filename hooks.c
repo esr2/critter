@@ -50,6 +50,34 @@ static int locationsAreEqual(YYLTYPE location, YYLTYPE* other, int checkAll) {
 	return 1;
 }
 
+static int locationIsStrictlyLess(YYLTYPE location, YYLTYPE* other, int checkAll) {
+/*	if (other == NULL) { 
+		return 0;
+	} */
+	
+	if (strcmp(location.filename, (*other).filename) != 0) {
+		return 0;
+	}
+	
+	if (location.first_line > other->first_line) {
+		return 0;
+	}
+	
+	if (location.first_column > other->first_column) {
+		return 0;
+	}
+	
+	if (checkAll && location.last_line > other->last_line) {
+		return 0;
+	}
+	
+	if (checkAll && location.last_column > other->last_column) {
+		return 0;
+	}
+	
+	return 1;
+}
+
 static void freeLocations(void* element, void* extra) { 
 	YYLTYPE *location = (YYLTYPE *)element;
 	if (location->filename != NULL) { free(location->filename); }
@@ -85,7 +113,7 @@ static void addFunctionAndLocationToStacks(void (*f)(YYLTYPE), YYLTYPE location)
  * and can be null. All functions that are popped are called in the proper order.
  */
 static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE)) {
-	int len, i;
+	int len, i, l;
 	void (*func)(YYLTYPE);
 	YYLTYPE* loc = NULL;
 	char *text = NULL;
@@ -95,8 +123,10 @@ static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE
 	
 	/* pop off function/location pairs until location matches
 	 input location (the first declaration specifier) */
-	while (!locationsAreEqual(location, loc, matchWhole)) {
-		len = DynArray_getLength(locationsArray) - 1;
+	len = DynArray_getLength(locationsArray) - 1;
+	while (len >= 0 && locationIsStrictlyLess(location, 
+											  DynArray_get(locationsArray, len),
+											  matchWhole)) {
 		loc = DynArray_removeAt(locationsArray, len);
 		assert(loc != NULL);
 		
@@ -104,8 +134,8 @@ static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE
 		assert(func != NULL);
 		
 		if (func == popIdentifier) { 
-			len = DynArray_getLength(identifiersArray) - 1;
-			text = DynArray_removeAt(identifiersArray, len);
+			l = DynArray_getLength(identifiersArray) - 1;
+			text = DynArray_removeAt(identifiersArray, l);
 			assert(text != NULL);
 			
 			DynArray_add(identifiers, text);
@@ -113,6 +143,7 @@ static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE
 		
 		DynArray_add(locations, loc);
 		DynArray_add(functions, func);
+		len--;
 	}
 	
 	i = DynArray_getLength(locations) - 1;
@@ -209,6 +240,14 @@ void h_registerIdentifierText(char* identifier) {
 	char *text = (char*)malloc(strlen(identifier)*sizeof(char));
 	strcpy(text, identifier);
 	DynArray_add(identifiersArray, text);
+}
+
+void h_registerConstant(YYLTYPE location) {
+	
+}
+
+void h_registerConstantText(char* constant) {
+	
 }
 
 void h_endDeclaration(YYLTYPE location) {

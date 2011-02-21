@@ -54,6 +54,7 @@ void endSwitch(YYLTYPE location);
 
 /*--------- Statements -----------------------*/
 void registerIdentifier(YYLTYPE location, char* identifier);
+void registerConstant(YYLTYPE location, char* constant);
 
 void beginCompoundStatement(YYLTYPE location);
 void endCompoundStatement(YYLTYPE location);

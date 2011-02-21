@@ -124,14 +124,14 @@ int column = 1;
 
 {L}({L}|{D})*		{ count(); return(check_type()); }
 
-0[xX]{H}+{IS}?		{ count(); return(CONSTANT); }
-0{D}+{IS}?		{ count(); return(CONSTANT); }
-{D}+{IS}?		{ count(); return(CONSTANT); }
-L?'(\\.|[^\\'])+'	{ count(); return(CONSTANT); }
+0[xX]{H}+{IS}?		{ count(); h_registerConstantText(yytext); return(CONSTANT); }
+0{D}+{IS}?		{ count(); h_registerConstantText(yytext); return(CONSTANT); }
+{D}+{IS}?		{ count(); h_registerConstantText(yytext); return(CONSTANT); }
+L?'(\\.|[^\\'])+'	{ count(); h_registerConstantText(yytext); return(CONSTANT); }
 
-{D}+{E}{FS}?		{ count(); return(CONSTANT); }
-{D}*"."{D}+({E})?{FS}?	{ count(); return(CONSTANT); }
-{D}+"."{D}*({E})?{FS}?	{ count(); return(CONSTANT); }
+{D}+{E}{FS}?		{ count(); h_registerConstantText(yytext); return(CONSTANT); }
+{D}*"."{D}+({E})?{FS}?	{ count(); h_registerConstantText(yytext); return(CONSTANT); }
+{D}+"."{D}*({E})?{FS}?	{ count(); h_registerConstantText(yytext); return(CONSTANT); }
 
 L?\"(\\.|[^\\"])*\"	{ count(); return(STRING_LITERAL); }
 

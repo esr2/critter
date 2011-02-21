@@ -64,7 +64,7 @@
 
 primary_expression
 	: IDENTIFIER	{h_registerIdentifier(@$);}
-	| CONSTANT
+	| CONSTANT		{h_registerConstant(@$);}
 	| STRING_LITERAL
 	| '(' expression ')'
 	;

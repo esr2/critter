@@ -147,6 +147,10 @@ void registerIdentifier(YYLTYPE location, char* identifier) {
 	isVariableNameTooShort(location, identifier);
 }
 
+void registerConstant(YYLTYPE location, char* constant) {
+	
+}
+
 /* location points to first bracket */
 void beginCompoundStatement(YYLTYPE location) {
 	tooDeeplyNested(location, BEGINNING);
