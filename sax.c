@@ -144,6 +144,7 @@ void endSwitch(YYLTYPE location) {
 
 /*--------- Statements -----------------------*/
 void registerIdentifier(YYLTYPE location, char* identifier) {
+	lyyerror(location, identifier);
 	isVariableNameTooShort(location, identifier);
 }
 
@@ -163,19 +164,21 @@ void endCompoundStatement(YYLTYPE location) {
 }
 
 void beginDeclaration(YYLTYPE location) {
+	lyyerror(location, "begin declaration");
 	isMagicNumber(location, BEGINNING, NULL);
 }
 
 void endDeclaration(YYLTYPE location) {
+	lyyerror(location, "end declaration");
 	isMagicNumber(location, END, NULL);
 }
 
 void beginStatement(YYLTYPE location) {
-	
+	lyyerror(location, "begin statement");
 }
 
 void endStatement(YYLTYPE location) {
-	
+	lyyerror(location, "end statement");
 }
 
 void registerDefineIntegralType(YYLTYPE location) {
