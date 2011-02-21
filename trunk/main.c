@@ -10,12 +10,23 @@
 #include <stdio.h>
 
 int main(int argc, char* argv[]) {
-	if (argc != 2) {
+	int failures = 0;
+	int i;
+	
+	if (argc < 2) {
 		fprintf(stderr, "Usage %s <file> \n", argv[0]);
 		return 1;
 	}
 	
-	if(newfile(argv[1])) {
+	/* go backwards because will be popped off in LIFO and we want to mimic
+	 * the order that the files were passed in in. */
+	for (i = argc-1; i > 0; i--) {
+		if(!newfile(argv[i])) {
+			failures++;
+		}
+	}
+	
+	if (failures != (argc - 1)) {
 		h_beginProgram();
 		if (!yyparse()) {
 			/* Success */
@@ -26,7 +37,8 @@ int main(int argc, char* argv[]) {
 		}
 	}
 	
-	/* should never get here */
+	/* Only get here if we didn't parse -- ie the number of failed files
+	 * was equal to the number of files passed in. */
 	return 1;
 }
 
