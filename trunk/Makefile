@@ -4,11 +4,11 @@ run:
 	a.out test.c
 
 
-all: generate main.c checks.c dynarray.c sax.c comments.c hooks.c
-	gcc main.c c.tab.c checks.c dynarray.c sax.c comments.c hooks.c
+all: generate main.c checks.c dynarray.c sax.c comments.c hooks.c locations.c
+	gcc main.c c.tab.c checks.c dynarray.c sax.c comments.c hooks.c locations.c
 
-debug: generate main.c checks.c dynarray.c sax.c comments.c hooks.c
-	gcc -g main.c c.tab.c checks.c dynarray.c sax.c comments.c hooks.c
+debug: generate main.c checks.c dynarray.c sax.c comments.c hooks.c locations.c
+	gcc -g main.c c.tab.c checks.c dynarray.c sax.c comments.c hooks.c locations.c
 
 generate: c.y c.l checks.h
 	bison c.y

@@ -9,7 +9,8 @@
 
 #include "comments.h"
 #include "strings.h"
-#include "assert.h"
+#include <assert.h>
+#include "locations.h"
 #include <stdlib.h>
 
 DynArray_T commentLocations;
@@ -21,12 +22,6 @@ void comment_intializeComments() {
 	commentLocations = DynArray_new(0);
 }
 
-static void freeLocations(void* element, void* extra) { 
-	assert(element != NULL);
-	YYLTYPE *location = (YYLTYPE *)element;
-	if (location->filename != NULL) { free(location->filename); }
-	free(element); 
-}
 static void freeComments(void* element, void* extra) { free(element); }
 
 void comment_freeComments() {
@@ -86,50 +81,10 @@ void comment_endComment(YYLTYPE location) {
 	char *text = malloc(sizeof(char) * strlen(lastCommentText));
 	strcpy(text, lastCommentText);
 	
-	YYLTYPE *loc = malloc(sizeof(YYLTYPE));
-	loc->filename = malloc(sizeof(char) * strlen(lastCommentLocation.filename));
-	strcpy(loc->filename, lastCommentLocation.filename);
-	loc->first_line = lastCommentLocation.first_line;
-	loc->first_column = lastCommentLocation.first_column;
-	loc->last_line = lastCommentLocation.last_line;
-	loc->last_column = lastCommentLocation.last_column;
+	YYLTYPE *loc = allocateLocation(location);
 	
 	DynArray_add(commentTexts, text);
 	DynArray_add(commentLocations, loc);
-}
-
-static int COMPARE_DISTANCE;
-
-/**
- * Compare two locations - meant to be used by Dynarray_search. Returns 0 if
- * equal and 1 if not.
- */
-static int compareLocations(const void *element1, const void *element2) {
-	// taking advantage of how dynarray compares elements
-	YYLTYPE *commentLocation = (YYLTYPE*)element1;
-	YYLTYPE *functionLocation = (YYLTYPE*)element2;
-	
-	assert(commentLocation != NULL);
-	assert(functionLocation != NULL);
-	
-	assert(commentLocation->filename != NULL);
-	assert(functionLocation->filename != NULL);
-	
-	if (strcmp(commentLocation->filename, functionLocation->filename) == 0) {
-		// Comment before function call
-		int distance = functionLocation->first_line - commentLocation->last_line;
-		if (distance <= COMPARE_DISTANCE && distance > 0) {
-			return 0;
-		}
-		
-		// Comment inside function body
-		distance = commentLocation->first_line - functionLocation->first_line;
-		if (distance <= COMPARE_DISTANCE && distance > 0) {
-			return 0;
-		}
-	}
-	
-	return 1;
 }
 
 /**
@@ -140,7 +95,7 @@ char* comment_getCommentCloseTo(YYLTYPE location, int compareDistance) {
 	int index;
 	char* text = NULL;
 	
-	COMPARE_DISTANCE = compareDistance;
+	setCompareDistance(compareDistance);
 	index = DynArray_search(commentLocations, &location, compareLocations);
 	
 	if (index != -1) {
