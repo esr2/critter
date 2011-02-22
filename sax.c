@@ -60,11 +60,13 @@ void endComment(YYLTYPE location) {
 
 /*--------- Function -----------------------*/
 void beginFunctionDefinition(YYLTYPE location) {
-	checkForComment(location);
+	checkForComment(location, "function");
+	globalHasComment(location, BEGINNING);
 }
 
 void endFunctionDefinition(YYLTYPE location) {
 	isFunctionTooLong(location);
+	globalHasComment(location, END);
 }
 
 void beginParameterList(YYLTYPE location) {
@@ -164,6 +166,7 @@ void endCompoundStatement(YYLTYPE location) {
 
 void beginDeclaration(YYLTYPE location) {
 	isMagicNumber(location, BEGINNING, NULL);
+	globalHasComment(location, MIDDLE);
 }
 
 void endDeclaration(YYLTYPE location) {

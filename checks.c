@@ -108,14 +108,18 @@ void CPlusPlusComments(YYLTYPE location) {
 }
 
 /**
- * Checks for comments before functions.
+ * Checks for comments before some construct.
  */
-void checkForComment(YYLTYPE location) {
+void checkForComment(YYLTYPE location, char* construct) {
 	char* text = comment_getCommentCloseTo(location, 5);
 
 	if (text == NULL) {
 		// comment not found
-		lyyerror(location, "Please include a descriptive comment above each function");
+		char error[500];
+		sprintf(error,
+				"Please include a descriptive comment above each %s",
+				construct);
+		lyyerror(location, error);
 	} else {
 		//printf("comment is %s\n", text);
 	}
@@ -285,6 +289,29 @@ void isMagicNumber(YYLTYPE location, int progress, char* constant) {
 			break;
 		case END:
 			inDeclaration--;
+			break;
+		default:
+			break;
+	}
+}
+
+/**
+ * Check that each global variable has a comment.
+ */
+void globalHasComment(YYLTYPE location, int progress) {
+	static int inFunction = 0;
+	
+	switch (progress) {
+		case BEGINNING:
+			inFunction = 1;
+			break;
+		case MIDDLE:
+			if (!inFunction) {
+				checkForComment(location, "global variable");
+			}
+			break;
+		case END:
+			inFunction = 0;
 			break;
 		default:
 			break;
