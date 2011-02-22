@@ -27,6 +27,12 @@ void beginFile(char* filename) {
  * = last_line.
  */
 void endFile(YYLTYPE location) {
+	/* check for a file level comment - start by creating a location
+	   to compare against. Do this at the end of the file so that all the
+	   comments have been found already. */
+	YYLTYPE begin = {1, 1, 1, 1, location.filename};
+	checkForComment(begin, "file");
+	
 	isFileTooLong(location);
 }
 
