@@ -58,8 +58,7 @@ static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE
 	DynArray_T identifiers = DynArray_new(0);
 	DynArray_T constants = DynArray_new(0);
 	
-	/* pop off function/location pairs until location matches
-	 input location (the first declaration specifier) */
+	/* pop off function/location pairs until location matches input location */
 	len = DynArray_getLength(locationsArray) - 1;
 	while (len >= 0 && locationIsLessOrEqual(location, 
 											 DynArray_get(locationsArray, len),
@@ -70,18 +69,25 @@ static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE
 		func = DynArray_removeAt(functionCallsArray, len);
 		assert(func != NULL);
 		
-		if (func == popIdentifier) { 
-			l = DynArray_getLength(identifiersArray) - 1;
-			text = DynArray_removeAt(identifiersArray, l);
+		if (func == popIdentifier || func == popConstant) { 
+			DynArray_T stack = NULL;
+			DynArray_T temporary = NULL;
+			
+			if (func == popIdentifier) {
+				stack = identifiersArray;
+				temporary = identifiers;
+			} else {
+				stack = constantsArray;
+				temporary = constants;
+			}
+			assert(stack);
+			assert(temporary);
+			
+			l = DynArray_getLength(stack) - 1;
+			text = DynArray_removeAt(stack, l);
 			assert(text != NULL);
 			
-			DynArray_add(identifiers, text);
-		} else if (func == popConstant) {
-			l = DynArray_getLength(constantsArray) - 1;
-			text = DynArray_removeAt(constantsArray, l);
-			assert(text != NULL);
-			
-			DynArray_add(constants, text);
+			DynArray_add(temporary, text);
 		}
 		
 		DynArray_add(locations, loc);
@@ -101,17 +107,23 @@ static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE
 		
 		(*func)(*loc);
 		
-		if (func == popIdentifier) { 
-			len = DynArray_getLength(identifiers) - 1;
-			text = DynArray_removeAt(identifiers, len);
+		if (func == popIdentifier || func == popConstant) { 
+			DynArray_T temporary = NULL;
+			void (*function)(YYLTYPE, char*);
 			
-			registerIdentifier(*loc, text);
-			free(text);
-		} else if (func == popConstant) {
-			len = DynArray_getLength(constants) - 1;
-			text = DynArray_removeAt(constants, len);
+			if (func == popIdentifier) {
+				temporary = identifiers;
+				function = registerIdentifier;
+			} else {
+				temporary = constants;
+				function = registerConstant;
+			}
+			assert(temporary);
 			
-			registerConstant(*loc, text);
+			len = DynArray_getLength(temporary) - 1;
+			text = DynArray_removeAt(temporary, len);
+			
+			function(*loc, text);
 			free(text);
 		}
 		
