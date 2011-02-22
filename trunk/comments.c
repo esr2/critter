@@ -16,6 +16,10 @@
 DynArray_T commentLocations;
 DynArray_T commentTexts;
 
+#define MAX_COMMENT_LENGTH 2000
+static char lastCommentText[MAX_COMMENT_LENGTH];
+static YYLTYPE *lastCommentLocation = NULL;
+
 void comment_intializeComments() {
 	// These have to be managed on a program level because files are nested
 	commentTexts = DynArray_new(0);
@@ -33,26 +37,21 @@ void comment_freeComments() {
 	DynArray_map(commentTexts, freeComments, NULL);
 	DynArray_free(commentTexts);
 	
+	freeLocations(lastCommentLocation, NULL);
 }
 
-#define MAX_COMMENT_LENGTH 2000
-static char lastCommentText[MAX_COMMENT_LENGTH];
-static YYLTYPE lastCommentLocation;
-
 void comment_beginComment(YYLTYPE location) {
+	assert(DynArray_getLength(commentLocations) == DynArray_getLength(commentTexts));
+	
 	/* check if the comments are adjacent, if they are concatenate this
 	   to the old comment */
-	if (lastCommentLocation.filename &&
-			strcmp(lastCommentLocation.filename, location.filename) == 0 &&
-			location.first_line - lastCommentLocation.last_line <= 1) {
+	if (lastCommentLocation &&
+			lastCommentLocation->filename &&
+			strcmp(lastCommentLocation->filename, location.filename) == 0 &&
+			location.first_line - lastCommentLocation->last_line <= 1) {
 		/* get and remove the last comment */
 		int len = DynArray_getLength(commentLocations) - 1;
-		char *text = DynArray_removeAt(commentTexts, len);
-		assert(text != NULL);
-		
-		/* copy lastCommentText and then free */
-		strcpy(lastCommentText, text);
-		free(text);
+		free(DynArray_removeAt(commentTexts, len));
 		freeLocations(DynArray_removeAt(commentLocations, len), NULL);
 		
 		/* add a new line to the end of the comment */
@@ -64,8 +63,10 @@ void comment_beginComment(YYLTYPE location) {
 			lastCommentText[i] = '\0';
 		}
 		
-		lastCommentLocation = location;
+		lastCommentLocation = copyLocation(lastCommentLocation, &location);
 	}
+	
+	assert(DynArray_getLength(commentLocations) == DynArray_getLength(commentTexts));
 }
 
 void comment_registerComment(char* text) {
@@ -74,17 +75,22 @@ void comment_registerComment(char* text) {
 }
 	
 void comment_endComment(YYLTYPE location) {
-	lastCommentLocation.last_line = location.last_line;
-	lastCommentLocation.last_column = location.last_column;
+	assert(DynArray_getLength(commentLocations) == DynArray_getLength(commentTexts));
+	assert(lastCommentLocation);
+	
+	lastCommentLocation->last_line = location.last_line;
+	lastCommentLocation->last_column = location.last_column;
 	
 	// add the latest comment to the arrays
-	char *text = malloc(sizeof(char) * strlen(lastCommentText));
-	strcpy(text, lastCommentText);
+	char *text = malloc(sizeof(char) * (strlen(lastCommentText)+1));
+	strncpy(text, lastCommentText, strlen(lastCommentText));
 	
 	YYLTYPE *loc = allocateLocation(location);
 	
 	DynArray_add(commentTexts, text);
 	DynArray_add(commentLocations, loc);
+	
+	assert(DynArray_getLength(commentLocations) == DynArray_getLength(commentTexts));
 }
 
 /**
