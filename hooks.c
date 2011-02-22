@@ -10,6 +10,7 @@
 #include "hooks.h"
 #include "sax.h"
 #include "dynarray.h"
+#include "locations.h"
 #include <stdlib.h>
 #include <strings.h>
 #include <stdio.h>
@@ -24,81 +25,10 @@ static DynArray_T constantsArray;
 static void popIdentifier() { }
 static void popConstant() { }
 
-static int locationsAreEqual(YYLTYPE location, YYLTYPE* other, int checkAll) {
-	if (other == NULL) { 
-		return 0;
-	}
-	
-	if (strcmp(location.filename, (*other).filename) != 0) {
-		return 0;
-	}
-	
-	if (location.first_line != other->first_line) {
-		return 0;
-	}
-	
-	if (location.first_column != other->first_column) {
-		return 0;
-	}
-	
-	if (checkAll && location.last_line != other->last_line) {
-		return 0;
-	}
-	
-	if (checkAll && location.last_column != other->last_column) {
-		return 0;
-	}
-	
-	return 1;
-}
-
-static int locationIsLessOrEqual(YYLTYPE location, YYLTYPE* other, int checkAll) {
-	if (strcmp(location.filename, (*other).filename) != 0) {
-		return 0;
-	}
-	
-	if (location.first_line > other->first_line) {
-		return 0;
-	}
-	
-	if (location.first_column > other->first_column) {
-		return 0;
-	}
-	
-	if (checkAll && location.last_line > other->last_line) {
-		return 0;
-	}
-	
-	if (checkAll && location.last_column > other->last_column) {
-		return 0;
-	}
-	
-	return 1;
-}
-
-static void freeLocations(void* element, void* extra) { 
-	YYLTYPE *location = (YYLTYPE *)element;
-	if (location->filename != NULL) { free(location->filename); }
-	free(element); 
-}
 
 static void freeText(void* element, void* extra) {
 	char *text = (char*)element;
 	free(text);
-}
-
-static YYLTYPE* allocateLocation(YYLTYPE location) {
-	YYLTYPE *loc = malloc(sizeof(YYLTYPE));
-	int length = strlen(location.filename);
-	loc->filename = malloc(sizeof(char) * length);
-	strncpy(loc->filename, location.filename, length);
-	loc->filename[length] = '\0';
-	loc->first_line = location.first_line;
-	loc->first_column = location.first_column;
-	loc->last_line = location.last_line;
-	loc->last_column = location.last_column;
-	
-	return loc;
 }
 
 static void addFunctionAndLocationToStacks(void (*f)(YYLTYPE), YYLTYPE location) {
@@ -263,10 +193,8 @@ void h_registerIdentifier(YYLTYPE location) {
 }
 
 void h_registerIdentifierText(char* identifier) {
-	int length = strlen(identifier);
-	char *text = (char*)malloc(length * sizeof(char));
-	strncpy(text, identifier, length);
-	text[length] = '\0';
+	char *text = (char*)malloc((strlen(identifier)+1)*sizeof(char));
+	strncpy(text, identifier, strlen(identifier));
 	DynArray_add(identifiersArray, text);
 }
 
@@ -275,10 +203,8 @@ void h_registerConstant(YYLTYPE location) {
 }
 
 void h_registerConstantText(char* constant) {
-	int length = strlen(constant);
-	char *text = (char*)malloc(length * sizeof(char));
-	strncpy(text, constant, length);
-	text[length] = '\0';
+	char *text = (char*)malloc((strlen(constant)+1)*sizeof(char));
+	strncpy(text, constant, strlen(constant));
 	DynArray_add(constantsArray, text);
 }
 
