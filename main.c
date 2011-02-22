@@ -20,6 +20,8 @@ int main(int argc, char* argv[]) {
 	
 	/* go backwards because will be popped off in LIFO and we want to mimic
 	 * the order that the files were passed in in. */
+	h_beginProgram();
+	
 	for (i = argc-1; i > 0; i--) {
 		if(!newfile(argv[i])) {
 			failures++;
@@ -27,7 +29,6 @@ int main(int argc, char* argv[]) {
 	}
 	
 	if (failures != (argc - 1)) {
-		h_beginProgram();
 		if (!yyparse()) {
 			/* Success */
 			return 0;
@@ -39,6 +40,8 @@ int main(int argc, char* argv[]) {
 	
 	/* Only get here if we didn't parse -- ie the number of failed files
 	 * was equal to the number of files passed in. */
+	YYLTYPE loc = {0, 0, 0, 0, NULL};
+	h_endProgram(loc);
 	return 1;
 }
 

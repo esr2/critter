@@ -121,13 +121,13 @@ int compareLocations(const void *element1, const void *element2) {
 	if (strcmp(commentLocation->filename, functionLocation->filename) == 0) {
 		// Comment before function call
 		int distance = functionLocation->first_line - commentLocation->last_line;
-		if (distance <= COMPARE_DISTANCE && distance > 0) {
+		if (distance <= COMPARE_DISTANCE && distance >= 0) {
 			return 0;
 		}
 		
 		// Comment inside function body
 		distance = commentLocation->first_line - functionLocation->first_line;
-		if (distance <= COMPARE_DISTANCE && distance > 0) {
+		if (distance <= COMPARE_DISTANCE && distance >= 0) {
 			return 0;
 		}
 	}
