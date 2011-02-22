@@ -193,9 +193,7 @@ void h_registerIdentifier(YYLTYPE location) {
 }
 
 void h_registerIdentifierText(char* identifier) {
-	char *text = (char*)malloc((strlen(identifier)+1)*sizeof(char));
-	strncpy(text, identifier, strlen(identifier));
-	DynArray_add(identifiersArray, text);
+	DynArray_add(identifiersArray, strdup(identifier));
 }
 
 void h_registerConstant(YYLTYPE location) {
@@ -203,9 +201,7 @@ void h_registerConstant(YYLTYPE location) {
 }
 
 void h_registerConstantText(char* constant) {
-	char *text = (char*)malloc((strlen(constant)+1)*sizeof(char));
-	strncpy(text, constant, strlen(constant));
-	DynArray_add(constantsArray, text);
+	DynArray_add(constantsArray, strdup(constant));
 }
 
 void h_endDeclaration(YYLTYPE location) {
