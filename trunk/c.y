@@ -442,6 +442,7 @@ statement_list
 expression_statement
 	: ';'
 	| expression ';'	{h_endExpressionStatement(@$);}
+	| error ';'
 	;
 
 beginIF : /*empty*/ {beginIf(@$);}
