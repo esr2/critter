@@ -88,8 +88,7 @@ YYLTYPE* copyLocation(YYLTYPE* dest, YYLTYPE* src) {
 		free(dest->filename);
 	}
 	
-	dest->filename = (char*)malloc(sizeof(char) * strlen(src->filename));
-	strncpy(dest->filename, src->filename, strlen(src->filename)+1);
+	dest->filename = strdup(src->filename);
 	dest->first_line = src->first_line;
 	dest->first_column = src->first_column;
 	dest->last_line = src->last_line;

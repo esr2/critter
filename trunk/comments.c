@@ -82,9 +82,7 @@ void comment_endComment(YYLTYPE location) {
 	lastCommentLocation->last_column = location.last_column;
 	
 	// add the latest comment to the arrays
-	char *text = malloc(sizeof(char) * (strlen(lastCommentText)+1));
-	strncpy(text, lastCommentText, strlen(lastCommentText));
-	
+	char *text = strdup(lastCommentText);
 	YYLTYPE *loc = allocateLocation(location);
 	
 	DynArray_add(commentTexts, text);
