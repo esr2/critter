@@ -104,7 +104,7 @@ void tooManyParameters(YYLTYPE location, int progress) {
  * Throws an error on C++ style single line comments.
  */
 void CPlusPlusComments(YYLTYPE location) {
-	lyyerror(location, "Don't use C++ style comments");
+	lyyerror(location, "Do not use C++ style comments");
 }
 
 /**
@@ -326,5 +326,17 @@ void isLoopTooLong(YYLTYPE location) {
 	
 	if (location.last_line - location.first_line + 1 >= MAX_LOOP_LENGTH) {
 		lyyerror(location, "Loop is too long, consider pulling out code into its own function");
+	}
+}
+
+/**
+ * Check that loops are not empty.
+ */
+void isLoopEmpty(YYLTYPE location, void (*lastCalled)(YYLTYPE),
+				 void (*beginLoop)(YYLTYPE), char* loopType) {
+	if (lastCalled == beginLoop) {
+		char error[500];
+		sprintf(error, "Do not use empty %s loops", loopType);
+		lyyerror(location, error);
 	}
 }
