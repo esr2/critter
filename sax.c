@@ -34,6 +34,7 @@ void endFile(YYLTYPE location) {
 	checkForComment(begin, "file");
 	
 	isFileTooLong(location);
+	tooManyFunctionsInFile(location, END);
 }
 
 /**
@@ -71,6 +72,7 @@ void endComment(YYLTYPE location) {
 void beginFunctionDefinition(YYLTYPE location) {
 	checkForComment(location, "function");
 	globalHasComment(location, BEGINNING);
+	tooManyFunctionsInFile(location, MIDDLE);
 }
 
 void endFunctionDefinition(YYLTYPE location) {

@@ -378,3 +378,25 @@ void isCompoundStatementEmpty(YYLTYPE location, int progress) {
 			break;
 	}
 }
+
+/**
+ * Check if there are too many functions in a file.
+ */
+void tooManyFunctionsInFile(YYLTYPE location, int progress) {
+	int MAX_FUNCTIONS_PER_FILE = 5;
+	static int numFunctions = 0;
+	
+	switch (progress) {
+		case MIDDLE:
+			numFunctions++;
+			break;
+		case END:
+			if (numFunctions > MAX_FUNCTIONS_PER_FILE) {
+				lyyerror(location, "There are too many functions in this file");
+			}
+			numFunctions = 0;
+			break;
+		default:
+			break;
+	}
+}
