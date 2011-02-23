@@ -15,7 +15,7 @@
 
 void comment_intializeComments();
 void comment_freeComments();
-void comment_beginComment(YYLTYPE location);
+void comment_beginComment(YYLTYPE location, int contiguous);
 void comment_registerComment(char* text);
 void comment_endComment(YYLTYPE location);
 char* comment_getCommentCloseTo(YYLTYPE location, int compareDistance);

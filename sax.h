@@ -12,6 +12,8 @@
 
 #include "c.tab.h"
 
+void (*lastCalledFunction)(YYLTYPE);
+
 /*--------- Overall -----------------------*/
 void beginFile(char* filename);
 void endFile(YYLTYPE location);

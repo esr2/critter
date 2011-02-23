@@ -106,6 +106,7 @@ static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE
 		func = DynArray_removeAt(functions, i);
 		
 		(*func)(*loc);
+		lastCalledFunction = func;
 		
 		if (func == popIdentifier || func == popConstant) { 
 			DynArray_T temporary = NULL;
@@ -155,6 +156,7 @@ void h_beginFile(char* filename) {
  */
 void h_endFile(YYLTYPE location) {
 	endFile(location);
+	lastCalledFunction = endFile;
 }
 
 /**
@@ -172,6 +174,7 @@ void h_beginProgram() {
 	assert(identifiersArray != NULL);
 	assert(constantsArray != NULL);
 	beginProgram();
+	lastCalledFunction = beginProgram;
 }
 
 /**
@@ -179,6 +182,7 @@ void h_beginProgram() {
  */
 void h_endProgram(YYLTYPE location) {
 	endProgram(location);
+	/* don't need to set lastCalledFunction because program is ending */
 	
 	assert(functionCallsArray != NULL);
 	assert(locationsArray != NULL);
@@ -219,6 +223,7 @@ void h_registerConstantText(char* constant) {
 void h_endDeclaration(YYLTYPE location) {
 	popUntil(location, 0, beginDeclaration);
 	endDeclaration(location);
+	lastCalledFunction = endDeclaration;
 }
 
 void h_beginDirectDeclarator(YYLTYPE location) {
@@ -234,11 +239,13 @@ void h_endDirectDeclarator(YYLTYPE location) {
 void h_endExpressionStatement(YYLTYPE location) {
 	popUntil(location, 0, beginStatement);
 	endStatement(location);
+	lastCalledFunction = endStatement;
 }
 
 /*------------ Function ----------------------*/
 void h_beginFunctionDefinition(YYLTYPE location) {
 	beginFunctionDefinition(location);
+	lastCalledFunction = beginFunctionDefinition;
 	
 	/* send appropriate calls for declaration_specifier, declarator etc */
 	popUntil(location, 1, NULL);
@@ -304,7 +311,6 @@ void h_registerVolatile(YYLTYPE location) {
 
 /* Storage class specifiers */
 static void h_registerStorageClass(YYLTYPE location) {
-	//h_registerDeclarationSpecifiers(location);
 	addFunctionAndLocationToStacks(h_registerDeclarationSpecifiers, location);
 }
 
