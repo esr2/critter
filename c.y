@@ -460,6 +460,8 @@ iteration_statement
 	| DO {beginDoWhile(@1);} statement WHILE '(' expression ')' ';'	{endDoWhile(@$);}
 	| FOR beginFOR '(' expression_statement expression_statement ')' statement {endFor(@$);}
 	| FOR beginFOR '(' expression_statement expression_statement expression ')' statement {endFor(@$);}
+	| FOR beginFOR '(' declaration expression_statement ')' statement {endFor(@$);}
+	| FOR beginFOR '(' declaration expression_statement expression ')' statement {endFor(@$);}
 	;
 
 jump_statement
