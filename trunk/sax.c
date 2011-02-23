@@ -101,6 +101,7 @@ void beginWhile(YYLTYPE location) {
 void endWhile(YYLTYPE location) {
 	lastCalledFunction = endWhile;
 	hasBraces(location, END);
+	isLoopTooLong(location);
 }
 
 void beginDoWhile(YYLTYPE location) {
@@ -111,6 +112,7 @@ void beginDoWhile(YYLTYPE location) {
 void endDoWhile(YYLTYPE location) {
 	lastCalledFunction = endDoWhile;
 	hasBraces(location, END);
+	isLoopTooLong(location);
 }
 
 void beginFor(YYLTYPE location) {
@@ -121,6 +123,7 @@ void beginFor(YYLTYPE location) {
 void endFor(YYLTYPE location) {
 	lastCalledFunction = beginFor;
 	hasBraces(location, END);
+	isLoopTooLong(location);
 }
 
 /*-- Selection (not called through hook) ---*/

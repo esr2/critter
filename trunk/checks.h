@@ -26,6 +26,7 @@ void neverUseGotos(YYLTYPE location);
 void isVariableNameTooShort(YYLTYPE location, char* identifier);
 void isMagicNumber(YYLTYPE location, int progress, char* constant);
 void globalHasComment(YYLTYPE location, int progress);
+void isLoopTooLong(YYLTYPE location);
 
 enum {
 	END = 1,
