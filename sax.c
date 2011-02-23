@@ -182,12 +182,14 @@ void registerConstant(YYLTYPE location, char* constant) {
 
 /* location points to first bracket */
 void beginCompoundStatement(YYLTYPE location) {
+	isCompoundStatementEmpty(location, BEGINNING);
 	lastCalledFunction = beginCompoundStatement;
 	tooDeeplyNested(location, BEGINNING);
 }
 
 /* location points to the entire statement */
 void endCompoundStatement(YYLTYPE location) {
+	isCompoundStatementEmpty(location, END);
 	lastCalledFunction = endCompoundStatement;
 	hasBraces(location, MIDDLE);
 	tooDeeplyNested(location, END);
