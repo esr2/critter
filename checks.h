@@ -27,8 +27,7 @@ void isVariableNameTooShort(YYLTYPE location, char* identifier);
 void isMagicNumber(YYLTYPE location, int progress, char* constant);
 void globalHasComment(YYLTYPE location, int progress);
 void isLoopTooLong(YYLTYPE location);
-void isLoopEmpty(YYLTYPE location, void (*lastCalled)(YYLTYPE),
-				 void (*beginLoop)(YYLTYPE), char* loopType);
+void isLoopEmpty(YYLTYPE location, void (*beginLoop)(YYLTYPE), char* loopType);
 
 enum {
 	END = 1,

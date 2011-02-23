@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include "dynarray.h"
 #include "comments.h"
+#include "sax.h"
 
 /**
  * Check if the file is above a maximum length
@@ -332,9 +333,8 @@ void isLoopTooLong(YYLTYPE location) {
 /**
  * Check that loops are not empty.
  */
-void isLoopEmpty(YYLTYPE location, void (*lastCalled)(YYLTYPE),
-				 void (*beginLoop)(YYLTYPE), char* loopType) {
-	if (lastCalled == beginLoop) {
+void isLoopEmpty(YYLTYPE location, void (*beginLoop)(YYLTYPE), char* loopType) {
+	if (lastCalledFunction == beginLoop) {
 		char error[500];
 		sprintf(error, "Do not use empty %s loops", loopType);
 		lyyerror(location, error);
