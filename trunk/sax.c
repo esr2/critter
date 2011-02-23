@@ -99,6 +99,7 @@ void beginWhile(YYLTYPE location) {
 }
 
 void endWhile(YYLTYPE location) {
+	isLoopEmpty(location, lastCalledFunction, beginWhile, "while");
 	lastCalledFunction = endWhile;
 	hasBraces(location, END);
 	isLoopTooLong(location);
@@ -110,6 +111,7 @@ void beginDoWhile(YYLTYPE location) {
 }
 
 void endDoWhile(YYLTYPE location) {
+	isLoopEmpty(location, lastCalledFunction, beginDoWhile, "doWhile");
 	lastCalledFunction = endDoWhile;
 	hasBraces(location, END);
 	isLoopTooLong(location);
@@ -121,7 +123,8 @@ void beginFor(YYLTYPE location) {
 }
 
 void endFor(YYLTYPE location) {
-	lastCalledFunction = beginFor;
+	isLoopEmpty(location, lastCalledFunction, beginFor, "for");
+	lastCalledFunction = endFor;
 	hasBraces(location, END);
 	isLoopTooLong(location);
 }
