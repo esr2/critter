@@ -51,17 +51,20 @@ void endProgram(YYLTYPE location) {
 	comment_freeComments();
 }
 
-/*--------- Comments -----------------------*/
+/*--- Comments (not called through hook) ---*/
 void beginComment(YYLTYPE location) {
-	comment_beginComment(location);
+	comment_beginComment(location, (lastCalledFunction == endComment));
+	lastCalledFunction = beginComment;
 }
 
 void registerComment(char* text) {
 	comment_registerComment(text);
+	/* don't setup lastCalledFunction because it provides no context */
 }
 
 void endComment(YYLTYPE location) {
 	comment_endComment(location);
+	lastCalledFunction = endComment;
 }
 
 /*--------- Function -----------------------*/
@@ -89,68 +92,80 @@ void endParameterList(YYLTYPE location) {
 	useEnumNotConstOrDefine(location, END);
 }
 
-/*--------- Iteration -----------------------*/
+/*-- Iteration (not called through hook) ---*/
 void beginWhile(YYLTYPE location) {
+	lastCalledFunction = beginWhile;
 	hasBraces(location, BEGINNING);
 }
 
 void endWhile(YYLTYPE location) {
+	lastCalledFunction = endWhile;
 	hasBraces(location, END);
 }
 
 void beginDoWhile(YYLTYPE location) {
+	lastCalledFunction = beginDoWhile;
 	hasBraces(location, BEGINNING);
 }
 
 void endDoWhile(YYLTYPE location) {
+	lastCalledFunction = endDoWhile;
 	hasBraces(location, END);
 }
 
 void beginFor(YYLTYPE location) {
+	lastCalledFunction = beginFor;
 	hasBraces(location, BEGINNING);
 }
 
 void endFor(YYLTYPE location) {
+	lastCalledFunction = beginFor;
 	hasBraces(location, END);
 }
 
-/*--------- Selection -----------------------*/
+/*-- Selection (not called through hook) ---*/
 void beginIf(YYLTYPE location) {
+	lastCalledFunction = beginIf;
 	hasBraces(location, BEGINNING);
 }
 
 void endIf(YYLTYPE location) {
+	lastCalledFunction = endIf;
 	hasBraces(location, END);
 }
 
 void beginElse(YYLTYPE location) {
-	
+	lastCalledFunction = beginElse;
 }
 
 void endElse(YYLTYPE location) {
-	
+	lastCalledFunction = endElse;
 }
 
 void beginSwitch(YYLTYPE location) {
+	lastCalledFunction = beginSwitch;
 	switchHasDefault(location, BEGINNING);
 	switchCasesHaveBreaks(location, BEGINNING, -1);
 }
 
 void registerDefault(YYLTYPE location) {
+	lastCalledFunction = registerDefault;
 	switchHasDefault(location, MIDDLE);
 	switchCasesHaveBreaks(location, MIDDLE, 1);
 }
 
 void registerCase(YYLTYPE location) {
+	lastCalledFunction = registerDefault;
 	switchCasesHaveBreaks(location, MIDDLE, 1);
 }
 
 void endSwitch(YYLTYPE location) {
+	lastCalledFunction = endSwitch;
 	switchHasDefault(location, END);
 	switchCasesHaveBreaks(location, END, -1);
 }
 
-/*--------- Statements -----------------------*/
+/*----- Statements (some through hook) ----------*/
 void registerIdentifier(YYLTYPE location, char* identifier) {
 	isVariableNameTooShort(location, identifier);
 }
@@ -161,11 +176,13 @@ void registerConstant(YYLTYPE location, char* constant) {
 
 /* location points to first bracket */
 void beginCompoundStatement(YYLTYPE location) {
+	lastCalledFunction = beginCompoundStatement;
 	tooDeeplyNested(location, BEGINNING);
 }
 
 /* location points to the entire statement */
 void endCompoundStatement(YYLTYPE location) {
+	lastCalledFunction = endCompoundStatement;
 	hasBraces(location, MIDDLE);
 	tooDeeplyNested(location, END);
 }
@@ -197,17 +214,19 @@ void registerConst(YYLTYPE location) {
 
 /* Jump Statements */
 void registerGoto(YYLTYPE location) {
+	lastCalledFunction = registerGoto;
 	neverUseGotos(location);
 }
 
 void registerContinue(YYLTYPE location) {
-	
+	lastCalledFunction = registerContinue;
 }
 
 void registerBreak(YYLTYPE location) {
+	lastCalledFunction = registerBreak;
 	switchCasesHaveBreaks(location, MIDDLE, 0);
 }
 
 void registerReturn(YYLTYPE location) {
-	
+	lastCalledFunction = registerReturn;
 }

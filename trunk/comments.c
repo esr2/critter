@@ -40,12 +40,13 @@ void comment_freeComments() {
 	freeLocations(lastCommentLocation, NULL);
 }
 
-void comment_beginComment(YYLTYPE location) {
+void comment_beginComment(YYLTYPE location, int contiguous) {
 	assert(DynArray_getLength(commentLocations) == DynArray_getLength(commentTexts));
 	
 	/* check if the comments are adjacent, if they are concatenate this
 	   to the old comment */
-	if (lastCommentLocation &&
+	if (contiguous && 
+			lastCommentLocation &&
 			lastCommentLocation->filename &&
 			strcmp(lastCommentLocation->filename, location.filename) == 0 &&
 			location.first_line - lastCommentLocation->last_line <= 1) {
