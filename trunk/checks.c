@@ -340,3 +340,41 @@ void isLoopEmpty(YYLTYPE location, void (*beginLoop)(YYLTYPE), char* loopType) {
 		lyyerror(location, error);
 	}
 }
+
+
+/**
+ * Check if compound statement is empty
+ */
+void isCompoundStatementEmpty(YYLTYPE location, int progress) {
+	static void (*context)(YYLTYPE);
+	
+	switch (progress) {
+		case BEGINNING:
+			context = lastCalledFunction;
+			break;
+		case END:
+			if (lastCalledFunction == beginCompoundStatement) {
+				/* create a good error message */
+				char *parent = NULL;
+				
+				if (context == beginIf) { parent = "if statements"; }
+				else if (context == beginElse) { parent = "else statements"; }
+				else if (context == beginFor) { parent = "for loops"; }
+				else if (context == beginWhile) { parent = "while loops"; }
+				else if (context == beginDoWhile) { parent = "doWhile loops"; }
+				
+				char error[500];
+				
+				if (parent) {
+					sprintf(error, "Do not use empty %s", parent);
+				} else {
+					sprintf(error, "Do not use empty block statements");
+				}
+				
+				lyyerror(location, error);
+			}
+			break;
+		default:
+			break;
+	}
+}
