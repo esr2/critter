@@ -317,3 +317,14 @@ void globalHasComment(YYLTYPE location, int progress) {
 			break;
 	}
 }
+
+/**
+ * Check that the loop length is less than a maximum.
+ */
+void isLoopTooLong(YYLTYPE location) {
+	int MAX_LOOP_LENGTH = 20;
+	
+	if (location.last_line - location.first_line + 1 >= MAX_LOOP_LENGTH) {
+		lyyerror(location, "Loop is too long, consider pulling out code into its own function");
+	}
+}
