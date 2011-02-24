@@ -144,10 +144,12 @@ void endIf(YYLTYPE location) {
 
 void beginElse(YYLTYPE location) {
 	lastCalledFunction = beginElse;
+	hasBraces(location, BEGINNING);
 }
 
 void endElse(YYLTYPE location) {
 	lastCalledFunction = endElse;
+	hasBraces(location, END);
 }
 
 void beginSwitch(YYLTYPE location) {

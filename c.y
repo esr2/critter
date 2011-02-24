@@ -449,7 +449,7 @@ beginIF : /*empty*/ {beginIf(@$);}
 
 selection_statement
 	: IF beginIF '(' expression ')' statement %prec LOWER_THAN_ELSE	{endIf(@$);}
-	| IF beginIF '(' expression ')' statement ELSE {beginElse(@7);} statement {endElse(@9); endIf(@$);}
+	| IF beginIF '(' expression ')' statement ELSE {endIf(@6); beginElse(@7);} statement {endElse(@9);}
 	| SWITCH {beginSwitch(@1);} '(' expression ')' statement {endSwitch(@$);}
 	;
 
