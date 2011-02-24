@@ -208,16 +208,6 @@ void count() {
  * Check the type of a string to see if it is a TYPE_NAME or IDENTIFIER
  */
 int check_type() {
-/*
-* pseudo code --- this is what it should check
-*
-*	if (yytext == type_name)
-*		return(TYPE_NAME);
-*
-*	return(IDENTIFIER);
-*
-*	it actually will only return IDENTIFIER
-*/
 	if (strcmp(yytext, "size_t") == 0 || strcmp(yytext, "FILE") == 0) {
 		return TYPE_NAME;
 	}
