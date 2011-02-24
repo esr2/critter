@@ -21,5 +21,5 @@ clean:
 	rm -f a.out
 	rm -rf *.dSYM
 
-spotless:
+spotless: clean
 	rm -f output.txt
