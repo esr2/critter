@@ -1,3 +1,6 @@
+/***
+ * This grammar file has been adapted from http://www.lysator.liu.se/c/ANSI-C-grammar-y.html
+ */
 %code {
 #include <stdio.h>
 #include <stdlib.h>
