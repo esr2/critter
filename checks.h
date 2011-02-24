@@ -13,7 +13,7 @@
 #include "c.tab.h"
 
 void isFileTooLong(YYLTYPE location);
-void hasBraces(YYLTYPE location, int progress);
+void hasBraces(YYLTYPE location);
 void isFunctionTooLong(YYLTYPE location);
 void tooManyParameters(YYLTYPE location, int progress);
 void CPlusPlusComments(YYLTYPE location);

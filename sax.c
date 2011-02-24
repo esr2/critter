@@ -97,59 +97,54 @@ void endParameterList(YYLTYPE location) {
 /*-- Iteration (not called through hook) ---*/
 void beginWhile(YYLTYPE location) {
 	lastCalledFunction = beginWhile;
-	hasBraces(location, BEGINNING);
 }
 
 void endWhile(YYLTYPE location) {
 	isLoopEmpty(location, beginWhile, "while");
+	hasBraces(location);
 	lastCalledFunction = endWhile;
-	hasBraces(location, END);
 	isLoopTooLong(location);
 }
 
 void beginDoWhile(YYLTYPE location) {
 	lastCalledFunction = beginDoWhile;
-	hasBraces(location, BEGINNING);
 }
 
 void endDoWhile(YYLTYPE location) {
 	isLoopEmpty(location, beginDoWhile, "doWhile");
+	hasBraces(location);
 	lastCalledFunction = endDoWhile;
-	hasBraces(location, END);
 	isLoopTooLong(location);
 }
 
 void beginFor(YYLTYPE location) {
 	lastCalledFunction = beginFor;
-	hasBraces(location, BEGINNING);
 }
 
 void endFor(YYLTYPE location) {
 	isLoopEmpty(location, beginFor, "for");
+	hasBraces(location);
 	lastCalledFunction = endFor;
-	hasBraces(location, END);
 	isLoopTooLong(location);
 }
 
 /*-- Selection (not called through hook) ---*/
 void beginIf(YYLTYPE location) {
 	lastCalledFunction = beginIf;
-	hasBraces(location, BEGINNING);
 }
 
 void endIf(YYLTYPE location) {
+	hasBraces(location);
 	lastCalledFunction = endIf;
-	hasBraces(location, END);
 }
 
 void beginElse(YYLTYPE location) {
 	lastCalledFunction = beginElse;
-	hasBraces(location, BEGINNING);
 }
 
 void endElse(YYLTYPE location) {
+	hasBraces(location);
 	lastCalledFunction = endElse;
-	hasBraces(location, END);
 }
 
 void beginSwitch(YYLTYPE location) {
@@ -195,7 +190,6 @@ void beginCompoundStatement(YYLTYPE location) {
 void endCompoundStatement(YYLTYPE location) {
 	isCompoundStatementEmpty(location, END);
 	lastCalledFunction = endCompoundStatement;
-	hasBraces(location, MIDDLE);
 	tooDeeplyNested(location, END);
 }
 
