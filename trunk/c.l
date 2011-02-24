@@ -1,3 +1,6 @@
+/***
+ * This lex specification has been adapted from http://www.lysator.liu.se/c/ANSI-C-grammar-l.html
+ */
 
 D			[0-9]
 L			[a-zA-Z_]
