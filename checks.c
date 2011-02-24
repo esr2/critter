@@ -55,7 +55,7 @@ void tooManyParameters(YYLTYPE location, int progress) {
 	int MAX_NUM_PARAMETERS = 7;
 	
 	static int numParameters = -1;
-	static int nestedListLevel = -1; /* should = 0 normally */
+	static int nestedListLevel = -1; /* should = 0 inside a non-nested parameter list */
 	
 	switch (progress) {
 		case BEGINNING:
