@@ -30,26 +30,9 @@ void isFileTooLong(YYLTYPE location) {
 /**
  * Checks if there are braces surrounding an if statement.
  */
-void hasBraces(YYLTYPE location, int progress) {
-	static int foundCompound = 0;
-	static int started = 0;
-	
-	switch (progress) {
-		case BEGINNING:
-			foundCompound = 0;
-			started = 1;
-			break;
-		case MIDDLE:
-			foundCompound = 1;
-			break;
-		case END:
-			if (!foundCompound && started) {
-				lyyerror(location, "Please use braces after all if, for and while statements");
-			}
-			started = 0;
-			break;
-		default:
-			break;
+void hasBraces(YYLTYPE location) {
+	if (lastCalledFunction != endCompoundStatement) {
+		lyyerror(location, "Please use braces after all if, for and while statements");
 	}
 	
 }
