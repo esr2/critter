@@ -145,7 +145,7 @@ perspective, i.e.\ as a command-line program which prints warnings and errors to
 Splint displays warnings about basic semantic errors like assignments with mismatched types and 
 ignored return values. With more effort, programmers can add annotations (i.e.\ fancy comments) that 
 give Splint a specification to check against. These annotations allow for stronger checks like memory 
-management, null pointers and ``violations of information hiding" \cite[p. 9]{splint-manual}. An 
+management, null pointers and ``violations of information hiding'' \cite[p. 9]{splint-manual}. An 
 example of annotations in action are the following abstract type declarations (\refCode \ref{splint-annotations}).
 
 \begin{figure}[h]
@@ -170,7 +170,7 @@ including warnings that encourage them to start adding annotations.  For some as
 \lstinline{/*@null@*/} annotations I think this has worked okay, but for others like abstract types, 
 memory management, etc. I don't think it has worked very well, and the warnings on these issues tend 
 to either make developers want to stop using Splint, or at least just turn off all the warnings of that type, 
-rather than start adding the annotations needed to enable better checking." \cite{evans-email} 
+rather than start adding the annotations needed to enable better checking. \cite{evans-email} 
 \end{quote}
 
 \section{PMD and Checkstyle}
