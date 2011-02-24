@@ -135,11 +135,13 @@ void beginIf(YYLTYPE location) {
 
 void endIf(YYLTYPE location) {
 	hasBraces(location);
+	checkIfElsePlacement(location, BEGINNING);
 	lastCalledFunction = endIf;
 }
 
 void beginElse(YYLTYPE location) {
 	lastCalledFunction = beginElse;
+	checkIfElsePlacement(location, END);
 }
 
 void endElse(YYLTYPE location) {

@@ -30,6 +30,7 @@ void isLoopTooLong(YYLTYPE location);
 void isLoopEmpty(YYLTYPE location, void (*beginLoop)(YYLTYPE), char* loopType);
 void isCompoundStatementEmpty(YYLTYPE location, int progress);
 void tooManyFunctionsInFile(YYLTYPE location, int progress);
+void checkIfElsePlacement(YYLTYPE location, int progress);
 
 enum {
 	END = 1,

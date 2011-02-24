@@ -32,7 +32,7 @@ void isFileTooLong(YYLTYPE location) {
  */
 void hasBraces(YYLTYPE location) {
 	if (lastCalledFunction != endCompoundStatement) {
-		lyyerror(location, "Please use braces after all if, for and while statements");
+		lyyerror(location, "Please use braces after all if, else, for and while statements");
 	}
 	
 }
@@ -378,6 +378,49 @@ void tooManyFunctionsInFile(YYLTYPE location, int progress) {
 				lyyerror(location, "There are too many functions in this file");
 			}
 			numFunctions = 0;
+			break;
+		default:
+			break;
+	}
+}
+
+void checkIfElsePlacement(YYLTYPE location, int progress) {
+	static int ifIsBracketed = 0;
+	static int ifLastLine;
+	static int hadError = 0;
+	
+	switch (progress) {
+		case BEGINNING:
+			ifIsBracketed = (lastCalledFunction == endCompoundStatement);
+			ifLastLine = location.last_line;
+			/* check that, if bracketed, appears on multiple lines */
+			if (ifIsBracketed && ((location.last_line - location.first_line) <= 0)) {
+				lyyerror(location, "When using braces with an if statement, use multiple lines");
+				hadError = 1;
+			}
+			break;
+		case END:
+			/* Don't need to check that the else is adjacent because else statements
+			   must come after an if statement */
+			if (hadError) {
+				hadError = 0;
+				return;
+			}
+			
+			if (ifIsBracketed) {
+				/* else should be on same line as '}' */
+				if (location.first_line != ifLastLine) {
+					lyyerror(location, 
+							 "Please put the else on the same line as the closing if brace");
+				}
+			} else {
+				/* else should be on line after the if statement finishes */
+				if ((location.first_line - ifLastLine) <= 0) {
+					lyyerror(location, "Please put the else on the line after the if");
+				}
+			}
+			
+			hadError = 0;
 			break;
 		default:
 			break;
