@@ -14,7 +14,8 @@
 
 void isFileTooLong(YYLTYPE location);
 void hasBraces(YYLTYPE location);
-void isFunctionTooLong(YYLTYPE location);
+void isFunctionTooLongByLines(YYLTYPE location);
+void isFunctionTooLongByStatements(YYLTYPE location, int progress);
 void tooManyParameters(YYLTYPE location, int progress);
 void CPlusPlusComments(YYLTYPE location);
 void checkForComment(YYLTYPE location, char* construct);
