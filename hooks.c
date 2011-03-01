@@ -49,89 +49,74 @@ static void addFunctionAndLocationToStacks(void (*f)(YYLTYPE), YYLTYPE location)
 static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE)) {
 	assert(DynArray_getLength(functionCallsArray) == DynArray_getLength(locationsArray));
 	
-	int len, i, l;
+	int i;
 	void (*func)(YYLTYPE);
 	YYLTYPE* loc = NULL;
 	char *text = NULL;
-	DynArray_T locations = DynArray_new(0);
-	DynArray_T functions = DynArray_new(0);
-	DynArray_T identifiers = DynArray_new(0);
-	DynArray_T constants = DynArray_new(0);
+	int firstLocation = 0;
+	int numIdentifiers = 0;
+	int numConstants = 0;
 	
-	/* pop off function/location pairs until location matches input location */
-	len = DynArray_getLength(locationsArray) - 1;
-	while (len >= 0 && locationIsLessOrEqual(location, 
-											 DynArray_get(locationsArray, len),
-											 matchWhole)) {
-		/* remove function and location from the stacks */
-		loc = DynArray_removeAt(locationsArray, len);
-		assert(loc != NULL);
-		func = DynArray_removeAt(functionCallsArray, len);
-		assert(func != NULL);
-		
-		/* add the function and location to the temporary stacks */
-		DynArray_add(locations, loc);
-		DynArray_add(functions, func);
-		len--;
-		
-		/* push identifiers and constants onto their own stacks to preserve
-		   proper ordering */
-		if (func == popIdentifier || func == popConstant) { 
-			DynArray_T stack = NULL;
-			DynArray_T temporaryStack = NULL;
-			
-			if (func == popIdentifier) {
-				stack = identifiersArray;
-				temporaryStack = identifiers;
-			} else {
-				stack = constantsArray;
-				temporaryStack = constants;
-			}
-			assert(stack);
-			assert(temporaryStack);
-			
-			l = DynArray_getLength(stack) - 1;
-			text = DynArray_removeAt(stack, l);
-			assert(text != NULL);
-			
-			DynArray_add(temporaryStack, text);
+	/* first find how many popIdentifiers and popConstants exist in the 
+	   functionCallsArray so we know where to start the queues */
+	for (i = 0; i < DynArray_getLength(locationsArray); i++) {
+		if (!locationIsLessOrEqual(location, 
+								   DynArray_get(locationsArray, i),
+								   matchWhole)) {
+			/*ignore the beginning of the queue which is irrelevant */
+			firstLocation++;
+			continue;
 		}
 		
+		func = DynArray_get(functionCallsArray, i);
+		if (func == popIdentifier) {
+			numIdentifiers++;
+		} else if (func == popConstant) {
+			numConstants++;
+		}
 	}
 	
-	/* if there is a beginning call, make it */
-	i = DynArray_getLength(locations) - 1;
-	if (beginCall) {
-		loc = DynArray_get(locations, i);
-		beginCall(*loc);
-	}
+	int identifierQPos = DynArray_getLength(identifiersArray) - numIdentifiers - 1;
+	if (identifierQPos < 0) identifierQPos = 0;
+	int constantQPos = DynArray_getLength(constantsArray) - numConstants - 1;
+	if (constantQPos < 0) constantQPos = 0;
 	
-	/* pop off all the items on the temporary stacks to preserve ordering */
-	for (; i >=0; i--) {
-		/* remove and call functions */
-		loc = DynArray_removeAt(locations, i);
-		func = DynArray_removeAt(functions, i);
+	/* dequeue function/location pairs until location matches input location */
+	for (i = firstLocation; i < DynArray_getLength(locationsArray); ) {
+		
+		/* if there is a beginning call, make it */
+		if (beginCall) {
+			loc = DynArray_get(locationsArray, i);
+			beginCall(*loc);
+			beginCall = NULL;
+		}
+		
+		/* remove function and location from the stacks */
+		loc = DynArray_removeAt(locationsArray, i);
+		assert(loc != NULL);
+		func = DynArray_removeAt(functionCallsArray, i);
+		assert(func != NULL);
 		
 		(*func)(*loc);
 		lastCalledFunction = func;
 		
 		/* call special functions for identifiers and constants in order to pass the
-		   actual text */
+		 actual text */
 		if (func == popIdentifier || func == popConstant) { 
-			DynArray_T temporaryStack = NULL;
+			DynArray_T queue = NULL;
 			void (*function)(YYLTYPE, char*);
 			
 			if (func == popIdentifier) {
-				temporaryStack = identifiers;
+				queue = identifiersArray;
 				function = registerIdentifier;
 			} else {
-				temporaryStack = constants;
+				queue = constantsArray;
 				function = registerConstant;
 			}
-			assert(temporaryStack);
+			assert(queue);
 			
-			len = DynArray_getLength(temporaryStack) - 1;
-			text = DynArray_removeAt(temporaryStack, len);
+			text = DynArray_removeAt(queue, (func == popIdentifier) ? 
+											identifierQPos : constantQPos);
 			
 			function(*loc, text);
 			free(text);
@@ -139,11 +124,6 @@ static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE
 		
 		freeLocations(loc, NULL);
 	}
-	
-	DynArray_free(locations);
-	DynArray_free(functions);
-	DynArray_free(identifiers);
-	DynArray_free(constants);
 	
 	assert(DynArray_getLength(functionCallsArray) == DynArray_getLength(locationsArray));
 }
