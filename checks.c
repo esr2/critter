@@ -95,11 +95,9 @@ void tooManyParameters(YYLTYPE location, int progress) {
 			break;
 		case END:
 			if (numParameters >= MAX_NUM_PARAMETERS && nestedListLevel == 0) {
-				char string[200];
-				sprintf(string,
-						"Please use less than %d function parameters, you used %d",
-						MAX_NUM_PARAMETERS, numParameters);
-				lyyerror(location, string);
+				flyyerror(location,
+						  "Please use less than %d function parameters, you used %d",
+						  MAX_NUM_PARAMETERS, numParameters);
 			}
 			nestedListLevel--;
 			break;
@@ -123,11 +121,8 @@ void checkForComment(YYLTYPE location, char* construct) {
 
 	if (text == NULL) {
 		// comment not found
-		char error[500];
-		sprintf(error,
-				"Please include a descriptive comment above each %s",
-				construct);
-		lyyerror(location, error);
+		flyyerror(location, "Please include a descriptive comment above each %s",
+						  construct);
 	} else {
 		//printf("comment is %s\n", text);
 	}
@@ -185,10 +180,9 @@ void switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase) {
 		case END:
 			if (numCases != numBreaks) {
 				int missing = numCases - numBreaks;
-				char errorMsg[200];
-				sprintf(errorMsg, "Each case in a switch statement should have a break statement, you're missing %d",
-						missing);
-				lyyerror(location, errorMsg);
+				flyyerror(location, 
+						  "Each case in a switch statement should have a break statement, you're missing %d",
+						  missing);
 			}
 			break;
 		default:
@@ -267,9 +261,9 @@ void isVariableNameTooShort(YYLTYPE location, int progress, char* identifier) {
 			break;
 		case MIDDLE:
 			if (inDeclaration && strlen(identifier) < MINIMUM_VARIABLE_NAME_LENGTH) {
-				char error[500];
-				sprintf(error, "Variable/function name '%s' is too short", identifier);
-				lyyerror(location, error);
+				flyyerror(location, 
+						  "Variable/function name '%s' is too short",
+						  identifier);
 			}
 			break;
 		case END:
@@ -357,9 +351,7 @@ void isLoopTooLong(YYLTYPE location) {
  */
 void isLoopEmpty(YYLTYPE location, void (*beginLoop)(YYLTYPE), char* loopType) {
 	if (lastCalledFunction == beginLoop) {
-		char error[500];
-		sprintf(error, "Do not use empty %s loops", loopType);
-		lyyerror(location, error);
+		flyyerror(location, "Do not use empty %s loops", loopType);
 	}
 }
 
@@ -385,15 +377,11 @@ void isCompoundStatementEmpty(YYLTYPE location, int progress) {
 				else if (context == beginWhile) { parent = "while loops"; }
 				else if (context == beginDoWhile) { parent = "doWhile loops"; }
 				
-				char error[500];
-				
 				if (parent) {
-					sprintf(error, "Do not use empty %s", parent);
+					flyyerror(location, "Do not use empty %s", parent);
 				} else {
-					sprintf(error, "Do not use empty block statements");
+					lyyerror(location, "Do not use empty block statements");
 				}
-				
-				lyyerror(location, error);
 			}
 			break;
 		default:
