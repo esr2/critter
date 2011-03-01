@@ -233,11 +233,26 @@ void neverUseGotos(YYLTYPE location) {
 /**
  * Error if a variable name is less than a certain minimum length. 
  */
-void isVariableNameTooShort(YYLTYPE location, char* identifier) {
+void isVariableNameTooShort(YYLTYPE location, int progress, char* identifier) {
 	int MINIMUM_VARIABLE_NAME_LENGTH = 1;
+	static int inDeclaration = 0;
 	
-	if (strlen(identifier) < MINIMUM_VARIABLE_NAME_LENGTH) {
-		lyyerror(location, "Variable/function name is too short");
+	switch (progress) {
+		case BEGINNING:
+			inDeclaration++;
+			break;
+		case MIDDLE:
+			if (inDeclaration && strlen(identifier) < MINIMUM_VARIABLE_NAME_LENGTH) {
+				char error[500];
+				sprintf(error, "Variable/function name '%s' is too short", identifier);
+				lyyerror(location, error);
+			}
+			break;
+		case END:
+			inDeclaration--;
+			break;
+		default:
+			break;
 	}
 }
 

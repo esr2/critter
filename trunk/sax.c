@@ -174,7 +174,7 @@ void endSwitch(YYLTYPE location) {
 
 /*----- Statements (some through hook) ----------*/
 void registerIdentifier(YYLTYPE location, char* identifier) {
-	isVariableNameTooShort(location, identifier);
+	isVariableNameTooShort(location, MIDDLE, identifier);
 }
 
 void registerConstant(YYLTYPE location, char* constant) {
@@ -198,10 +198,12 @@ void endCompoundStatement(YYLTYPE location) {
 void beginDeclaration(YYLTYPE location) {
 	isMagicNumber(location, BEGINNING, NULL);
 	globalHasComment(location, MIDDLE);
+	isVariableNameTooShort(location, BEGINNING, NULL);
 }
 
 void endDeclaration(YYLTYPE location) {
 	isMagicNumber(location, END, NULL);
+	isVariableNameTooShort(location, END, NULL);
 }
 
 void beginStatement(YYLTYPE location) {
