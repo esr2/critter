@@ -399,6 +399,13 @@ void tooManyFunctionsInFile(YYLTYPE location, int progress) {
 	}
 }
 
+/**
+ * Throw error based on the placement of the else relative to the if statement. 
+ *  - if an if statement is bracketed, it should appear on multiple lines
+ *  - if an if statement is bracketed, the else statement should be on the same line as
+ *    as the closing brace
+ *  - if an if statement is unbracketed, the else statement should appear on the next line
+ */
 void checkIfElsePlacement(YYLTYPE location, int progress) {
 	static int ifIsBracketed = 0;
 	static int ifLastLine;
