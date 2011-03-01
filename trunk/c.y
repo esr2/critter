@@ -7,6 +7,7 @@
 #include "checks.h"
 #include "sax.h"
 #include "hooks.h"
+#include <stdarg.h>
 }
 
 %code requires {
@@ -511,4 +512,15 @@ void lyyerror(YYLTYPE t, char *s)
 				t.first_column, t.last_line, t.last_column);
 	} 
 	fprintf(stderr, "%s\n", s);
+}
+
+void flyyerror(YYLTYPE location, char* format, ...) {
+	char error[500];
+	va_list arg_ptr;
+	
+	va_start(arg_ptr, format);
+	vsprintf(error, format, arg_ptr);
+	va_end(arg_ptr);
+	
+	lyyerror(location, error);
 }
