@@ -38,13 +38,37 @@ void hasBraces(YYLTYPE location) {
 }
 
 /**
- * Checks if a function is too long
+ * Checks if a function is too long by it's line count
  */
-void isFunctionTooLong(YYLTYPE location) {
+void isFunctionTooLongByLines(YYLTYPE location) {
 	int MAX_FUNCTION_LENGTH = 100;
 	
 	if (location.last_line - location.first_line + 1 >= MAX_FUNCTION_LENGTH) {
-		lyyerror(location, "Function is too long");
+		lyyerror(location, "Function is too long by lines");
+	}
+}
+
+/**
+ * Checks if a function is too long by it's statement count
+ */
+void isFunctionTooLongByStatements(YYLTYPE location, int progress) {
+	int MAX_FUNCTION_LENGTH = 100;
+	static int statementCount = 0;
+	
+	switch (progress) {
+		case BEGINNING:
+			statementCount = 0;
+			break;
+		case MIDDLE:
+			statementCount++;
+			break;
+		case END:
+			if (statementCount >= MAX_FUNCTION_LENGTH) {
+				lyyerror(location, "Function is too long by statements");
+			}
+			break;
+		default:
+			break;
 	}
 }
 

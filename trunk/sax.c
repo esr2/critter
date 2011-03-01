@@ -71,12 +71,14 @@ void endComment(YYLTYPE location) {
 /*--------- Function -----------------------*/
 void beginFunctionDefinition(YYLTYPE location) {
 	checkForComment(location, "function");
+	isFunctionTooLongByStatements(location, BEGINNING);
 	globalHasComment(location, BEGINNING);
 	tooManyFunctionsInFile(location, MIDDLE);
 }
 
 void endFunctionDefinition(YYLTYPE location) {
-	isFunctionTooLong(location);
+	isFunctionTooLongByLines(location);
+	isFunctionTooLongByStatements(location, END);
 	globalHasComment(location, END);
 }
 
@@ -211,7 +213,7 @@ void beginStatement(YYLTYPE location) {
 }
 
 void endStatement(YYLTYPE location) {
-	
+	isFunctionTooLongByStatements(location, MIDDLE);
 }
 
 void registerDefineIntegralType(YYLTYPE location) {
