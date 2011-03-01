@@ -63,66 +63,75 @@ static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE
 	while (len >= 0 && locationIsLessOrEqual(location, 
 											 DynArray_get(locationsArray, len),
 											 matchWhole)) {
+		/* remove function and location from the stacks */
 		loc = DynArray_removeAt(locationsArray, len);
 		assert(loc != NULL);
-		
 		func = DynArray_removeAt(functionCallsArray, len);
 		assert(func != NULL);
 		
+		/* add the function and location to the temporary stacks */
+		DynArray_add(locations, loc);
+		DynArray_add(functions, func);
+		len--;
+		
+		/* push identifiers and constants onto their own stacks to preserve
+		   proper ordering */
 		if (func == popIdentifier || func == popConstant) { 
 			DynArray_T stack = NULL;
-			DynArray_T temporary = NULL;
+			DynArray_T temporaryStack = NULL;
 			
 			if (func == popIdentifier) {
 				stack = identifiersArray;
-				temporary = identifiers;
+				temporaryStack = identifiers;
 			} else {
 				stack = constantsArray;
-				temporary = constants;
+				temporaryStack = constants;
 			}
 			assert(stack);
-			assert(temporary);
+			assert(temporaryStack);
 			
 			l = DynArray_getLength(stack) - 1;
 			text = DynArray_removeAt(stack, l);
 			assert(text != NULL);
 			
-			DynArray_add(temporary, text);
+			DynArray_add(temporaryStack, text);
 		}
 		
-		DynArray_add(locations, loc);
-		DynArray_add(functions, func);
-		len--;
 	}
 	
+	/* if there is a beginning call, make it */
 	i = DynArray_getLength(locations) - 1;
 	if (beginCall) {
 		loc = DynArray_get(locations, i);
 		beginCall(*loc);
 	}
 	
+	/* pop off all the items on the temporary stacks to preserve ordering */
 	for (; i >=0; i--) {
+		/* remove and call functions */
 		loc = DynArray_removeAt(locations, i);
 		func = DynArray_removeAt(functions, i);
 		
 		(*func)(*loc);
 		lastCalledFunction = func;
 		
+		/* call special functions for identifiers and constants in order to pass the
+		   actual text */
 		if (func == popIdentifier || func == popConstant) { 
-			DynArray_T temporary = NULL;
+			DynArray_T temporaryStack = NULL;
 			void (*function)(YYLTYPE, char*);
 			
 			if (func == popIdentifier) {
-				temporary = identifiers;
+				temporaryStack = identifiers;
 				function = registerIdentifier;
 			} else {
-				temporary = constants;
+				temporaryStack = constants;
 				function = registerConstant;
 			}
-			assert(temporary);
+			assert(temporaryStack);
 			
-			len = DynArray_getLength(temporary) - 1;
-			text = DynArray_removeAt(temporary, len);
+			len = DynArray_getLength(temporaryStack) - 1;
+			text = DynArray_removeAt(temporaryStack, len);
 			
 			function(*loc, text);
 			free(text);
