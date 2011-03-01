@@ -23,7 +23,7 @@ void switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase);
 void tooDeeplyNested(YYLTYPE location, int progress);
 void useEnumNotConstOrDefine(YYLTYPE location, int progress);
 void neverUseGotos(YYLTYPE location);
-void isVariableNameTooShort(YYLTYPE location, char* identifier);
+void isVariableNameTooShort(YYLTYPE location, int progress, char* identifier);
 void isMagicNumber(YYLTYPE location, int progress, char* constant);
 void globalHasComment(YYLTYPE location, int progress);
 void isLoopTooLong(YYLTYPE location);
