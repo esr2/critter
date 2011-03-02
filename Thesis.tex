@@ -113,7 +113,7 @@ From a different point of view, this problem can be formulated in terms of softw
 Namely, there are two perspectives on software quality: that of the user and that of the programmer. 
 Users evaluate software on whether or not it behaves as it ought to. In contrast, programmers evaluate 
 software on whether or not it is easily maintainable. Minimally, maintainability implies that 
-code is easy to read and update. Evaluating the user’s perspective of a program is possible and most 
+code is easy to read and update. Evaluating the user's perspective of a program is possible and most 
 easily accomplished through automated testing. Though it is possible to evaluate the programmers' 
 perspective, tools that do so only check for certain qualities. Unfortunately, code quality is 
 subjective, any tool that only performs pre-defined inspections will never be satisfactory to every 
@@ -122,14 +122,25 @@ programmer.
 The biggest reason to perform semantic error checking is to improve readability (the 
 ease with which another programmer can understand a piece of code). In the same way that 
 grammatical errors in a paper often confound its underlying arguments, poorly written code can easily 
-obscure its underlying function. Furthermore, readable code is easy to revise and update later.  In an 
-industrial or academic setting, where it is necessary to read or edit another's code, maintaining 
-readability is essential. The successful implementation of automated semantic error checking 
-can immediately save work for professors by replacing the process of writing the same set of stylistic 
-comments to many students with a set of automated warnings.
-Students can also directly benefit by applying this tool to their code before submitting assignments --- 
-giving them the chance to improve their grades as well as their coding habits.
-\todoin{separate academia and industry and play up both}
+obscure its underlying function. Furthermore, readable code is easy to revise and update later. 
+
+In the academic world, professors and TA's often read students' code, especially in introductory level
+courses. In these courses, much of the focus is often on enforcing ``good style'' (though the definition 
+varies from professor to professor).  The successful implementation of automated semantic error 
+checking can immediately save work for professors by replacing the process of writing the same set of 
+stylistic comments to many students with a set of automated warnings. Students can also directly 
+benefit by applying this tool to their code before submitting assignments --- giving them the chance to 
+improve their grades as well as their coding habits.
+
+In an industrial setting, where it is necessary to read or edit another's code, maintaining readability is 
+essential. Projects are often handed over to new employees or teams who are then expected to be 
+able to contribute immediately. Poorly organized or written code makes this daunting task 
+very onerous. Most successful software companies employ a codified internal style but the task of 
+enforcement falls to the employees. Most transgressions are simply due to inattention and could 
+easily be solved by an automated reminder system. Such a tool would reduce the need to bother 
+one's peers with simple style errors, allowing the entire team to be more productive. 
+
+\todo{separate academia and industry and play up both -- successful?}
 
 \chapter{Related Products}
 
