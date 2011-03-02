@@ -126,7 +126,7 @@ int compareLocations(const void *element1, const void *element2) {
 		}
 		
 		// Comment inside function body
-		distance = commentLocation->first_line - functionLocation->first_line;
+		distance = commentLocation->first_line - functionLocation->last_line;
 		if (distance <= COMPARE_DISTANCE && distance >= 0) {
 			return 0;
 		}
