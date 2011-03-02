@@ -76,9 +76,9 @@ static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE
 		}
 	}
 	
-	int identifierQPos = DynArray_getLength(identifiersArray) - numIdentifiers - 1;
+	int identifierQPos = DynArray_getLength(identifiersArray) - numIdentifiers;
 	if (identifierQPos < 0) identifierQPos = 0;
-	int constantQPos = DynArray_getLength(constantsArray) - numConstants - 1;
+	int constantQPos = DynArray_getLength(constantsArray) - numConstants;
 	if (constantQPos < 0) constantQPos = 0;
 	
 	/* dequeue function/location pairs until location matches input location */
