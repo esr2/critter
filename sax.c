@@ -74,17 +74,20 @@ void beginFunctionDefinition(YYLTYPE location) {
 	isFunctionTooLongByStatements(location, BEGINNING);
 	globalHasComment(location, BEGINNING);
 	tooManyFunctionsInFile(location, MIDDLE);
+	validateComment(location, BEGIN_FUNCTION, NULL);
 }
 
 void endFunctionDefinition(YYLTYPE location) {
 	isFunctionTooLongByLines(location);
 	isFunctionTooLongByStatements(location, END);
 	globalHasComment(location, END);
+	validateComment(location, END_FUNCTION, NULL);
 }
 
 void beginParameterList(YYLTYPE location) {
 	tooManyParameters(location, BEGINNING);
 	useEnumNotConstOrDefine(location, BEGINNING);
+	validateComment(location, BEGIN_PARAM_LIST, NULL);
 }
 
 void registerParameter(YYLTYPE location) {
@@ -94,6 +97,7 @@ void registerParameter(YYLTYPE location) {
 void endParameterList(YYLTYPE location) {
 	tooManyParameters(location, END);
 	useEnumNotConstOrDefine(location, END);
+	validateComment(location, END_PARAM_LIST, NULL);
 }
 
 /*-- Iteration (not called through hook) ---*/
@@ -177,6 +181,7 @@ void endSwitch(YYLTYPE location) {
 /*----- Statements (some through hook) ----------*/
 void registerIdentifier(YYLTYPE location, char* identifier) {
 	isVariableNameTooShort(location, MIDDLE, identifier);
+	validateComment(location, FOUND_IDENTIFIER, identifier);
 }
 
 void registerConstant(YYLTYPE location, char* constant) {
@@ -245,4 +250,5 @@ void registerReturn(YYLTYPE location) {
 
 void registerReturnSomething(YYLTYPE location) {
 	lastCalledFunction = registerReturnSomething;
+	validateComment(location, RETURNING, NULL);
 }

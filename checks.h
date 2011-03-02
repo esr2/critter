@@ -12,6 +12,21 @@
 
 #include "c.tab.h"
 
+enum {
+	BEGINNING = -1,
+	MIDDLE = 0,
+	END = 1,
+};
+
+enum commandType {
+	BEGIN_FUNCTION,
+	BEGIN_PARAM_LIST,
+	FOUND_IDENTIFIER,
+	END_PARAM_LIST,
+	RETURNING,
+	END_FUNCTION
+};
+
 void isFileTooLong(YYLTYPE location);
 void hasBraces(YYLTYPE location);
 void isFunctionTooLongByLines(YYLTYPE location);
@@ -32,11 +47,6 @@ void isLoopEmpty(YYLTYPE location, void (*beginLoop)(YYLTYPE), char* loopType);
 void isCompoundStatementEmpty(YYLTYPE location, int progress);
 void tooManyFunctionsInFile(YYLTYPE location, int progress);
 void checkIfElsePlacement(YYLTYPE location, int progress);
-
-enum {
-	BEGINNING = -1,
-	MIDDLE = 0,
-	END = 1,
-};
+void validateComment(YYLTYPE location, enum commandType command, char* text);
 
 #endif

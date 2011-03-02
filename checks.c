@@ -15,6 +15,7 @@
 #include "dynarray.h"
 #include "comments.h"
 #include "sax.h"
+#include "locations.h"
 
 /**
  * Check if the file is above a maximum length
@@ -459,4 +460,92 @@ void checkIfElsePlacement(YYLTYPE location, int progress) {
 		default:
 			break;
 	}
+}
+
+/**
+ * Helper function to free text.
+ */
+static void freeText(void* element, void* extra) {
+	free(element);
+}
+
+/**
+ * Make sure function comments have the appropriate contents. Specifically check
+ * that the comment mentions each parameter (by name) and what the function returns.
+ */
+void validateComment(YYLTYPE location, enum commandType command, char* text) {
+	static YYLTYPE *beginFunctionLocation = NULL;
+	static DynArray_T parameters = NULL;
+	static int didReturnSomething;
+	static int inParameterList;
+	static int inFunction;
+	
+	char* commentText = NULL;
+	
+	switch (command) {
+		case BEGIN_FUNCTION:
+			inFunction = 1;
+			beginFunctionLocation = allocateLocation(location);
+			parameters = DynArray_new(0);
+			didReturnSomething = 0;
+			inParameterList = 0;
+			break;
+		case BEGIN_PARAM_LIST:
+			inParameterList++;
+			break;
+		case FOUND_IDENTIFIER:
+			if (inFunction && inParameterList == 1) {
+				DynArray_add(parameters, strdup(text));
+			}
+			break;
+		case END_PARAM_LIST:
+			inParameterList--;
+			break;
+		case RETURNING:
+			didReturnSomething = 1;
+			break;
+		case END_FUNCTION:
+			/* find comment text */
+			commentText = comment_getCommentCloseTo(location, 1);
+			if (commentText == NULL) {
+				/* Error for not having a comment is already handled by checkForComment */
+				return;
+			}
+			
+			/* look for each parameter name */
+			int i;
+			int numParameters = DynArray_getLength(parameters);
+			int numParametersInComment = 0;
+			for (i = 0; i < numParameters; i++) {
+				char *position = strstr(commentText, (char*)DynArray_get(parameters, i));
+				
+				if (position != NULL) {
+					numParametersInComment++;
+				}
+			}
+			
+			if (numParametersInComment < numParameters) {
+				lyyerror(location, "A function's comment should refer to each parameter by name");
+			}
+			
+			/* if didReturnSomething, look for the word 'return' */
+			if (didReturnSomething) {
+				char *position = strstr(commentText, "return");
+				
+				if (position == NULL) {
+					lyyerror(location, 
+							 "A function's comment should explictly state what the function returns");
+				}
+			}
+			
+			/* clean up */
+			inFunction = 0;
+			freeLocations(beginFunctionLocation, NULL);
+			DynArray_map(parameters, freeText, NULL);
+			DynArray_free(parameters);
+			break;
+		default:
+			break;
+	}
+
 }
