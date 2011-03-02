@@ -204,12 +204,12 @@ void endCompoundStatement(YYLTYPE location) {
 
 void beginDeclaration(YYLTYPE location) {
 	isMagicNumber(location, BEGINNING, NULL);
-	globalHasComment(location, MIDDLE);
 	isVariableNameTooShort(location, BEGINNING, NULL);
 }
 
 void endDeclaration(YYLTYPE location) {
 	isMagicNumber(location, END, NULL);
+	globalHasComment(location, MIDDLE);
 	isVariableNameTooShort(location, END, NULL);
 }
 
