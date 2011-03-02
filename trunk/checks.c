@@ -31,9 +31,15 @@ void isFileTooLong(YYLTYPE location) {
 /**
  * Checks if there are braces surrounding an if statement.
  */
-void hasBraces(YYLTYPE location) {
+void hasBraces(YYLTYPE location, char* construct) {
 	if (lastCalledFunction != endCompoundStatement) {
-		lyyerror(location, "Please use braces after all if, else, for and while statements");
+		if (construct == "else" && (lastCalledFunction == endElse ||
+									lastCalledFunction == endIf)) {
+			/* at the end of an else if [else] */
+			return;
+		}
+		
+		flyyerror(location, "Please use braces after all %s statements", construct);
 	}
 	
 }
