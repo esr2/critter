@@ -28,7 +28,7 @@ enum commandType {
 };
 
 void isFileTooLong(YYLTYPE location);
-void hasBraces(YYLTYPE location);
+void hasBraces(YYLTYPE location, char* construct);
 void isFunctionTooLongByLines(YYLTYPE location);
 void isFunctionTooLongByStatements(YYLTYPE location, int progress);
 void tooManyParameters(YYLTYPE location, int progress);
