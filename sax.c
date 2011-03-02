@@ -242,3 +242,7 @@ void registerBreak(YYLTYPE location) {
 void registerReturn(YYLTYPE location) {
 	lastCalledFunction = registerReturn;
 }
+
+void registerReturnSomething(YYLTYPE location) {
+	lastCalledFunction = registerReturnSomething;
+}
