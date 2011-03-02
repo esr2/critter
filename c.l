@@ -211,7 +211,9 @@ void count() {
  * Check the type of a string to see if it is a TYPE_NAME or IDENTIFIER
  */
 int check_type() {
-	if (strcmp(yytext, "size_t") == 0 || strcmp(yytext, "FILE") == 0) {
+	if (strcmp(yytext, "size_t") == 0 || 
+		strcmp(yytext, "FILE") == 0   ||
+		strcmp(yytext, "pid_t") == 0) {
 		return TYPE_NAME;
 	}
 
