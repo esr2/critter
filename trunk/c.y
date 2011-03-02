@@ -473,7 +473,7 @@ jump_statement
 	| CONTINUE ';'			{registerContinue(@$);}
 	| BREAK ';'				{registerBreak(@$);}
 	| RETURN ';'			{registerReturn(@$);}
-	| RETURN expression ';'	{registerReturn(@$);}
+	| RETURN expression ';'	{registerReturnSomething(@$);}
 	;
 
 translation_unit
