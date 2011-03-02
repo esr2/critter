@@ -91,7 +91,7 @@ static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE
 			beginCall = NULL;
 		}
 		
-		/* remove function and location from the stacks */
+		/* remove function and location from the queues */
 		loc = DynArray_removeAt(locationsArray, i);
 		assert(loc != NULL);
 		func = DynArray_removeAt(functionCallsArray, i);
