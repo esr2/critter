@@ -236,7 +236,6 @@ void *DynArray_removeAt(DynArray_T oDynArray, int iIndex)
 /*--------------------------------------------------------------------*/
 
 void DynArray_toArray(DynArray_T oDynArray, void **ppvArray)
-   
 /* Fill ppvArray with the elements of oDynArray.
    It is a checked runtime error for oDynArray or ppvArray to be NULL.
    It is an unchecked runtime error for *ppvArray to be too small
@@ -395,7 +394,6 @@ int DynArray_search(DynArray_T oDynArray, void *pvSoughtElement,
 
 int DynArray_backwardsSearch(DynArray_T oDynArray, void *pvSoughtElement,
                     int (*pfCompare)(const void *pvElement1, const void *pvElement2))
-   
 /* Linear search oDynArray for *pvSoughtElement using *pfCompare to
    determine equality.  Return the index at which *pvSoughtElement
    is found, or -1 if there is no such index.
@@ -422,7 +420,6 @@ int DynArray_backwardsSearch(DynArray_T oDynArray, void *pvSoughtElement,
 
 int DynArray_bsearch(DynArray_T oDynArray, void *pvSoughtElement,
                      int (*pfCompare)(const void *pvElement1, const void *pvElement2))
-   
 /* Binary search oDynArray for *pvSoughtElement using *pfCompare to
    determine equality.  Return the index at which *pvSoughtElement
    is found, or -1 if there is no such index.
