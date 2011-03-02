@@ -231,6 +231,10 @@ void h_endExpressionStatement(YYLTYPE location) {
 	lastCalledFunction = endStatement;
 }
 
+void h_registerExpression(YYLTYPE location) {
+	popUntil(location, 0, NULL);
+}
+
 /*------------ Function ----------------------*/
 void h_beginFunctionDefinition(YYLTYPE location) {
 	beginFunctionDefinition(location);

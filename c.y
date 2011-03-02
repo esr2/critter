@@ -195,8 +195,8 @@ assignment_operator
 	;
 
 expression
-	: assignment_expression
-	| expression ',' assignment_expression
+	: assignment_expression {h_registerExpression(@$);}
+	| expression ',' assignment_expression {h_registerExpression(@3);}
 	;
 
 constant_expression
