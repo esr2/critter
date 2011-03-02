@@ -34,9 +34,9 @@ void tooManyFunctionsInFile(YYLTYPE location, int progress);
 void checkIfElsePlacement(YYLTYPE location, int progress);
 
 enum {
-	END = 1,
+	BEGINNING = -1,
 	MIDDLE = 0,
-	BEGINNING = -1
+	END = 1,
 };
 
 #endif
