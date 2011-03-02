@@ -237,7 +237,7 @@ void h_beginFunctionDefinition(YYLTYPE location) {
 	lastCalledFunction = beginFunctionDefinition;
 	
 	/* send appropriate calls for declaration_specifier, declarator etc */
-	popUntil(location, 1, NULL);
+	popUntil(location, 0, NULL);
 }
 
 void h_beginParameterList(YYLTYPE location) {
