@@ -4,6 +4,7 @@ run:
 	a.out test.c
 
 test:
+	cp output.txt output_old.txt
 	tester.sh 2> output.txt
 
 all: generate main.c checks.c dynarray.c sax.c comments.c hooks.c locations.c
@@ -22,4 +23,4 @@ clean:
 	rm -rf *.dSYM
 
 spotless: clean
-	rm -f output.txt
+	rm -f output.txt output_old.txt

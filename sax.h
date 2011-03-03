@@ -12,7 +12,10 @@
 
 #include "c.tab.h"
 
-void (*lastCalledFunction)(YYLTYPE);
+void (*lastCalled_get())(YYLTYPE);
+void lastCalled_set(void (*func)(YYLTYPE));
+void lastCalled_setEndComment();
+int lastCalled_getWasComment();
 
 /*--------- Overall -----------------------*/
 void beginFile(char* filename);

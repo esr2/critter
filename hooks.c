@@ -98,7 +98,7 @@ static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE
 		assert(func != NULL);
 		
 		(*func)(*loc);
-		lastCalledFunction = func;
+		lastCalled_set(func);
 		
 		/* call special functions for identifiers and constants in order to pass the
 		 actual text */
@@ -145,7 +145,7 @@ void h_beginFile(char* filename) {
  */
 void h_endFile(YYLTYPE location) {
 	endFile(location);
-	lastCalledFunction = endFile;
+	lastCalled_set(endFile);
 }
 
 /**
@@ -163,7 +163,7 @@ void h_beginProgram() {
 	assert(identifiersArray != NULL);
 	assert(constantsArray != NULL);
 	beginProgram();
-	lastCalledFunction = beginProgram;
+	lastCalled_set(beginProgram);
 }
 
 /**
@@ -212,7 +212,7 @@ void h_registerConstantText(char* constant) {
 void h_endDeclaration(YYLTYPE location) {
 	popUntil(location, 0, beginDeclaration);
 	endDeclaration(location);
-	lastCalledFunction = endDeclaration;
+	lastCalled_set(endDeclaration);
 }
 
 void h_beginDirectDeclarator(YYLTYPE location) {
@@ -228,7 +228,7 @@ void h_endDirectDeclarator(YYLTYPE location) {
 void h_endExpressionStatement(YYLTYPE location) {
 	popUntil(location, 0, beginStatement);
 	endStatement(location);
-	lastCalledFunction = endStatement;
+	lastCalled_set(endStatement);
 }
 
 void h_registerExpression(YYLTYPE location) {
@@ -238,7 +238,7 @@ void h_registerExpression(YYLTYPE location) {
 /*------------ Function ----------------------*/
 void h_beginFunctionDefinition(YYLTYPE location) {
 	beginFunctionDefinition(location);
-	lastCalledFunction = beginFunctionDefinition;
+	lastCalled_set(beginFunctionDefinition);
 	
 	/* send appropriate calls for declaration_specifier, declarator etc */
 	popUntil(location, 0, NULL);
