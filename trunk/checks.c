@@ -32,9 +32,9 @@ void isFileTooLong(YYLTYPE location) {
  * Checks if there are braces surrounding an if statement.
  */
 void hasBraces(YYLTYPE location, char* construct) {
-	if (lastCalledFunction != endCompoundStatement) {
-		if (construct == "else" && (lastCalledFunction == endElse ||
-									lastCalledFunction == endIf)) {
+	if (lastCalled_get() != endCompoundStatement) {
+		if (construct == "else" && (lastCalled_get() == endElse ||
+									lastCalled_get() == endIf)) {
 			/* at the end of an else if [else] */
 			return;
 		}
@@ -357,7 +357,7 @@ void isLoopTooLong(YYLTYPE location) {
  * Check that loops are not empty.
  */
 void isLoopEmpty(YYLTYPE location, void (*beginLoop)(YYLTYPE), char* loopType) {
-	if (lastCalledFunction == beginLoop) {
+	if (lastCalled_get() == beginLoop) {
 		flyyerror(location, "Do not use empty %s loops", loopType);
 	}
 }
@@ -371,10 +371,10 @@ void isCompoundStatementEmpty(YYLTYPE location, int progress) {
 	
 	switch (progress) {
 		case BEGINNING:
-			context = lastCalledFunction;
+			context = lastCalled_get();
 			break;
 		case END:
-			if (lastCalledFunction == beginCompoundStatement) {
+			if (lastCalled_get() == beginCompoundStatement) {
 				/* create a good error message */
 				char *parent = NULL;
 				
@@ -432,7 +432,7 @@ void checkIfElsePlacement(YYLTYPE location, int progress) {
 	
 	switch (progress) {
 		case BEGINNING:
-			ifIsBracketed = (lastCalledFunction == endCompoundStatement);
+			ifIsBracketed = (lastCalled_get() == endCompoundStatement);
 			ifLastLine = location.last_line;
 			/* check that, if bracketed, appears on multiple lines */
 			if (ifIsBracketed && ((location.last_line - location.first_line) <= 0)) {
