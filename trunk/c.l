@@ -243,12 +243,15 @@ int newfile(char *fn) {
 	FILE *f = fopen(fn, "r");
 	/* if not local then check usr/include */
 	if (!f) {
+		/* PUT BACK IN WHEN CAN PARSE THROUGH DEFINES
 		char *prefix =  "/usr/include/";
 		char *filename = calloc(strlen(fn)+strlen(prefix)+5, 1);
 		strcpy(filename, prefix);
 		strcpy(filename+strlen(prefix), fn);
 		f = fopen(filename, "r");
-		if (!f) {perror(fn); return 0;}
+		if (!f) {perror(fn); return 0;} */
+		perror(fn);
+		return 0;
 	} 
 	/* add file to included list */
 	addSymbol(fn);
