@@ -24,9 +24,10 @@ void isFileTooLong(YYLTYPE location) {
 	int MAX_FILE_LENGTH = 200;
 	
 	if (location.first_line > MAX_FILE_LENGTH) {
-		flyyerror(location, 
-				 "File is too long, should be less than %d lines",
-				 MAX_FILE_LENGTH);
+		flyyerror(ERROR_NORMAL,
+				  location, 
+				  "File is too long, should be less than %d lines",
+				  MAX_FILE_LENGTH);
 	}
 }
 
@@ -41,7 +42,10 @@ void hasBraces(YYLTYPE location, char* construct) {
 			return;
 		}
 		
-		flyyerror(location, "Please use braces after all %s statements", construct);
+		flyyerror(ERROR_NORMAL,
+				  location, 
+				  "Please use braces after all %s statements",
+				  construct);
 	}
 	
 }
@@ -53,9 +57,10 @@ void isFunctionTooLongByLines(YYLTYPE location) {
 	int MAX_FUNCTION_LENGTH = 55;
 	
 	if (location.last_line - location.first_line + 1 >= MAX_FUNCTION_LENGTH) {
-		flyyerror(location, 
-				 "Function is too long by line count, should be less than %d lines",
-				 MAX_FUNCTION_LENGTH);
+		flyyerror(ERROR_NORMAL,
+				  location, 
+				  "Function is too long by line count, should be less than %d lines",
+				  MAX_FUNCTION_LENGTH);
 	}
 }
 
@@ -75,7 +80,8 @@ void isFunctionTooLongByStatements(YYLTYPE location, int progress) {
 			break;
 		case END:
 			if (statementCount >= MAX_FUNCTION_LENGTH) {
-				flyyerror(location, 
+				flyyerror(ERROR_NORMAL,
+						  location, 
 						  "Function is too long by statement count, should be less than %d statements",
 						  MAX_FUNCTION_LENGTH);
 			}
@@ -108,7 +114,8 @@ void tooManyParameters(YYLTYPE location, int progress) {
 			break;
 		case END:
 			if (numParameters >= MAX_NUM_PARAMETERS && nestedListLevel == 0) {
-				flyyerror(location,
+				flyyerror(ERROR_HIGH,
+						  location,
 						  "Please use less than %d function parameters, you used %d",
 						  MAX_NUM_PARAMETERS, numParameters);
 			}
@@ -123,7 +130,7 @@ void tooManyParameters(YYLTYPE location, int progress) {
  * Throws an error on C++ style single line comments.
  */
 void CPlusPlusComments(YYLTYPE location) {
-	lyyerror(location, "Do not use C++ style comments");
+	lyyerror(ERROR_NORMAL, location, "Do not use C++ style comments");
 }
 
 /**
@@ -134,8 +141,10 @@ void checkForComment(YYLTYPE location, char* construct) {
 
 	if (text == NULL) {
 		// comment not found
-		flyyerror(location, "Please include a descriptive comment above each %s",
-						  construct);
+		flyyerror(ERROR_HIGH,
+				  location,
+				  "Please include a descriptive comment above each %s",
+				  construct);
 	} else {
 		//printf("comment is %s\n", text);
 	}
@@ -158,7 +167,7 @@ void switchHasDefault(YYLTYPE location, int progress) {
 			break;
 		case END:
 			if (!found && started) {
-				lyyerror(location, "Always include a default in switch statements");
+				lyyerror(ERROR_HIGH, location, "Always include a default in switch statements");
 			}
 			started = 0;
 			break;
@@ -193,7 +202,8 @@ void switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase) {
 		case END:
 			if (numCases != numBreaks) {
 				int missing = numCases - numBreaks;
-				flyyerror(location, 
+				flyyerror(ERROR_HIGH,
+						  location, 
 						  "Each case/default in a switch statement should have a break statement, you're missing %d",
 						  missing);
 			}
@@ -221,7 +231,7 @@ void tooDeeplyNested(YYLTYPE location, int progress) {
 			/* complain only at the highest point which is too deep -- i.e. 
 			 * avoid complaining on each further offense/level past the max */
 			if (nestedLevel == MAX_NESTING_LEVEL) {
-				lyyerror(location, "This area is too deeply nested, consider refactoring");
+				lyyerror(ERROR_HIGH, location, "This area is too deeply nested, consider refactoring");
 			}
 			nestedLevel--;
 			break;
@@ -244,7 +254,7 @@ void useEnumNotConstOrDefine(YYLTYPE location, int progress) {
 			break;
 		case MIDDLE:
 			if (!inParameterList) {
-				//lyyerror(location, "It would be better to use enum to define integral constants");
+				//lyyerror(ERROR_NORMAL, location, "It would be better to use enum to define integral constants");
 			}
 			break;
 		case END:
@@ -258,7 +268,7 @@ void useEnumNotConstOrDefine(YYLTYPE location, int progress) {
  * Error on any use of a GOTO.
  */
 void neverUseGotos(YYLTYPE location) {
-	lyyerror(location, "Never use GOTO statements");
+	lyyerror(ERROR_HIGH, location, "Never use GOTO statements");
 }
 
 /**
@@ -286,7 +296,8 @@ void isVariableNameTooShort(YYLTYPE location, int progress, char* identifier) {
 						}
 					}
 					
-					flyyerror(location, 
+					flyyerror(ERROR_NORMAL,
+							  location, 
 							  "Variable/function name '%s' is too short",
 							  identifier);
 				}
@@ -327,7 +338,7 @@ void isMagicNumber(YYLTYPE location, int progress, char* constant) {
 					}
 				}
 				
-				lyyerror(location, "Do not use magic numbers");
+				lyyerror(ERROR_HIGH, location, "Do not use magic numbers");
 			}
 			break;
 		case END:
@@ -368,9 +379,10 @@ void isLoopTooLong(YYLTYPE location) {
 	int MAX_LOOP_LENGTH = 35;
 	
 	if (location.last_line - location.first_line + 1 >= MAX_LOOP_LENGTH) {
-		flyyerror(location, 
-				 "Loop is too long, should be less than %d lines; consider pulling out the code into its own function",
-				 MAX_LOOP_LENGTH);
+		flyyerror(ERROR_NORMAL,
+				  location, 
+				  "Loop is too long, should be less than %d lines; consider pulling out the code into its own function",
+				  MAX_LOOP_LENGTH);
 	}
 }
 
@@ -396,9 +408,9 @@ void isCompoundStatementEmpty(YYLTYPE location, int progress) {
 				else if (context == beginDoWhile) { parent = "doWhile loops"; }
 				
 				if (parent) {
-					flyyerror(location, "Do not use empty %s", parent);
+					flyyerror(ERROR_HIGH, location, "Do not use empty %s", parent);
 				} else {
-					lyyerror(location, "Do not use empty block statements");
+					lyyerror(ERROR_HIGH, location, "Do not use empty block statements");
 				}
 			}
 			break;
@@ -420,7 +432,8 @@ void tooManyFunctionsInFile(YYLTYPE location, int progress) {
 			break;
 		case END:
 			if (numFunctions > MAX_FUNCTIONS_PER_FILE) {
-				flyyerror(location, 
+				flyyerror(ERROR_LOW,
+						  location, 
 						  "There are too many functions in this file. Please limit yourself to %d",
 						  MAX_FUNCTIONS_PER_FILE);
 			}
@@ -449,7 +462,7 @@ void checkIfElsePlacement(YYLTYPE location, int progress) {
 			ifLastLine = location.last_line;
 			/* check that, if bracketed, appears on multiple lines */
 			if (ifIsBracketed && ((location.last_line - location.first_line) <= 0)) {
-				lyyerror(location, "When using braces with an if statement, use multiple lines");
+				lyyerror(ERROR_LOW, location, "When using braces with an if statement, use multiple lines");
 				hadError = 1;
 			}
 			break;
@@ -464,13 +477,14 @@ void checkIfElsePlacement(YYLTYPE location, int progress) {
 			if (ifIsBracketed) {
 				/* else should be on same line as '}' */
 				if (location.first_line != ifLastLine) {
-					lyyerror(location, 
+					lyyerror(ERROR_LOW,
+							 location, 
 							 "Please put the else on the same line as the closing if brace");
 				}
 			} else {
 				/* else should be on line after the if statement finishes */
 				if ((location.first_line - ifLastLine) <= 0) {
-					lyyerror(location, "Please put the else on the line after the if");
+					lyyerror(ERROR_LOW, location, "Please put the else on the line after the if");
 				}
 			}
 			
@@ -546,7 +560,9 @@ void validateComment(YYLTYPE location, enum commandType command, char* text) {
 			}
 			
 			if (numParametersInComment < numParameters) {
-				lyyerror(location, "A function's comment should refer to each parameter by name");
+				lyyerror(ERROR_HIGH, 
+						 location, 
+						 "A function's comment should refer to each parameter by name");
 			}
 			
 			/* if didReturnSomething, look for the word 'return' */
@@ -554,7 +570,8 @@ void validateComment(YYLTYPE location, enum commandType command, char* text) {
 				char *position = strstr(commentText, "return");
 				
 				if (position == NULL) {
-					lyyerror(location, 
+					lyyerror(ERROR_HIGH,
+							 location, 
 							 "A function's comment should explictly state what the function returns");
 				}
 			}
