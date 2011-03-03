@@ -21,7 +21,7 @@
  * Check if the file is above a maximum length
  */
 void isFileTooLong(YYLTYPE location) {
-	int MAX_FILE_LENGTH = 100;
+	int MAX_FILE_LENGTH = 200;
 	
 	if (location.first_line > MAX_FILE_LENGTH) {
 		flyyerror(location, 
@@ -50,7 +50,7 @@ void hasBraces(YYLTYPE location, char* construct) {
  * Checks if a function is too long by it's line count
  */
 void isFunctionTooLongByLines(YYLTYPE location) {
-	int MAX_FUNCTION_LENGTH = 100;
+	int MAX_FUNCTION_LENGTH = 55;
 	
 	if (location.last_line - location.first_line + 1 >= MAX_FUNCTION_LENGTH) {
 		flyyerror(location, 
@@ -63,7 +63,7 @@ void isFunctionTooLongByLines(YYLTYPE location) {
  * Checks if a function is too long by it's statement count
  */
 void isFunctionTooLongByStatements(YYLTYPE location, int progress) {
-	int MAX_FUNCTION_LENGTH = 100;
+	int MAX_FUNCTION_LENGTH = 50;
 	static int statementCount = 0;
 	
 	switch (progress) {
@@ -207,11 +207,11 @@ void switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase) {
  * Checks whether a region of code (i.e. a compound statement) nests too deeply.
  */
 void tooDeeplyNested(YYLTYPE location, int progress) {
-	int MAX_NESTING_LEVEL = 2;
+	int MAX_NESTING_LEVEL = 3; /* Acceptable is function, loop, if.
+								  Anything after is too much */
+								
+	/* Statement inside just a function is at level 0 */
 	static int nestedLevel = -1;
-	static int lastLevel = -1;
-	
-	lastLevel = nestedLevel;
 	
 	switch (progress) {
 		case BEGINNING:
@@ -265,18 +265,31 @@ void neverUseGotos(YYLTYPE location) {
  * Error if a variable name is less than a certain minimum length. 
  */
 void isVariableNameTooShort(YYLTYPE location, int progress, char* identifier) {
-	int MINIMUM_VARIABLE_NAME_LENGTH = 1;
+	int MINIMUM_VARIABLE_NAME_LENGTH = 3;
 	static int inDeclaration = 0;
+	char *acceptableVariables[3] = {"i", "j", "c"};
+	int numAcceptable = 3;
 	
 	switch (progress) {
 		case BEGINNING:
 			inDeclaration++;
 			break;
 		case MIDDLE:
-			if (inDeclaration && strlen(identifier) < MINIMUM_VARIABLE_NAME_LENGTH) {
-				flyyerror(location, 
-						  "Variable/function name '%s' is too short",
-						  identifier);
+			if (inDeclaration) {
+				if (strlen(identifier) < MINIMUM_VARIABLE_NAME_LENGTH) {
+					int i;
+					
+					/* see if number is within the acceptableVariables array */
+					for (i = 0; i < numAcceptable; i++) {
+						if (strcmp(acceptableVariables[i], identifier) == 0) {
+							return;
+						}
+					}
+					
+					flyyerror(location, 
+							  "Variable/function name '%s' is too short",
+							  identifier);
+				}
 			}
 			break;
 		case END:
@@ -293,7 +306,7 @@ void isVariableNameTooShort(YYLTYPE location, int progress, char* identifier) {
  * the rest of the code).
  */
 void isMagicNumber(YYLTYPE location, int progress, char* constant) {
-	int acceptableNumbers[2] = {0, 1};
+	int acceptableNumbers[3] = {0, 1, 2};
 	int numAcceptable = sizeof(acceptableNumbers)/sizeof(int);
 	
 	static int inDeclaration = 0;
@@ -352,7 +365,7 @@ void globalHasComment(YYLTYPE location, int progress) {
  * Check that the loop length is less than a maximum.
  */
 void isLoopTooLong(YYLTYPE location) {
-	int MAX_LOOP_LENGTH = 20;
+	int MAX_LOOP_LENGTH = 35;
 	
 	if (location.last_line - location.first_line + 1 >= MAX_LOOP_LENGTH) {
 		flyyerror(location, 
