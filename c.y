@@ -20,6 +20,12 @@
 		int last_column;
 		char *filename;
 	} YYLTYPE;
+	
+	enum errorLevel {
+		ERROR_HIGH,
+		ERROR_NORMAL,
+		ERROR_LOW,
+	};
 #endif
 	
 # define YYLLOC_DEFAULT(Current, Rhs, N)								\
@@ -495,26 +501,35 @@ function_definition
 
 %%
 
-yyerror(char *s)
-{
-	if(yylloc.first_line) {
-		fprintf(stderr, "%s:%d.%d-%d.%d: error: ", yylloc.filename,
-				yylloc.first_line, yylloc.first_column, yylloc.last_line,
-				yylloc.last_column);
-	} 
-	fprintf(stderr, "%s\n", s);
-}
-
-void lyyerror(YYLTYPE t, char *s)
-{
+void lyyerror(enum errorLevel priority, YYLTYPE t, char *s) {
+	char *level;
+	switch (priority) {
+		case ERROR_HIGH:
+			level = "big problem";
+			break;
+		case ERROR_NORMAL:
+			level = "error";
+			break;
+		case ERROR_LOW:
+			level = "low priority";
+			break;
+		default:
+			break;
+	}
+	
 	if(t.first_line) {
-		fprintf(stderr, "%s:%d.%d-%d.%d: error: ", t.filename, t.first_line,
-				t.first_column, t.last_line, t.last_column);
+		fprintf(stderr, "%s:%d.%d-%d.%d: %s: ", t.filename, t.first_line,
+				t.first_column, t.last_line, t.last_column, level);
 	} 
 	fprintf(stderr, "%s\n", s);
 }
 
-void flyyerror(YYLTYPE location, char* format, ...) {
+yyerror(enum errorLevel priority, char *s)
+{
+	lyyerror(priority, yylloc, s);
+}
+
+void flyyerror(enum errorLevel priority, YYLTYPE location, char* format, ...) {
 	char error[500];
 	va_list arg_ptr;
 	
@@ -522,5 +537,5 @@ void flyyerror(YYLTYPE location, char* format, ...) {
 	vsprintf(error, format, arg_ptr);
 	va_end(arg_ptr);
 	
-	lyyerror(location, error);
+	lyyerror(priority, location, error);
 }
