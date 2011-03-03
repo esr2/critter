@@ -362,16 +362,6 @@ void isLoopTooLong(YYLTYPE location) {
 }
 
 /**
- * Check that loops are not empty.
- */
-void isLoopEmpty(YYLTYPE location, void (*beginLoop)(YYLTYPE), char* loopType) {
-	if (lastCalled_get() == beginLoop) {
-		flyyerror(location, "Do not use empty %s loops", loopType);
-	}
-}
-
-
-/**
  * Check if compound statement is empty
  */
 void isCompoundStatementEmpty(YYLTYPE location, int progress) {
