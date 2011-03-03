@@ -24,7 +24,9 @@ void isFileTooLong(YYLTYPE location) {
 	int MAX_FILE_LENGTH = 100;
 	
 	if (location.first_line > MAX_FILE_LENGTH) {
-		lyyerror(location, "File is too long");
+		flyyerror(location, 
+				 "File is too long, should be less than %d lines",
+				 MAX_FILE_LENGTH);
 	}
 }
 
@@ -51,7 +53,9 @@ void isFunctionTooLongByLines(YYLTYPE location) {
 	int MAX_FUNCTION_LENGTH = 100;
 	
 	if (location.last_line - location.first_line + 1 >= MAX_FUNCTION_LENGTH) {
-		lyyerror(location, "Function is too long by lines");
+		flyyerror(location, 
+				 "Function is too long by line count, should be less than %d lines",
+				 MAX_FUNCTION_LENGTH);
 	}
 }
 
@@ -71,7 +75,9 @@ void isFunctionTooLongByStatements(YYLTYPE location, int progress) {
 			break;
 		case END:
 			if (statementCount >= MAX_FUNCTION_LENGTH) {
-				lyyerror(location, "Function is too long by statements");
+				flyyerror(location, 
+						  "Function is too long by statement count, should be less than %d statements",
+						  MAX_FUNCTION_LENGTH);
 			}
 			break;
 		default:
@@ -188,7 +194,7 @@ void switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase) {
 			if (numCases != numBreaks) {
 				int missing = numCases - numBreaks;
 				flyyerror(location, 
-						  "Each case in a switch statement should have a break statement, you're missing %d",
+						  "Each case/default in a switch statement should have a break statement, you're missing %d",
 						  missing);
 			}
 			break;
@@ -349,7 +355,9 @@ void isLoopTooLong(YYLTYPE location) {
 	int MAX_LOOP_LENGTH = 20;
 	
 	if (location.last_line - location.first_line + 1 >= MAX_LOOP_LENGTH) {
-		lyyerror(location, "Loop is too long, consider pulling out code into its own function");
+		flyyerror(location, 
+				 "Loop is too long, should be less than %d lines; consider pulling out the code into its own function",
+				 MAX_LOOP_LENGTH);
 	}
 }
 
@@ -409,7 +417,9 @@ void tooManyFunctionsInFile(YYLTYPE location, int progress) {
 			break;
 		case END:
 			if (numFunctions > MAX_FUNCTIONS_PER_FILE) {
-				lyyerror(location, "There are too many functions in this file");
+				flyyerror(location, 
+						  "There are too many functions in this file. Please limit yourself to %d",
+						  MAX_FUNCTIONS_PER_FILE);
 			}
 			numFunctions = 0;
 			break;
