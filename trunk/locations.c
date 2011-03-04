@@ -217,7 +217,7 @@ int isLocationWithin(const void *element1, const void *element2) {
 		return 1;
 	}
 	
-	int bottomDistance = soughtLocation->first_line - commentLocation->first_line;
+	int bottomDistance = soughtLocation->last_line - commentLocation->last_line;
 	
 	if (bottomDistance < 0) {
 		/* comment ends after soughtLocation */
@@ -225,7 +225,7 @@ int isLocationWithin(const void *element1, const void *element2) {
 	}
 	
 	if ((bottomDistance == 0) && 
-		(soughtLocation->first_column - commentLocation->first_column < 0)) {
+		(soughtLocation->last_column - commentLocation->last_column < 0)) {
 		/* comment ends on the same line as soughtLocation but after the column */
 		return 1;
 	}

@@ -88,7 +88,6 @@ void endComment(YYLTYPE location) {
 
 /*--------- Function -----------------------*/
 void beginFunctionDefinition(YYLTYPE location) {
-	checkForComment(location, "function");
 	isFunctionTooLongByStatements(location, BEGINNING);
 	globalHasComment(location, BEGINNING);
 	tooManyFunctionsInFile(location, MIDDLE);
@@ -208,6 +207,7 @@ void beginCompoundStatement(YYLTYPE location) {
 	isCompoundStatementEmpty(location, BEGINNING);
 	lastCalled_set(beginCompoundStatement);
 	tooDeeplyNested(location, BEGINNING);
+	validateComment(location, BEGIN_FUNCTION_BODY, NULL);
 }
 
 /* location points to the entire statement */

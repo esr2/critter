@@ -512,6 +512,9 @@ void validateComment(YYLTYPE location, enum commandType command, char* text) {
 	static int didReturnSomething;
 	static int inParameterList;
 	static int inFunction;
+	static int isFirstBracket;
+	static int bracketLine;
+	static int bracketColumn;
 	
 	char* commentText = NULL;
 	
@@ -522,6 +525,7 @@ void validateComment(YYLTYPE location, enum commandType command, char* text) {
 			parameters = DynArray_new(0);
 			didReturnSomething = 0;
 			inParameterList = 0;
+			isFirstBracket = 1;
 			break;
 		case BEGIN_PARAM_LIST:
 			inParameterList++;
@@ -536,15 +540,35 @@ void validateComment(YYLTYPE location, enum commandType command, char* text) {
 		case END_PARAM_LIST:
 			inParameterList--;
 			break;
+		case BEGIN_FUNCTION_BODY:
+			if (inFunction && isFirstBracket) {
+				bracketLine = location.first_line;
+				bracketColumn = location.first_column;
+			}
+			isFirstBracket = 0;
+			break;
 		case RETURNING:
 			didReturnSomething = 1;
 			break;
 		case END_FUNCTION:
 			/* find comment text */
-			commentText = comment_getCommentCloseTo(location, 1);
+			commentText = comment_getCommentAbove(*beginFunctionLocation, 1);
 			if (commentText == NULL) {
-				/* Error for not having a comment is already handled by checkForComment */
-				return;
+				YYLTYPE * between = allocateLocation(*beginFunctionLocation);
+				between->first_line = beginFunctionLocation->last_line;
+				between->first_column = beginFunctionLocation->last_column;
+				between->last_line = bracketLine;
+				between->last_column = bracketColumn;
+				
+				commentText = comment_getCommentWithin(*between);
+				freeLocations(between, NULL);
+				
+				if (commentText == NULL) {
+					lyyerror(ERROR_HIGH,
+							 location,
+							 "Please include a descriptive comment above each function");
+					return;
+				}
 			}
 			
 			/* look for each parameter name */
