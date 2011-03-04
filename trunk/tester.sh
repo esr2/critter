@@ -5,6 +5,7 @@ PATHS=(
  "/Users/erinrosenbaum/Documents/Senior_Year/Thesis/ish/fall07/student_94"
  "/Users/erinrosenbaum/Documents/Senior_Year/Thesis/ish/spr09/student_12"
  "/Users/erinrosenbaum/Documents/Senior_Year/Thesis/ish/spr03/student_23"
+ "/Users/erinrosenbaum/Documents/Senior_Year/Thesis/ish/spr02/student_13"
  )
 
 PROGRAM="/Users/erinrosenbaum/Documents/Senior_Year/Thesis/repository/trunk/a.out"
