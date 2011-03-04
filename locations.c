@@ -134,3 +134,101 @@ int compareLocations(const void *element1, const void *element2) {
 	
 	return 1;
 }
+
+/**
+ * Is the comment within compareDistance above the sought location?
+ * Returns 0 if valid and 1 if not.
+ */
+int isLocationAbove(const void *element1, const void *element2) {
+	// taking advantage of how dynarray compares elements
+	YYLTYPE *commentLocation = (YYLTYPE*)element1;
+	YYLTYPE *soughtLocation = (YYLTYPE*)element2;
+	
+	assert(commentLocation != NULL);
+	assert(soughtLocation != NULL);
+	
+	assert(commentLocation->filename != NULL);
+	assert(soughtLocation->filename != NULL);
+	
+	if (strcmp(commentLocation->filename, soughtLocation->filename) == 0) {
+		int distance = soughtLocation->first_line - commentLocation->last_line;
+		if (distance <= COMPARE_DISTANCE && distance >= 0) {
+			return 0;
+		}
+	}
+	
+	return 1;
+}
+
+/**
+ * Is the comment within compareDistance below the sought location?
+ * Returns 0 if valid and 1 if not.
+ */
+int isLocationBelow(const void *element1, const void *element2) {
+	// taking advantage of how dynarray compares elements
+	YYLTYPE *commentLocation = (YYLTYPE*)element1;
+	YYLTYPE *soughtLocation = (YYLTYPE*)element2;
+	
+	assert(commentLocation != NULL);
+	assert(soughtLocation != NULL);
+	
+	assert(commentLocation->filename != NULL);
+	assert(soughtLocation->filename != NULL);
+	
+	if (strcmp(commentLocation->filename, soughtLocation->filename) == 0) {
+		int distance = commentLocation->first_line - soughtLocation->last_line;
+		if (distance <= COMPARE_DISTANCE && distance >= 0) {
+			return 0;
+		}
+	}
+	
+	return 1;
+}
+
+/**
+ * Is the comment within the sought location?
+ * Returns 0 if valid and 1 if not.
+ */
+int isLocationWithin(const void *element1, const void *element2) {
+	// taking advantage of how dynarray compares elements
+	YYLTYPE *commentLocation = (YYLTYPE*)element1;
+	YYLTYPE *soughtLocation = (YYLTYPE*)element2;
+	
+	assert(commentLocation != NULL);
+	assert(soughtLocation != NULL);
+	
+	assert(commentLocation->filename != NULL);
+	assert(soughtLocation->filename != NULL);
+	
+	if (strcmp(commentLocation->filename, soughtLocation->filename) != 0) {
+		return 1;
+	}
+	
+	int topDistance = commentLocation->first_line - soughtLocation->first_line;
+	
+	if (topDistance < 0) {
+		/* comment starts above soughtLocation */
+		return 1;
+	}
+	
+	if ((topDistance == 0) && 
+		(commentLocation->first_column - soughtLocation->first_column < 0)) {
+		/* comment starts on the same line as soughtLocation but before the column */
+		return 1;
+	}
+	
+	int bottomDistance = soughtLocation->first_line - commentLocation->first_line;
+	
+	if (bottomDistance < 0) {
+		/* comment ends after soughtLocation */
+		return 1;
+	}
+	
+	if ((bottomDistance == 0) && 
+		(soughtLocation->first_column - commentLocation->first_column < 0)) {
+		/* comment ends on the same line as soughtLocation but after the column */
+		return 1;
+	}
+	
+	return 0;
+}

@@ -109,3 +109,56 @@ char* comment_getCommentCloseTo(YYLTYPE location, int compareDistance) {
 	
 	return text;
 }
+
+/**
+ * Find the comment within compareDistance above the location. Returns the text
+ * of the comment or NULL if not found.
+ */
+char* comment_getCommentAbove(YYLTYPE location, int compareDistance) {
+	int index;
+	char* text = NULL;
+	
+	setCompareDistance(compareDistance);
+	index = DynArray_search(commentLocations, &location, isLocationAbove);
+	
+	if (index != -1) {
+		text = (char*)DynArray_get(commentTexts, index);
+	}
+	
+	return text;
+}
+
+/**
+ * Find the comment within compareDistance below the location. Returns the text
+ * of the comment or NULL if not found.
+ */
+char* comment_getCommentBelow(YYLTYPE location, int compareDistance) {
+	int index;
+	char* text = NULL;
+	
+	setCompareDistance(compareDistance);
+	index = DynArray_search(commentLocations, &location, isLocationBelow);
+	
+	if (index != -1) {
+		text = (char*)DynArray_get(commentTexts, index);
+	}
+	
+	return text;
+}
+
+/**
+ * Find the comment within compareDistance below the location. Returns the text
+ * of the comment or NULL if not found.
+ */
+char* comment_getCommentWithin(YYLTYPE location) {
+	int index;
+	char* text = NULL;
+	
+	index = DynArray_search(commentLocations, &location, isLocationWithin);
+	
+	if (index != -1) {
+		text = (char*)DynArray_get(commentTexts, index);
+	}
+	
+	return text;
+}
