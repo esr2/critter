@@ -594,9 +594,13 @@ void validateComment(YYLTYPE location, enum commandType command, char* text) {
 				char *position = strstr(commentText, "return");
 				
 				if (position == NULL) {
-					lyyerror(ERROR_HIGH,
-							 location, 
-							 "A function's comment should explictly state what the function returns");
+					position = strstr(commentText, "Return");
+					
+					if (position == NULL) {
+						lyyerror(ERROR_HIGH,
+								 location, 
+								 "A function's comment should explicitly state what the function returns");
+					}
 				}
 			}
 			
