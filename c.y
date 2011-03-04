@@ -524,9 +524,9 @@ void lyyerror(enum errorLevel priority, YYLTYPE t, char *s) {
 	fprintf(stderr, "%s\n", s);
 }
 
-yyerror(enum errorLevel priority, char *s)
+yyerror(char *s)
 {
-	lyyerror(priority, yylloc, s);
+	lyyerror(ERROR_HIGH, yylloc, s);
 }
 
 void flyyerror(enum errorLevel priority, YYLTYPE location, char* format, ...) {
