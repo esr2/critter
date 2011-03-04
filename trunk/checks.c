@@ -507,6 +507,7 @@ static void freeText(void* element, void* extra) {
  * that the comment mentions each parameter (by name) and what the function returns.
  */
 void validateComment(YYLTYPE location, enum commandType command, char* text) {
+	static YYLTYPE *beginFunctionLocation = NULL;
 	static DynArray_T parameters = NULL;
 	static int didReturnSomething;
 	static int inParameterList;
@@ -517,6 +518,7 @@ void validateComment(YYLTYPE location, enum commandType command, char* text) {
 	switch (command) {
 		case BEGIN_FUNCTION:
 			inFunction = 1;
+			beginFunctionLocation = allocateLocation(location);
 			parameters = DynArray_new(0);
 			didReturnSomething = 0;
 			inParameterList = 0;
@@ -576,6 +578,7 @@ void validateComment(YYLTYPE location, enum commandType command, char* text) {
 			
 			/* clean up */
 			inFunction = 0;
+			freeLocations(beginFunctionLocation, NULL);
 			DynArray_map(parameters, freeText, NULL);
 			DynArray_free(parameters);
 			break;
