@@ -137,7 +137,7 @@ void CPlusPlusComments(YYLTYPE location) {
  * Checks for comments before some construct.
  */
 void checkForComment(YYLTYPE location, char* construct) {
-	char* text = comment_getCommentCloseTo(location, 1);
+	char* text = comment_getCommentAbove(location, 1);
 
 	if (text == NULL) {
 		// comment not found

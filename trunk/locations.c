@@ -104,38 +104,6 @@ void setCompareDistance(int distance) {
 }
 
 /**
- * Compare two locations - meant to be used by Dynarray_search. Returns 0 if
- * equal and 1 if not.
- */
-int compareLocations(const void *element1, const void *element2) {
-	// taking advantage of how dynarray compares elements
-	YYLTYPE *commentLocation = (YYLTYPE*)element1;
-	YYLTYPE *functionLocation = (YYLTYPE*)element2;
-	
-	assert(commentLocation != NULL);
-	assert(functionLocation != NULL);
-	
-	assert(commentLocation->filename != NULL);
-	assert(functionLocation->filename != NULL);
-	
-	if (strcmp(commentLocation->filename, functionLocation->filename) == 0) {
-		// Comment before function call
-		int distance = functionLocation->first_line - commentLocation->last_line;
-		if (distance <= COMPARE_DISTANCE && distance >= 0) {
-			return 0;
-		}
-		
-		// Comment inside function body
-		distance = commentLocation->first_line - functionLocation->last_line;
-		if (distance <= COMPARE_DISTANCE && distance >= 0) {
-			return 0;
-		}
-	}
-	
-	return 1;
-}
-
-/**
  * Is the comment within compareDistance above the sought location?
  * Returns 0 if valid and 1 if not.
  */
