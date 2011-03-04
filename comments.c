@@ -93,24 +93,6 @@ void comment_endComment(YYLTYPE location) {
 }
 
 /**
- * Find the comment compareDistance close to location. Returns the text
- * of the comment or NULL if not found.
- */
-char* comment_getCommentCloseTo(YYLTYPE location, int compareDistance) {
-	int index;
-	char* text = NULL;
-	
-	setCompareDistance(compareDistance);
-	index = DynArray_search(commentLocations, &location, compareLocations);
-	
-	if (index != -1) {
-		text = (char*)DynArray_get(commentTexts, index);
-	}
-	
-	return text;
-}
-
-/**
  * Find the comment within compareDistance above the location. Returns the text
  * of the comment or NULL if not found.
  */

@@ -17,7 +17,6 @@ int locationIsLessOrEqual(YYLTYPE location, YYLTYPE* other, int checkAll);
 void freeLocations(void* element, void* extra);
 YYLTYPE* allocateLocation(YYLTYPE location);
 YYLTYPE* copyLocation(YYLTYPE* dest, YYLTYPE* src);
-int compareLocations(const void *element1, const void *element2);
 void setCompareDistance(int distance);
 int isLocationAbove(const void *element1, const void *element2);
 int isLocationBelow(const void *element1, const void *element2);
