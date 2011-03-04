@@ -4,7 +4,7 @@ run:
 	a.out test.c
 
 test:
-	cp output.txt output_old.txt
+	if test -e output.txt; then cp output.txt output_old.txt; fi
 	tester.sh 2> output.txt
 
 all: generate main.c checks.c dynarray.c sax.c comments.c hooks.c locations.c
