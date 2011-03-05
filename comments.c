@@ -93,7 +93,8 @@ void comment_endComment(YYLTYPE location) {
 }
 
 static char* getComment(YYLTYPE *location, 
-						int (*compareFunction)(const void*, const void*)) {
+						int (*compareFunction)(const void*, const void*),
+						YYLTYPE *returnLocation) {
 	int index;
 	char* text = NULL;
 	
@@ -101,6 +102,9 @@ static char* getComment(YYLTYPE *location,
 	
 	if (index != -1) {
 		text = (char*)DynArray_get(commentTexts, index);
+		if (returnLocation != NULL) {
+			*returnLocation = *(YYLTYPE*)DynArray_get(commentLocations, index);
+		}
 	}
 	
 	return text;
@@ -111,26 +115,26 @@ static char* getComment(YYLTYPE *location,
  * Find the comment within compareDistance above the location. Returns the text
  * of the comment or NULL if not found.
  */
-char* comment_getCommentAbove(YYLTYPE location, int compareDistance) {
+char* comment_getCommentAbove(YYLTYPE location, int compareDistance, YYLTYPE *returnLocation) {
 	setCompareDistance(compareDistance);
-	return getComment(&location, isLocationAbove);
+	return getComment(&location, isLocationAbove, returnLocation);
 }
 
 /**
  * Find the comment within compareDistance below the location. Returns the text
  * of the comment or NULL if not found.
  */
-char* comment_getCommentBelow(YYLTYPE location, int compareDistance) {
+char* comment_getCommentBelow(YYLTYPE location, int compareDistance, YYLTYPE *returnLocation) {
 	setCompareDistance(compareDistance);
-	return getComment(&location, isLocationBelow);
+	return getComment(&location, isLocationBelow, returnLocation);
 }
 
 /**
  * Find the comment within compareDistance below the location. Returns the text
  * of the comment or NULL if not found.
  */
-char* comment_getCommentWithin(YYLTYPE location) {
-	return getComment(&location, isLocationWithin);
+char* comment_getCommentWithin(YYLTYPE location, YYLTYPE *returnLocation) {
+	return getComment(&location, isLocationWithin, returnLocation);
 }
 
 /**

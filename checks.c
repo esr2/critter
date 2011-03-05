@@ -137,7 +137,7 @@ void CPlusPlusComments(YYLTYPE location) {
  * Checks for comments before some construct.
  */
 void checkForComment(YYLTYPE location, char* construct) {
-	char* text = comment_getCommentAbove(location, 1);
+	char* text = comment_getCommentAbove(location, 1, NULL);
 
 	if (text == NULL) {
 		// comment not found
@@ -518,7 +518,10 @@ void validateComment(YYLTYPE location, enum commandType command, char* text) {
 	
 	char* commentText = NULL;
 	char* commentTextAbove = NULL;
-	char* commentTextBetween = NULL;
+	char* commentTextBetween = NULL;	
+	YYLTYPE commentLocationAbove;
+	YYLTYPE commentLocationBetween;
+	YYLTYPE* commentLocation = NULL;
 	
 	switch (command) {
 		case BEGIN_FUNCTION:
@@ -554,7 +557,7 @@ void validateComment(YYLTYPE location, enum commandType command, char* text) {
 			break;
 		case END_FUNCTION:
 			/* find comment text */
-			commentTextAbove = comment_getCommentAbove(*beginFunctionLocation, 2);
+			commentTextAbove = comment_getCommentAbove(*beginFunctionLocation, 2, &commentLocationAbove);
 			
 			YYLTYPE * between = allocateLocation(*beginFunctionLocation);
 			between->first_line = beginFunctionLocation->last_line;
@@ -562,12 +565,16 @@ void validateComment(YYLTYPE location, enum commandType command, char* text) {
 			between->last_line = bracketLine;
 			between->last_column = bracketColumn;
 			
-			commentTextBetween = comment_getCommentWithin(*between);
+			commentTextBetween = comment_getCommentWithin(*between, &commentLocationBetween);
 			freeLocations(between, NULL);
 
-			commentText = ((commentTextBetween != NULL) ? 
-						   commentTextBetween : 
-						   commentTextAbove);
+			if (commentTextBetween != NULL) {
+				commentText = commentTextBetween;
+				commentLocation = &commentLocationBetween;
+			} else {
+				commentText = commentTextAbove;
+				commentLocation = &commentLocationAbove;
+			}
 			
 			int commentHasContent = comment_isContentful(commentText);
 			
@@ -576,6 +583,13 @@ void validateComment(YYLTYPE location, enum commandType command, char* text) {
 				lyyerror(ERROR_HIGH,
 						 location,
 						 "Please include a descriptive comment above each function");
+
+				/* clean up */
+				inFunction = 0;
+				freeLocations(beginFunctionLocation, NULL);
+				DynArray_map(parameters, freeText, NULL);
+				DynArray_free(parameters);
+				
 				return;
 			}
 			
@@ -610,6 +624,13 @@ void validateComment(YYLTYPE location, enum commandType command, char* text) {
 								 "A function's comment should explicitly state what the function returns");
 					}
 				}
+			}
+			
+			/* check that the comment is not on the same line as the function declaration */
+			if (commentLocation->first_line == beginFunctionLocation->first_line) {
+				lyyerror(ERROR_NORMAL,
+						 location,
+						 "Please put function comments above the function declaration");
 			}
 			
 			/* clean up */

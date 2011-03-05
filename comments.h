@@ -18,9 +18,9 @@ void comment_freeComments();
 void comment_beginComment(YYLTYPE location, int contiguous);
 void comment_registerComment(char* text);
 void comment_endComment(YYLTYPE location);
-char* comment_getCommentAbove(YYLTYPE location, int compareDistance);
-char* comment_getCommentBelow(YYLTYPE location, int compareDistance);
-char* comment_getCommentWithin(YYLTYPE location);
+char* comment_getCommentAbove(YYLTYPE location, int compareDistance, YYLTYPE *returnLocation);
+char* comment_getCommentBelow(YYLTYPE location, int compareDistance, YYLTYPE *returnLocation);
+char* comment_getCommentWithin(YYLTYPE location, YYLTYPE *returnLocation);
 int comment_isContentful(const char* text);
 
 #endif COMMENTS_INCLUDED
