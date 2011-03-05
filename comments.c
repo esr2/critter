@@ -155,3 +155,45 @@ int comment_isContentful(const char* text) {
 	
 	return 0;
 }
+
+/**
+ * Case insensitive form of strstr. Inspired by http://www.daniweb.com/code/snippet216564.html
+ */
+static char* strstrInsensitive(const char* haystack, const char* needle) {
+	char* hay = (char*)haystack;
+	
+	while (*hay != '\0') {
+		if (toupper(*hay) == toupper(*needle)) {
+			/* matched starting character, loop through rest of needle */
+			const char *h, *n;
+			for (h = hay, n = needle; *h && *n; ++h, ++n )
+			{
+				if ( toupper(*h) != toupper(*n) )
+				{
+					break;
+				}
+			}
+			if (*n == '\0') {
+				/* matched all of 'needle' to null termination, 
+				   return the start of the match */
+				return hay;
+			}
+		}
+		hay++;
+	}
+	
+	return NULL;
+}
+
+/**
+ * Checks to see if the comment contains the needle.
+ */
+int comment_contains(const char* text, const char* needle, int ignoreCase) {
+	if (text == NULL || needle == NULL) {
+		return -1;
+	}
+	
+	char* position = ignoreCase ? strstrInsensitive(text, needle) : strstr(text, needle);
+	
+	return (position != NULL);
+}
