@@ -21,5 +21,6 @@ void comment_endComment(YYLTYPE location);
 char* comment_getCommentAbove(YYLTYPE location, int compareDistance);
 char* comment_getCommentBelow(YYLTYPE location, int compareDistance);
 char* comment_getCommentWithin(YYLTYPE location);
+int comment_isContentful(const char* text);
 
 #endif COMMENTS_INCLUDED
