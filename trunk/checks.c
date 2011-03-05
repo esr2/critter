@@ -537,7 +537,7 @@ void validateComment(YYLTYPE location, enum commandType command, char* text) {
 			break;
 		case FOUND_IDENTIFIER:
 			if (inFunction && inParameterList == 1) {
-				/* ASSUMPTION: all identifier found in a paramter list are the names
+				/* ASSUMPTION: all identifiers found in a paramter list are the names
 				   of the parameters. */
 				DynArray_add(parameters, strdup(text));
 			}

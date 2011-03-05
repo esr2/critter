@@ -202,7 +202,6 @@ void registerConstant(YYLTYPE location, char* constant) {
 	isMagicNumber(location, MIDDLE, constant);
 }
 
-/* location points to first bracket */
 void beginCompoundStatement(YYLTYPE location) {
 	isCompoundStatementEmpty(location, BEGINNING);
 	lastCalled_set(beginCompoundStatement);
@@ -210,7 +209,6 @@ void beginCompoundStatement(YYLTYPE location) {
 	validateComment(location, BEGIN_FUNCTION_BODY, NULL);
 }
 
-/* location points to the entire statement */
 void endCompoundStatement(YYLTYPE location) {
 	isCompoundStatementEmpty(location, END);
 	lastCalled_set(endCompoundStatement);
