@@ -92,22 +92,28 @@ void comment_endComment(YYLTYPE location) {
 	assert(DynArray_getLength(commentLocations) == DynArray_getLength(commentTexts));
 }
 
-/**
- * Find the comment within compareDistance above the location. Returns the text
- * of the comment or NULL if not found.
- */
-char* comment_getCommentAbove(YYLTYPE location, int compareDistance) {
+static char* getComment(YYLTYPE *location, 
+						int (*compareFunction)(const void*, const void*)) {
 	int index;
 	char* text = NULL;
 	
-	setCompareDistance(compareDistance);
-	index = DynArray_search(commentLocations, &location, isLocationAbove);
+	index = DynArray_search(commentLocations, location, compareFunction);
 	
 	if (index != -1) {
 		text = (char*)DynArray_get(commentTexts, index);
 	}
 	
 	return text;
+	
+}
+
+/**
+ * Find the comment within compareDistance above the location. Returns the text
+ * of the comment or NULL if not found.
+ */
+char* comment_getCommentAbove(YYLTYPE location, int compareDistance) {
+	setCompareDistance(compareDistance);
+	return getComment(&location, isLocationAbove);
 }
 
 /**
@@ -115,17 +121,8 @@ char* comment_getCommentAbove(YYLTYPE location, int compareDistance) {
  * of the comment or NULL if not found.
  */
 char* comment_getCommentBelow(YYLTYPE location, int compareDistance) {
-	int index;
-	char* text = NULL;
-	
 	setCompareDistance(compareDistance);
-	index = DynArray_search(commentLocations, &location, isLocationBelow);
-	
-	if (index != -1) {
-		text = (char*)DynArray_get(commentTexts, index);
-	}
-	
-	return text;
+	return getComment(&location, isLocationBelow);
 }
 
 /**
@@ -133,16 +130,7 @@ char* comment_getCommentBelow(YYLTYPE location, int compareDistance) {
  * of the comment or NULL if not found.
  */
 char* comment_getCommentWithin(YYLTYPE location) {
-	int index;
-	char* text = NULL;
-	
-	index = DynArray_search(commentLocations, &location, isLocationWithin);
-	
-	if (index != -1) {
-		text = (char*)DynArray_get(commentTexts, index);
-	}
-	
-	return text;
+	return getComment(&location, isLocationWithin);
 }
 
 /**
