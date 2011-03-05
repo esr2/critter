@@ -79,7 +79,8 @@ int column = 1;
 						  while((c = input()) && c != '\n') ;
 						}
 						if(!newfile(yytext)) {
-							yyterminate(); /* no such file */ 
+							/* no such file, could terminate here but won't in order to
+							   process as many files as possible */
 						}
 						BEGIN INITIAL;
 					}
@@ -250,6 +251,7 @@ int newfile(char *fn) {
 		strcpy(filename+strlen(prefix), fn);
 		f = fopen(filename, "r");
 		if (!f) {perror(fn); return 0;} */
+		fprintf(stderr, "%s:%d: ", curfilename, yylineno);
 		perror(fn);
 		return 0;
 	} 
