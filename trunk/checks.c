@@ -517,6 +517,8 @@ void validateComment(YYLTYPE location, enum commandType command, char* text) {
 	static int bracketColumn;
 	
 	char* commentText = NULL;
+	char* commentTextAbove = NULL;
+	char* commentTextBetween = NULL;
 	
 	switch (command) {
 		case BEGIN_FUNCTION:
@@ -552,23 +554,29 @@ void validateComment(YYLTYPE location, enum commandType command, char* text) {
 			break;
 		case END_FUNCTION:
 			/* find comment text */
-			commentText = comment_getCommentAbove(*beginFunctionLocation, 1);
-			if (commentText == NULL) {
-				YYLTYPE * between = allocateLocation(*beginFunctionLocation);
-				between->first_line = beginFunctionLocation->last_line;
-				between->first_column = beginFunctionLocation->last_column;
-				between->last_line = bracketLine;
-				between->last_column = bracketColumn;
-				
-				commentText = comment_getCommentWithin(*between);
-				freeLocations(between, NULL);
-				
-				if (commentText == NULL) {
-					lyyerror(ERROR_HIGH,
-							 location,
-							 "Please include a descriptive comment above each function");
-					return;
-				}
+			commentTextAbove = comment_getCommentAbove(*beginFunctionLocation, 2);
+			
+			YYLTYPE * between = allocateLocation(*beginFunctionLocation);
+			between->first_line = beginFunctionLocation->last_line;
+			between->first_column = beginFunctionLocation->last_column;
+			between->last_line = bracketLine;
+			between->last_column = bracketColumn;
+			
+			commentTextBetween = comment_getCommentWithin(*between);
+			freeLocations(between, NULL);
+
+			commentText = ((commentTextBetween != NULL) ? 
+						   commentTextBetween : 
+						   commentTextAbove);
+			
+			int commentHasContent = comment_isContentful(commentText);
+			
+			
+			if (commentText == NULL || (commentHasContent != 1)) {
+				lyyerror(ERROR_HIGH,
+						 location,
+						 "Please include a descriptive comment above each function");
+				return;
 			}
 			
 			/* look for each parameter name */

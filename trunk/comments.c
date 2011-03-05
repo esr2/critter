@@ -144,3 +144,22 @@ char* comment_getCommentWithin(YYLTYPE location) {
 	
 	return text;
 }
+
+/**
+ * Checks if the given text contains a letter (most likely meaning it has words).
+ * Returns -1 on error, 0 on false and 1 on true;
+ */
+int comment_isContentful(const char* text) {
+	if (text == NULL) {
+		return -1;
+	}
+	
+	while (*text != '\0') {
+		if (isalpha(*text)) {
+			return 1;
+		}
+		text++;
+	}
+	
+	return 0;
+}
