@@ -598,9 +598,7 @@ void validateComment(YYLTYPE location, enum commandType command, char* text) {
 			int numParameters = DynArray_getLength(parameters);
 			int numParametersInComment = 0;
 			for (i = 0; i < numParameters; i++) {
-				char *position = strstr(commentText, (char*)DynArray_get(parameters, i));
-				
-				if (position != NULL) {
+				if (comment_contains(commentText, (char*)DynArray_get(parameters, i), 0)) {
 					numParametersInComment++;
 				}
 			}
@@ -613,16 +611,10 @@ void validateComment(YYLTYPE location, enum commandType command, char* text) {
 			
 			/* if didReturnSomething, look for the word 'return' */
 			if (didReturnSomething) {
-				char *position = strstr(commentText, "return");
-				
-				if (position == NULL) {
-					position = strstr(commentText, "Return");
-					
-					if (position == NULL) {
-						lyyerror(ERROR_HIGH,
-								 location, 
-								 "A function's comment should explicitly state what the function returns");
-					}
+				if (!comment_contains(commentText, "return", 1)) {
+					lyyerror(ERROR_HIGH,
+							 location, 
+							 "A function's comment should explicitly state what the function returns");
 				}
 			}
 			
