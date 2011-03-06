@@ -492,7 +492,6 @@ given order, stopping to read through any locally included header files. Upon en
 \begin{figure}
 \caption{Example Error and Corresponding Message}
 \label{errorExample}
-\vspace{3mm}
 \begin{minipage}[b]{0.5\textwidth}
 \hspace{1mm} test.c:
 \begin{lstlisting}[numbers=left, firstnumber=92,xleftmargin=1cm]
@@ -508,10 +507,70 @@ given order, stopping to read through any locally included header files. Upon en
 test.c:92.22-92.23: big problem: Do not use magic numbers
 \end{lstlisting}
 \end{minipage} \\
-\small{Here, \programName is complaining that the for loop's exit condition contains a `magic number'. The error message contains the location of the error, the warning level and then the error message.}
+\small{Here, \programName is complaining that the for loop's exit condition contains a `magic number', in this case 5. The error message contains the location of the error, the warning level and then the error message.}
 \end{figure}
 
-The administrator is responsible for defining the set of semantic errors. 
+The administrator is responsible for defining the set of checked semantic errors. \programName 
+comes with a set of predefined checks that the administrator may use or discard at their discretion. 
+Checks are event driven and are called when the appropriate element in the code is reached. For 
+example, checking for a minimum length of each variable name happens when \programName 
+recognizes a variable inside a declaration. The administrator can write their own checks as functions 
+which they setup to be involked at each of the relevant callback points.
+
+\chapter{How \programName Works}
+
+\programName, is built on top of Bison and Flex, a parser generator and a lexical analyzer 
+respectively. These two programs each take in specification files which define a set of tokens and a 
+context free grammar. They work in tandem to read in segments of code, parse it into the appropriate 
+token and then determine the grammar construct of each segment. \programName's specification file 
+outlines valid ANSI C code but does not compile or in anyway track the contents. This means, for 
+example, that \programName sees any variable or function name as just as an IDENTIFIER (which is 
+defined as any set of letters that does not already designate a variable type). Bison and Flex also track 
+the location of any token or grammar construct in a \lstinline{YYLTYPE} structure (normally a \lstinline
+{YYLTYPE} contains 4 fields, \lstinline{first_line}, \lstinline{first_column}, \lstinline{last_line} and 
+\lstinline{last_column} however I have also added a \lstinline{filename} field in order to produce more 
+accurate checks and error messages across a set of files). Each grammar rule can contain multiple 
+actions which consist of C code. These actions can also reference the location of any of the 
+components or the entire rule. \programName calls the event handlers from these actions, passing in 
+the location of the relevant construction (see \refCode \ref{grammar}, where actions are underlined). 
+Some actions are hidden in subroutines in order to avoid ambiguities within the grammar.
+
+\begin{figure} 
+\caption{Excerpt of the Grammar}
+\label{grammar}
+\begin{lstlisting}[language=Caml, escapechar=\%]
+parameter_list
+	: parameter_declaration											%\underline{\{h\_registerParameter(@\$);\}}%
+	| parameter_list ',' parameter_declaration	%\underline{\{h\_registerParameter(@3);\}}%
+	;
+
+parameter_declaration
+	: declaration_specifiers declarator
+	| declaration_specifiers abstract_declarator
+	| declaration_specifiers
+	;
+
+beginIF : /*empty*/ %\underline{\{beginIf(@\$);\}}%
+
+selection_statement
+	: IF beginIF '(' expression ')' statement %\underline{\{endIf(@\$);\}}%
+	| IF beginIF '(' expression ')' statement ELSE %\underline{\{endIf(@6); beginElse(@7);\}}% statement	%\underline{\{endElse(@9);\}}%
+	| SWITCH %\underline{\{beginSwitch(@1);\}}% '(' expression ')' statement %\underline{\{endSwitch(@\$);\}}%
+	;
+
+beginFOR : /*empty*/ %\underline{\{beginFor(@\$);\}}%
+
+iteration_statement
+	: WHILE %\underline{\{beginWhile(@1);\}}% '(' expression ')' statement %\underline{\{endWhile(@\$);\}}%
+	| DO %\underline{\{beginDoWhile(@1);\}}% statement WHILE '(' expression ')' ';' %\underline{\{endDoWhile(@\$);\}}%
+	| FOR beginFOR '(' expression_statement expression_statement ')' statement	%\underline{\{endFor(@\$);\}}%
+	| FOR beginFOR '(' expression_statement expression_statement expression ')' statement %\underline{\{endFor(@\$);\}}%
+	| FOR beginFOR '(' declaration expression_statement ')' statement %\underline{\{endFor(@\$);\}}%
+	| FOR beginFOR '(' declaration expression_statement expression ')' statement	%\underline{\{endFor(@\$);\}}%
+
+\end{lstlisting}
+\end{figure} 
+
 
 \nocite{*}
 \bibliographystyle{plain}
