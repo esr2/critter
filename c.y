@@ -201,8 +201,8 @@ assignment_operator
 	;
 
 expression
-	: assignment_expression {h_registerExpression(@$);}
-	| expression ',' assignment_expression {h_registerExpression(@3);}
+	: assignment_expression					{h_registerExpression(@$);}
+	| expression ',' assignment_expression	{h_registerExpression(@3);}
 	;
 
 constant_expression
@@ -311,7 +311,7 @@ enumerator_list
 	;
 
 enumerator
-	: IDENTIFIER 	{h_registerIdentifier(@$);}
+	: IDENTIFIER							{h_registerIdentifier(@$);}
 	| IDENTIFIER '=' constant_expression	{h_registerIdentifier(@1);}
 	;
 
@@ -326,13 +326,13 @@ declarator
 	;
 
 direct_declarator
-	: IDENTIFIER {h_registerIdentifier(@$);}
+	: IDENTIFIER			{h_registerIdentifier(@$);}
 	| '(' declarator ')'
-	| direct_declarator '[' {h_beginDirectDeclarator(@1);} constant_expression ']'  {h_endDirectDeclarator(@$);}
-	| direct_declarator '[' {h_beginDirectDeclarator(@1);} ']' {h_endDirectDeclarator(@$);}
-	| direct_declarator '(' {h_beginDirectDeclarator(@1);} parameter_type_list ')' {h_endDirectDeclarator(@$);}
-	| direct_declarator '(' {h_beginDirectDeclarator(@1);} identifier_list ')' {h_endDirectDeclarator(@$);}
-	| direct_declarator '(' {h_beginDirectDeclarator(@1);} ')' {h_endDirectDeclarator(@$);}
+	| direct_declarator '[' {h_beginDirectDeclarator(@1);} constant_expression ']'	{h_endDirectDeclarator(@$);}
+	| direct_declarator '[' {h_beginDirectDeclarator(@1);} ']'						{h_endDirectDeclarator(@$);}
+	| direct_declarator '(' {h_beginDirectDeclarator(@1);} parameter_type_list ')'	{h_endDirectDeclarator(@$);}
+	| direct_declarator '(' {h_beginDirectDeclarator(@1);} identifier_list ')'		{h_endDirectDeclarator(@$);}
+	| direct_declarator '(' {h_beginDirectDeclarator(@1);} ')'						{h_endDirectDeclarator(@$);}
 	;
 
 type_direct_declarator
@@ -361,13 +361,13 @@ type_qualifier_list
 beginParamList : /*empty*/ {h_beginParameterList(@$)};
 
 parameter_type_list
-	: beginParamList parameter_list {h_endParameterList(@$);}
-	| beginParamList parameter_list ',' ELLIPSIS {h_endParameterList(@$);}
+	: beginParamList parameter_list					{h_endParameterList(@$);}
+	| beginParamList parameter_list ',' ELLIPSIS	{h_endParameterList(@$);}
 	;
 
 parameter_list
-	: parameter_declaration {h_registerParameter(@$);}
-	| parameter_list ',' parameter_declaration {h_registerParameter(@3);}
+	: parameter_declaration							{h_registerParameter(@$);}
+	| parameter_list ',' parameter_declaration		{h_registerParameter(@3);}
 	;
 
 parameter_declaration
@@ -377,7 +377,7 @@ parameter_declaration
 	;
 
 identifier_list
-	: IDENTIFIER 	{h_registerIdentifier(@$);}
+	: IDENTIFIER						{h_registerIdentifier(@$);}
 	| identifier_list ',' IDENTIFIER 	{h_registerIdentifier(@3);}
 	;
 
@@ -430,13 +430,13 @@ labeled_statement
 	| DEFAULT {registerDefault(@$);} ':' statement
 	;
 
-beginCompound : /* empty */ { beginCompoundStatement(@$);}
+beginCompound : /* empty */ {beginCompoundStatement(@$);}
 
 compound_statement
-	: '{' beginCompound '}' {endCompoundStatement(@$);}
-	| '{' beginCompound statement_list '}' {endCompoundStatement(@$);}
-	| '{' beginCompound declaration_list '} ' {endCompoundStatement(@$);}
-	| '{' beginCompound declaration_list statement_list '}' {endCompoundStatement(@$);}
+	: '{' beginCompound '}'									{endCompoundStatement(@$);}
+	| '{' beginCompound statement_list '}'					{endCompoundStatement(@$);}
+	| '{' beginCompound declaration_list '} '				{endCompoundStatement(@$);}
+	| '{' beginCompound declaration_list statement_list '}'	{endCompoundStatement(@$);}
 	;
 
 declaration_list
@@ -458,20 +458,20 @@ expression_statement
 beginIF : /*empty*/ {beginIf(@$);}
 
 selection_statement
-	: IF beginIF '(' expression ')' statement %prec LOWER_THAN_ELSE	{endIf(@$);}
-	| IF beginIF '(' expression ')' statement ELSE {endIf(@6); beginElse(@7);} statement {endElse(@9);}
-	| SWITCH {beginSwitch(@1);} '(' expression ')' statement {endSwitch(@$);}
+	: IF beginIF '(' expression ')' statement %prec LOWER_THAN_ELSE							{endIf(@$);}
+	| IF beginIF '(' expression ')' statement ELSE {endIf(@6); beginElse(@7);} statement	{endElse(@9);}
+	| SWITCH {beginSwitch(@1);} '(' expression ')' statement								{endSwitch(@$);}
 	;
 
 beginFOR : /*empty*/ {beginFor(@$);}
 
 iteration_statement
-	: WHILE {beginWhile(@1);} '(' expression ')' statement	{endWhile(@$);}
-	| DO {beginDoWhile(@1);} statement WHILE '(' expression ')' ';'	{endDoWhile(@$);}
-	| FOR beginFOR '(' expression_statement expression_statement ')' statement {endFor(@$);}
-	| FOR beginFOR '(' expression_statement expression_statement expression ')' statement {endFor(@$);}
-	| FOR beginFOR '(' declaration expression_statement ')' statement {endFor(@$);}
-	| FOR beginFOR '(' declaration expression_statement expression ')' statement {endFor(@$);}
+	: WHILE {beginWhile(@1);} '(' expression ')' statement									{endWhile(@$);}
+	| DO {beginDoWhile(@1);} statement WHILE '(' expression ')' ';'							{endDoWhile(@$);}
+	| FOR beginFOR '(' expression_statement expression_statement ')' statement				{endFor(@$);}
+	| FOR beginFOR '(' expression_statement expression_statement expression ')' statement	{endFor(@$);}
+	| FOR beginFOR '(' declaration expression_statement ')' statement						{endFor(@$);}
+	| FOR beginFOR '(' declaration expression_statement expression ')' statement			{endFor(@$);}
 	;
 
 jump_statement
