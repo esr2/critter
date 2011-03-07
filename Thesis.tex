@@ -523,21 +523,22 @@ which they setup to be involked at each of the relevant callback points.
 
 \chapter{How \programName Works}
 
-\programName, is built on top of Bison and Flex, a parser generator and a lexical analyzer 
-respectively. These two programs each take in specification files which define a set of tokens and a 
-context free grammar. They work in tandem to read in segments of code, parse it into the appropriate 
-token and then determine the grammar construct of each segment. \programName's specification file 
-outlines valid ANSI C code but does not compile or in anyway track the contents. This means, for 
-example, that \programName sees any variable or function name as just as an IDENTIFIER (which is 
-defined as any set of letters that does not already designate a variable type). Bison and Flex also track 
-the location of any token or grammar construct in a \lstinline{YYLTYPE} structure (normally a \lstinline
-{YYLTYPE} contains 4 fields, \lstinline{first_line}, \lstinline{first_column}, \lstinline{last_line} and 
-\lstinline{last_column} however I have also added a \lstinline{filename} field in order to produce more 
-accurate checks and error messages across a set of files). Each grammar rule can contain multiple 
-actions which consist of C code. These actions can also reference the location of any of the 
-components or the entire rule. \programName calls the event handlers from these actions, passing in 
-the location of the relevant construction (see \refCode \ref{grammar}, where actions are underlined). 
-Some actions are hidden in subroutines in order to avoid ambiguities within the grammar.
+\programName is built on top of Bison and Flex, a parser generator and a lexical analyzer 
+respectively. These two programs each take in a specification file which define a set of tokens and a 
+corresponding context free grammar. They work in tandem to read code, parse it into the appropriate 
+tokens and then determine each grammar construct. \programName's specification files 
+describe valid ANSI C code but \programName does not compile or in anyway track the contents. This 
+means, for example, that \programName sees any variable or function name as just as an 
+\lstinline{IDENTIFIER} (which is defined as any set of letters that does not already designate a 
+variable type). Bison and Flex also track the location of any token or grammar construct in a 
+\lstinline{YYLTYPE} structure. (Normally a \lstinline{YYLTYPE} contains 4 fields, \lstinline{first_line}, 
+\lstinline{first_column}, \lstinline{last_line} and \lstinline{last_column} however I have also added a 
+\lstinline{filename} field in order to produce more accurate checks and error messages across a set of 
+files.) Each grammar rule can contain multiple actions which consist of C code. These actions can 
+also reference the location of any of single component of or the entire rule. \programName calls the 
+event handlers from these actions, passing in the location of the relevant construction (see \refCode 
+\ref{grammar}, where actions are underlined). Some actions are hidden in subroutines in order to 
+avoid ambiguities within the grammar.
 
 \begin{figure} 
 \caption{Excerpt of the Grammar}
@@ -575,6 +576,18 @@ iteration_statement
 \end{lstlisting}
 \end{figure} 
 
+\programName is event based and is largely inspired by SAX \cite{saxHomepage}. SAX allows one to 
+create event handlers for the beginning and end of each XML element as well as capture the text in 
+between. \programName calls event handlers at the beginning and end of constructs (functions, 
+declarations, statements, parameter lists, etc) as well as when it finds singular elements (variable 
+names, \lstinline{break} statements, parameters, etc). In the code, handlers are prefaced by the words 
+\lstinline{begin}, \lstinline{end} and \lstinline{register} to signal at what point each is called (as shown 
+in \refCode \ref{grammar}). Each handler is passed, at minimum, the location of the relevant code; 
+however, \lstinline{begin} handlers only know the location of the beginning of the construct since the 
+entire construct has not been read yet. Each of these event handlers exist in the file sax.c/h which in 
+turn call the administrator defined checks. While these checks could be written into the event handlers 
+themselves, it is conventional to separate them into their own functions (and files) in order to preserve 
+the readability of the sax.c file and the code in general.
 
 \nocite{*}
 \bibliographystyle{plain}
