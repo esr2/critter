@@ -591,6 +591,56 @@ turn call the administrator defined checks. While these checks could be written 
 themselves, it is conventional to separate them into their own functions (and files) in order to preserve 
 the readability of the sax.c file and the code in general.
 
+Minimally, each check needs access to the location of the code construct in case an error needs to be 
+produced. However, checks often need additional information regarding the surrounding context of 
+the possible error. A simple example is the check against using magic numbers (\refCode 
+\ref{checkWithContext}). \programName should only throw an error when it finds an magic number 
+inside a normal statement (as opposed to a declaration where it is necessary to use a magic number). 
+This check then needs to know every time a declaration begins and ends as well as each time a 
+magic number is found.
+
+\begin{figure}
+\caption{Checks with additional context}
+\label{checkWithContext}
+\begin{lstlisting}[language=C]
+void isMagicNumber(YYLTYPE location, int progress, char* constant) {
+	int acceptableNumbers[3] = {0, 1, 2};
+	int numAcceptable = sizeof(acceptableNumbers)/sizeof(int);
+	
+	static int inDeclaration = 0;
+	
+	switch (progress) {
+		case BEGINNING:
+			inDeclaration++;
+			break;
+		case MIDDLE:
+			if (inDeclaration == 0) {
+				int number = (int)strtol(constant, (char**)NULL, 0);
+				int i;
+
+				/* see if number is within the acceptableNumbers array */
+				for (i = 0; i < numAcceptable; i++) {
+					if (number == acceptableNumbers[i]) {
+						return;
+					}
+				}
+				
+				lyyerror(ERROR_HIGH, location, "Do not use magic numbers");
+			}
+			break;
+		case END:
+			inDeclaration--;
+			break;
+		default:
+			break;
+	}
+}
+\end{lstlisting}
+\small{Throw an error on encountering a magic number outside of a declaration.}
+\end{figure}
+
+
+
 \nocite{*}
 \bibliographystyle{plain}
 \bibliography{Bibliography}
