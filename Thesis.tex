@@ -487,7 +487,7 @@ actual beginning of the construct.
 \chapter{What \programName Does}
 
 \programName reads in a set of C source code files and determines if they contain any of the 
-semantic errors that the administrator has defined. It is run through the command line inside one's 
+specified semantic errors. It is run through the command line inside one's 
 working directory. \programName is given a list of .c/h files to check and reads through each in the 
 given order, stopping to read through any locally included header files. Upon encountering an error,
 \programName prints out the full location of the error, a warning level and an error message to 
@@ -496,6 +496,7 @@ given order, stopping to read through any locally included header files. Upon en
 \begin{figure}
 \caption{Example Error and Corresponding Message}
 \label{errorExample}
+\vspace{2mm}
 \begin{minipage}[b]{0.5\textwidth}
 \hspace{1mm} test.c:
 \begin{lstlisting}[numbers=left, firstnumber=92,xleftmargin=1cm]
@@ -519,7 +520,7 @@ comes with a set of predefined checks that the administrator may use or discard 
 Checks are event driven and are called when the appropriate element in the code is reached. For 
 example, checking for a minimum length of each variable name happens when \programName 
 recognizes a variable inside a declaration. The administrator can write their own checks as functions 
-which they setup to be involked at each of the relevant callback points.
+to be invoked at each of the relevant callback points.
 
 \chapter{How \programName Works}
 
