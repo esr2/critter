@@ -60,6 +60,9 @@
 \includeversion{PRINT}
 \excludeversion{COLOR}
 
+\usepackage{caption, subcaption}
+\ExecuteOptions{tight,TABTOPCAP}
+
 %for title page
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
 
@@ -496,22 +499,22 @@ given order, stopping to read through any locally included header files. Upon en
 \begin{figure}
 \caption{Example Error and Corresponding Message}
 \label{errorExample}
-\vspace{2mm}
-\begin{minipage}[b]{0.5\textwidth}
-\hspace{1mm} test.c:
+\begin{subfigure}[b]{.5\linewidth}
+\caption{test.c}
+\label{errorExampleCode}
 \begin{lstlisting}[numbers=left, firstnumber=92,xleftmargin=1cm]
 	for (int q = 0; q<5; q++) {
 		printf("hi");
 	}
 \end{lstlisting}
-\end{minipage}
-\hspace{-10mm}
-\begin{minipage}[b]{0.5\textwidth}
-\hspace{8mm} stderr:
+\end{subfigure}
+\begin{subfigure}[b]{.5\linewidth}
+\caption{stderr}
+\label{errorExampleStderr}
 \begin{lstlisting}[xleftmargin=1cm]
 test.c:92.22-92.23: big problem: Do not use magic numbers
 \end{lstlisting}
-\end{minipage} \\
+\end{subfigure}
 \small{Here, \programName is complaining that the for loop's exit condition contains a `magic number', in this case 5. The error message contains the location of the error, the warning level and then the error message.}
 \end{figure}
 
@@ -597,16 +600,17 @@ the possible error. A simple example is the check against using magic numbers (\
 \ref{checkWithContext}). \programName should only throw an error when it finds an magic number 
 inside a normal statement (as opposed to a declaration where it is necessary to use a magic number). 
 This check then needs to know every time a declaration begins and ends as well as each time a 
-magic number is found.
+magic number is found. Alternatively, one can set global variables regarding the context and minimize 
+the number of parameters to each check.
 
 \begin{figure}
-\caption{Checks with additional context}
+\caption{Check with additional context}
 \label{checkWithContext}
 \begin{lstlisting}[language=C]
 void isMagicNumber(YYLTYPE location, int progress, char* constant) {
 	int acceptableNumbers[3] = {0, 1, 2};
 	int numAcceptable = sizeof(acceptableNumbers)/sizeof(int);
-	
+
 	static int inDeclaration = 0;
 	
 	switch (progress) {
@@ -624,7 +628,6 @@ void isMagicNumber(YYLTYPE location, int progress, char* constant) {
 						return;
 					}
 				}
-				
 				lyyerror(ERROR_HIGH, location, "Do not use magic numbers");
 			}
 			break;
