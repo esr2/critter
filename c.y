@@ -301,8 +301,8 @@ struct_declarator
 
 enum_specifier
 	: ENUM '{' enumerator_list '}'
-	| ENUM IDENTIFIER '{' {h_registerIdentifier(@2);} enumerator_list '}'
-	| ENUM IDENTIFIER	{h_registerIdentifier(@2);}
+	| ENUM IDENTIFIER '{' enumerator_list '}'
+	| ENUM IDENTIFIER
 	;
 
 enumerator_list
