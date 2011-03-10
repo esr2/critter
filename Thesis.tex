@@ -530,13 +530,13 @@ corresponding context free grammar. They work in tandem to read code, parse it i
 tokens and then determine each grammar construct. \programName's specification files 
 describe valid ANSI C code but \programName does not compile or in anyway track the contents. This 
 means, for example, that \programName sees any variable or function name as just as an 
-\lstinline{IDENTIFIER} (which is defined as any set of letters that does not already designate a 
+\lstinline{IDENTIFIER} (any set of letters that does not already designate a 
 variable type). Bison and Flex also track the location of any token or grammar construct in a 
 \lstinline{YYLTYPE} structure. (Normally a \lstinline{YYLTYPE} contains 4 fields, \lstinline{first_line}, 
 \lstinline{first_column}, \lstinline{last_line} and \lstinline{last_column} however I have also added a 
 \lstinline{filename} field in order to produce more accurate checks and error messages across a set of 
 files.) Each grammar rule can contain multiple actions which consist of C code. These actions can 
-also reference the location of any of single component of or the entire rule. \programName calls the 
+also reference the location of the entire rule or any of single component of it. \programName calls the 
 event handlers from these actions, passing in the location of the relevant construction (see \refCode 
 \ref{grammar}, where actions are underlined). Some actions are hidden in subroutines in order to 
 avoid ambiguities within the grammar.
@@ -577,8 +577,9 @@ iteration_statement
 \end{lstlisting}
 \end{figure} 
 
-\programName is event based and is largely inspired by SAX \cite{saxHomepage}. SAX allows one to 
-create event handlers for the beginning and end of each XML element as well as capture the text in 
+\programName is event based and is largely inspired by SAX \cite{saxHomepage}. SAX is a 
+framework which allows programmers to use event handlers to parse XML files. SAX typically uses
+event handlers for the beginning and end of each XML element as well as to capture the text in 
 between. \programName calls event handlers at the beginning and end of constructs (functions, 
 declarations, statements, parameter lists, etc) as well as when it finds singular elements (variable 
 names, \lstinline{break} statements, parameters, etc). In the code, handlers are prefaced by the words 
