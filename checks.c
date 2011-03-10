@@ -51,7 +51,7 @@ void hasBraces(YYLTYPE location, char* construct) {
 }
 
 /**
- * Checks if a function is too long by it's line count
+ * Checks if a function is too long by its line count
  */
 void isFunctionTooLongByLines(YYLTYPE location) {
 	int MAX_FUNCTION_LENGTH = 55;
@@ -65,7 +65,7 @@ void isFunctionTooLongByLines(YYLTYPE location) {
 }
 
 /**
- * Checks if a function is too long by it's statement count
+ * Checks if a function is too long by its statement count
  */
 void isFunctionTooLongByStatements(YYLTYPE location, int progress) {
 	int MAX_FUNCTION_LENGTH = 50;
@@ -151,7 +151,7 @@ void checkForComment(YYLTYPE location, char* construct) {
 }
 
 /**
- * Checks if each switch statment has a default case.
+ * Checks if each switch statement has a default case.
  */
 void switchHasDefault(YYLTYPE location, int progress) {
 	static int started = 0;
@@ -176,7 +176,7 @@ void switchHasDefault(YYLTYPE location, int progress) {
 }
 
 /**
- * Checks if each switch case statment has a break statement.
+ * Checks if each switch case statement has a break statement.
  */
 void switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase) {
 	static int numCases = 0;
@@ -447,7 +447,7 @@ void tooManyFunctionsInFile(YYLTYPE location, int progress) {
 /**
  * Throw error based on the placement of the else relative to the if statement. 
  *  - if an if statement is bracketed, it should appear on multiple lines
- *  - if an if statement is bracketed, the else statement should be on the same line as
+ *  - if an if statement is bracketed, the else statement should be on the same line
  *    as the closing brace
  *  - if an if statement is unbracketed, the else statement should appear on the next line
  */
