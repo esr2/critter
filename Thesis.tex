@@ -525,6 +525,42 @@ example, checking for a minimum length of each variable name happens when \progr
 recognizes a variable inside a declaration. The administrator can write their own checks as functions 
 to be invoked at each of the relevant callback points.
 
+The set of predefined checks are listed below in \refCode \ref{predefinedChecks}.
+
+\begin{table}
+\caption{Predefined Checks}
+\label{predefinedChecks}
+	\begin{center}
+	\begin{tabular}{l p{10cm}}
+		\toprule
+		Check Name & Purpose \\
+		\midrule
+		isFileTooLong & Check if the file is above a maximum length. \\
+		hasBraces & Checks if there are braces surrounding an if statement. \\
+		isFunctionTooLongByLines & Checks if a function is too long by its line count. \\
+		isFunctionTooLongByStatements & Checks if a function is too long by its statement count. \\
+		tooManyParameters & Checks if there are too many parameters in the function declaration. \\
+		CPlusPlusComments & Throws an error on C++ style single line comments. \\
+		checkForComment & Checks for comments before some construct. \\
+		switchHasDefault & Checks if each switch statement has a default case. \\
+		switchCasesHaveBreaks & Checks if each switch case statement has a break statement. \\
+		tooDeeplyNested & Checks whether a region of code (i.e. a compound statement) nests too deeply. \\
+		useEnumNotConstOrDefine & Advices using enum instead of const for declarations. Actually just checks that 'const' doesn't appear inside a parameter list before outputting the error.\\
+		neverUseGotos & Error on any use of a GOTO. \\
+		isVariableNameTooShort & Error if a variable name is less than a certain minimum length. \\
+		isMagicNumber & Error on encountering a magic number outside of a declaration (presumably, inside a declaration a variable will be initialized to a magic number and then used throughout the rest of the code). \\
+		globalHasComment & Check that each global variable has a comment. \\
+		isLoopTooLong & Check that the loop length is less than a maximum. \\
+		isLoopEmpty & Check if compound statement is empty. \\
+		isCompoundStatementEmpty & Check if there are too many functions in a file. \\
+		tooManyFunctionsInFile & Check if there are too many functions in a file. \\
+		checkIfElsePlacement & Throw error based on the placement of the else relative to the if statement.  \\
+		validateComment & Make sure function comments have the appropriate contents. Specifically check that the comment mentions each parameter (by name) and what the function returns. \\
+		\bottomrule
+	\end{tabular}
+	\end{center}
+\end{table}
+
 \chapter{How \programName Works}
 
 \programName is built on top of Bison and Flex, a parser generator and a lexical analyzer 
