@@ -18,7 +18,7 @@
 #include "locations.h"
 
 /**
- * Check if the file is above a maximum length
+ * Check if the file exceeds a maximum length.
  */
 void isFileTooLong(YYLTYPE location) {
 	int MAX_FILE_LENGTH = 200;
@@ -32,7 +32,7 @@ void isFileTooLong(YYLTYPE location) {
 }
 
 /**
- * Checks if there are braces surrounding an if statement.
+ * Check if there are braces surrounding an if statement.
  */
 void hasBraces(YYLTYPE location, char* construct) {
 	if (lastCalled_get() != endCompoundStatement) {
@@ -51,7 +51,7 @@ void hasBraces(YYLTYPE location, char* construct) {
 }
 
 /**
- * Checks if a function is too long by its line count
+ * Check if a function exceeds a maximum line count.
  */
 void isFunctionTooLongByLines(YYLTYPE location) {
 	int MAX_FUNCTION_LENGTH = 55;
@@ -65,7 +65,7 @@ void isFunctionTooLongByLines(YYLTYPE location) {
 }
 
 /**
- * Checks if a function is too long by its statement count
+ * Check if there are too many parameters in the function declaration.
  */
 void isFunctionTooLongByStatements(YYLTYPE location, int progress) {
 	int MAX_FUNCTION_LENGTH = 50;
@@ -127,14 +127,14 @@ void tooManyParameters(YYLTYPE location, int progress) {
 }
 
 /**
- * Throws an error on C++ style single line comments.
+ * Throw an error on C++ style single line comments.
  */
 void CPlusPlusComments(YYLTYPE location) {
 	lyyerror(ERROR_NORMAL, location, "Do not use C++ style comments");
 }
 
 /**
- * Checks for comments before some construct.
+ * Check for comments before some construct.
  */
 void checkForComment(YYLTYPE location, char* construct) {
 	char* text = comment_getCommentAbove(location, 1, NULL);
@@ -151,7 +151,7 @@ void checkForComment(YYLTYPE location, char* construct) {
 }
 
 /**
- * Checks if each switch statement has a default case.
+ * Check that each switch statement has a default case.
  */
 void switchHasDefault(YYLTYPE location, int progress) {
 	static int started = 0;
@@ -176,7 +176,7 @@ void switchHasDefault(YYLTYPE location, int progress) {
 }
 
 /**
- * Checks if each switch case statement has a break statement.
+ * Check that each switch case has a break statement.
  */
 void switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase) {
 	static int numCases = 0;
@@ -214,7 +214,7 @@ void switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase) {
 }
 
 /**
- * Checks whether a region of code (i.e. a compound statement) nests too deeply.
+ * Check whether a region of code (i.e. a compound statement) nests too deeply.
  */
 void tooDeeplyNested(YYLTYPE location, int progress) {
 	int MAX_NESTING_LEVEL = 3; /* Acceptable is function, loop, if.
@@ -242,8 +242,7 @@ void tooDeeplyNested(YYLTYPE location, int progress) {
 }
 
 /**
- * Advices using enum instead of const for declarations. Actually just checks
- * that 'const' doesn't appear inside a parameter list before outputting the error.
+ * Advises using enum instead of const or #define for declarations.
  */
 void useEnumNotConstOrDefine(YYLTYPE location, int progress) {
 	static int inParameterList = 0;
@@ -265,14 +264,14 @@ void useEnumNotConstOrDefine(YYLTYPE location, int progress) {
 }
 
 /**
- * Error on any use of a GOTO.
+ * Throw an error on any use of a GOTO statement.
  */
 void neverUseGotos(YYLTYPE location) {
 	lyyerror(ERROR_HIGH, location, "Never use GOTO statements");
 }
 
 /**
- * Error if a variable name is less than a certain minimum length. 
+ * Check if a variable's name exceeds a minimum length.
  */
 void isVariableNameTooShort(YYLTYPE location, int progress, char* identifier) {
 	int MINIMUM_VARIABLE_NAME_LENGTH = 3;
@@ -312,9 +311,9 @@ void isVariableNameTooShort(YYLTYPE location, int progress, char* identifier) {
 }
 
 /**
- * Error on encountering a magic number outside of a declaration (presumably, inside a
- * declaration a variable will be initialized to a magic number and then used throughout
- * the rest of the code).
+ * Throw an error on encountering a magic number outside of a declaration. 
+ * (Presumably, inside a declaration, a variable will be initialized to a magic
+ * number and then used throughout the rest of the code).
  */
 void isMagicNumber(YYLTYPE location, int progress, char* constant) {
 	int acceptableNumbers[3] = {0, 1, 2};
@@ -350,7 +349,7 @@ void isMagicNumber(YYLTYPE location, int progress, char* constant) {
 }
 
 /**
- * Check that each global variable has a comment.
+ * Check if each global variable has a comment.
  */
 void globalHasComment(YYLTYPE location, int progress) {
 	static int inFunction = 0;
@@ -373,7 +372,7 @@ void globalHasComment(YYLTYPE location, int progress) {
 }
 
 /**
- * Check that the loop length is less than a maximum.
+ * Check if the loop length exceeds a maximum length.
  */
 void isLoopTooLong(YYLTYPE location) {
 	int MAX_LOOP_LENGTH = 35;
@@ -387,7 +386,7 @@ void isLoopTooLong(YYLTYPE location) {
 }
 
 /**
- * Check if compound statement is empty
+ * Check if the compound statement is empty.
  */
 void isCompoundStatementEmpty(YYLTYPE location, int progress) {
 	static void (*context)(YYLTYPE);
@@ -445,11 +444,13 @@ void tooManyFunctionsInFile(YYLTYPE location, int progress) {
 }
 
 /**
- * Throw error based on the placement of the else relative to the if statement. 
+ * Throw an error based on the placement of the else statement relative to the
+ * if statement. 
  *  - if an if statement is bracketed, it should appear on multiple lines
- *  - if an if statement is bracketed, the else statement should be on the same line
- *    as the closing brace
- *  - if an if statement is unbracketed, the else statement should appear on the next line
+ *  - if an if statement is bracketed, the else statement should be on the same
+ *    line as the closing brace
+ *  - if an if statement is unbracketed, the else statement should appear on 
+ *    the next line
  */
 void checkIfElsePlacement(YYLTYPE location, int progress) {
 	static int ifIsBracketed = 0;
@@ -503,8 +504,9 @@ static void freeText(void* element, void* extra) {
 }
 
 /**
- * Make sure function comments have the appropriate contents. Specifically check
- * that the comment mentions each parameter (by name) and what the function returns.
+ * Check if function comments have the appropriate contents. Specifically check
+ * that the comment mentions each parameter (by name) and what the function
+ * returns.
  */
 void validateComment(YYLTYPE location, enum commandType command, char* text) {
 	static YYLTYPE *beginFunctionLocation = NULL;
