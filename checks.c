@@ -36,8 +36,8 @@ void isFileTooLong(YYLTYPE location) {
  */
 void hasBraces(YYLTYPE location, char* construct) {
 	if (lastCalled_get() != endCompoundStatement) {
-		if (construct == "else" && (lastCalled_get() == endElse ||
-									lastCalled_get() == endIf)) {
+		if ((strcmp(construct,"else")== 0) && (lastCalled_get() == endElse ||
+                                              lastCalled_get() == endIf)) {
 			/* at the end of an else if [else] */
 			return;
 		}
