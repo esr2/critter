@@ -562,22 +562,37 @@ The set of predefined checks are listed below in Table \ref{predefinedChecks}.
 
 \chapter{How \programName Works}
 
+\section{Parsing the Code}
+
 \programName is built on top of Bison and Flex, a parser generator and a lexical analyzer 
-respectively. These two programs each take in a specification file which define a set of tokens and a 
-corresponding context free grammar. They work in tandem to read code, parse it into the appropriate 
-tokens and then determine each grammar construct. \programName's specification files 
+respectively. These two programs each take in a specification file (which define a set of tokens and a 
+corresponding context free grammar) and output a set of C files to programmatically parse code. 
+Control goes back and forth between the lexical analyzer, which recognizes code as distinct elements, 
+and the parser, which determines how the elements fit together. \programName's specification files 
 describe valid ANSI C code but \programName does not compile or in anyway track the contents. This 
 means, for example, that \programName sees any variable or function name as just as an 
-\lstinline{IDENTIFIER} (any set of letters that does not already designate a 
-variable type). Bison and Flex also track the location of any token or grammar construct in a 
-\lstinline{YYLTYPE} structure. (Normally a \lstinline{YYLTYPE} contains 4 fields, \lstinline{first_line}, 
-\lstinline{first_column}, \lstinline{last_line} and \lstinline{last_column} however I have also added a 
-\lstinline{filename} field in order to produce more accurate checks and error messages across a set of 
-files.) Each grammar rule can contain multiple actions which consist of C code. These actions can 
-also reference the location of the entire rule or any of single component of it. \programName calls the 
-event handlers from these actions, passing in the location of the relevant construction (see \refCode 
-\ref{grammar}, where actions are underlined). Some actions are hidden in subroutines in order to 
-avoid ambiguities within the grammar.
+\lstinline{IDENTIFIER} (any set of letters that does not already designate a variable type) without any 
+context as to where it was defined or used before. Because \programName cannot evaluate code, it 
+cannot follow preprocessor directives. \programName therefore reads all of the code in the file, even if 
+it would not actually be included during compilation. In order to combat the issue of multiple inclusion 
+of header files, \programName stores the name of each file it opens and does not open that file again, 
+even if it is included from another file. Standard header files (such as \lstinline{stdlib.h} and 
+\lstinline{strings.h}) are not included because they define types within preprocessor directives (which 
+\programName cannot evaluate and therefore cannot recognize as a type). To adjust for this issue, the 
+lexer instead contains a hack for determining if character strings in the code are \lstinline{IDENTIFIER}s 
+or type names. Namely, the lexer does a string compare against common types defined in headers 
+such as \lstinline{FILE}, \lstinline{pid_t}, etc. If any of these hardcoded checks pass, then the lexer tells 
+the parser it has found a type name instead of an \lstinline{IDENTIFIER}.
+
+Each grammar rule can contain multiple actions which consist of C code. These actions can 
+also reference the location of the entire rule or any of single component of it through the prebuilt 
+location mechanism. Bison and Flex track the location of any token or grammar construct. They store 
+this information in a \lstinline{YYLTYPE} structure. (Normally a \lstinline{YYLTYPE} contains 4 fields, 
+\lstinline{first_line}, \lstinline{first_column}, \lstinline{last_line} and \lstinline{last_column}; however, I 
+have also added a \lstinline{filename} field in order to produce more accurate checks and error 
+messages across a set of files.) \programName calls the event handlers from these actions, passing in 
+the location of the relevant construction (see \refCode \ref{grammar}, where actions are underlined). 
+Some actions are `hidden' in subroutines in order to avoid ambiguities within the grammar.
 
 \begin{figure} 
 \caption{Excerpt of the Grammar}
@@ -615,6 +630,25 @@ iteration_statement
 \end{lstlisting}
 \end{figure} 
 
+Instead of writing them from scratch, I found the Flex and Bison specification files online 
+\cite{originalGrammar} and have modified them to add additional functionality. The only major 
+modification of the actual grammar was to add the ability to recognize and dynamically add 
+\lstinline{typdef} definitions as types. These type names are stored in an internal symbol table and the 
+lexer checks to make sure that any potential \lstinline{IDENTIFIER}s are not already listed there. In 
+order to accommodate the inclusion of header files, I had to expand the given lexer functionality to 
+transfer control between files. The specific method of using a stack of buffers/files is heavily inspired 
+from the examples in the O'Reily Flex \& Bison book \cite{flex-and-bison}. When transferring to a 
+different file, the lexer adds the current file to a stack with its file pointer, internal state, and current line 
+number. When it reaches the end of the file, the lexer pops the current file off the stack and goes back 
+to its previous state. The end of program occurs when there are no more files on the stack. 
+\footnote{\programName starts by adding all of the given files to the stack and dynamically adding 
+additional header files. While this pre-loading is not strictly in concordance with the model of adding 
+header files, it simplified the interface between the main module and the lexer/parser.} 
+\todo{Add that I added a comment state?}
+
+
+\section{How Checks are Called}
+
 \programName is event based and is largely inspired by SAX \cite{saxHomepage}. SAX is a 
 framework which allows programmers to use event handlers to parse XML files. SAX typically uses
 event handlers for the beginning and end of each XML element as well as to capture the text in 
@@ -628,6 +662,8 @@ entire construct has not been read yet. Each of these event handlers exist in th
 turn call the administrator defined checks. While these checks could be written into the event handlers 
 themselves, it is conventional to separate them into their own functions (and files) in order to preserve 
 the readability of the sax.c file and the code in general.
+
+\section{How Checks Are Written}
 
 Minimally, each check needs access to the location of the code construct in case an error needs to be 
 produced. However, checks often need additional information regarding the surrounding context of 
