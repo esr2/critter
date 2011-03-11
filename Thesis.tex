@@ -525,7 +525,7 @@ example, checking for a minimum length of each variable name happens when \progr
 recognizes a variable inside a declaration. The administrator can write their own checks as functions 
 to be invoked at each of the relevant callback points.
 
-The set of predefined checks are listed below in \refCode \ref{predefinedChecks}.
+The set of predefined checks are listed below in Table \ref{predefinedChecks}.
 
 \begin{table}
 \caption{Predefined Checks}
@@ -535,27 +535,26 @@ The set of predefined checks are listed below in \refCode \ref{predefinedChecks}
 		\toprule
 		Check Name & Purpose \\
 		\midrule
-		isFileTooLong & Check if the file is above a maximum length. \\
-		hasBraces & Checks if there are braces surrounding an if statement. \\
-		isFunctionTooLongByLines & Checks if a function is too long by its line count. \\
-		isFunctionTooLongByStatements & Checks if a function is too long by its statement count. \\
-		tooManyParameters & Checks if there are too many parameters in the function declaration. \\
-		CPlusPlusComments & Throws an error on C++ style single line comments. \\
-		checkForComment & Checks for comments before some construct. \\
-		switchHasDefault & Checks if each switch statement has a default case. \\
-		switchCasesHaveBreaks & Checks if each switch case statement has a break statement. \\
-		tooDeeplyNested & Checks whether a region of code (i.e. a compound statement) nests too deeply. \\
-		useEnumNotConstOrDefine & Advices using enum instead of const for declarations. Actually just checks that 'const' doesn't appear inside a parameter list before outputting the error.\\
-		neverUseGotos & Error on any use of a GOTO. \\
-		isVariableNameTooShort & Error if a variable name is less than a certain minimum length. \\
-		isMagicNumber & Error on encountering a magic number outside of a declaration (presumably, inside a declaration a variable will be initialized to a magic number and then used throughout the rest of the code). \\
-		globalHasComment & Check that each global variable has a comment. \\
-		isLoopTooLong & Check that the loop length is less than a maximum. \\
-		isLoopEmpty & Check if compound statement is empty. \\
-		isCompoundStatementEmpty & Check if there are too many functions in a file. \\
+		isFileTooLong & Check if the file exceeds a maximum length. \\
+		hasBraces & Check if there are braces surrounding an if statement. \\
+		isFunctionTooLongByLines & Check if a function exceeds a maximum line count. \\
+		isFunctionTooLongByStatements & Checks if a function exceeds a maximum statement count. \\
+		tooManyParameters & Check if there are too many parameters in the function declaration. \\
+		CPlusPlusComments & Throw an error on C++ style single line comments. \\
+		checkForComment & Check for comments before some construct. \\
+		switchHasDefault & Check that each \lstinline!switch! statement has a \lstinline!default! case. \\
+		switchCasesHaveBreaks & Check that each \lstinline!switch! case has a \lstinline!break! statement. \\
+		tooDeeplyNested & Check whether a region of code (i.e. a compound statement) nests too deeply. \\
+		useEnumNotConstOrDefine & Advises using \lstinline!enum! instead of \lstinline!const! or \lstinline!#define! for declarations. \\
+		neverUseGotos & Throw an error on any use of a \lstinline!GOTO! statement. \\
+		isVariableNameTooShort & Check if a variable's name exceeds a minimum length. \\
+		isMagicNumber & Throw an error on encountering a magic number outside of a declaration. \\
+		globalHasComment & Check if each global variable has a comment. \\
+		isLoopTooLong & Check if the loop length exceeds a maximum length. \\
+		isCompoundStatementEmpty  & Check if the compound statement is empty. \\
 		tooManyFunctionsInFile & Check if there are too many functions in a file. \\
-		checkIfElsePlacement & Throw error based on the placement of the else relative to the if statement.  \\
-		validateComment & Make sure function comments have the appropriate contents. Specifically check that the comment mentions each parameter (by name) and what the function returns. \\
+		checkIfElsePlacement & Throw an error based on the placement of the else statement relative to the if statement.  \\
+		validateComment & Check if function comments have the appropriate contents. Specifically check that the comment mentions each parameter (by name) and what the function returns. \\
 		\bottomrule
 	\end{tabular}
 	\end{center}
