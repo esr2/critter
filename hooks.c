@@ -16,10 +16,10 @@
 #include <stdio.h>
 #include <assert.h>
 
-static DynArray_T functionCallsArray;
-static DynArray_T locationsArray;
-static DynArray_T identifiersArray;
-static DynArray_T constantsArray;
+static DynArray_T functionCallsQueue;
+static DynArray_T locationsQueue;
+static DynArray_T identifiersQueue;
+static DynArray_T constantsQueue;
 
 /*---------------- Util -----------------------*/
 static void popIdentifier() { }
@@ -31,13 +31,13 @@ static void freeText(void* element, void* extra) {
 	free(text);
 }
 
-static void addFunctionAndLocationToStacks(void (*f)(YYLTYPE), YYLTYPE location) {
-	assert(DynArray_getLength(functionCallsArray) == DynArray_getLength(locationsArray));
+static void enqueueFunctionAndLocation(void (*f)(YYLTYPE), YYLTYPE location) {
+	assert(DynArray_getLength(functionCallsQueue) == DynArray_getLength(locationsQueue));
 	
-	DynArray_add(functionCallsArray, (void*)f);
-	DynArray_add(locationsArray, allocateLocation(location));
+	DynArray_add(functionCallsQueue, (void*)f);
+	DynArray_add(locationsQueue, allocateLocation(location));
 	
-	assert(DynArray_getLength(functionCallsArray) == DynArray_getLength(locationsArray));
+	assert(DynArray_getLength(functionCallsQueue) == DynArray_getLength(locationsQueue));
 }
 
 /**
@@ -46,8 +46,8 @@ static void addFunctionAndLocationToStacks(void (*f)(YYLTYPE), YYLTYPE location)
  * match or just the first line/column. BeginCall is called on first location
  * and can be null. All functions that are popped are called in the proper order.
  */
-static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE)) {
-	assert(DynArray_getLength(functionCallsArray) == DynArray_getLength(locationsArray));
+static void dequeueUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE)) {
+	assert(DynArray_getLength(functionCallsQueue) == DynArray_getLength(locationsQueue));
 	
 	int i;
 	void (*func)(YYLTYPE);
@@ -59,16 +59,16 @@ static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE
 	
 	/* first find how many popIdentifiers and popConstants exist in the 
 	   functionCallsArray so we know where to start the queues */
-	for (i = 0; i < DynArray_getLength(locationsArray); i++) {
+	for (i = 0; i < DynArray_getLength(locationsQueue); i++) {
 		if (!locationIsLessOrEqual(location, 
-								   DynArray_get(locationsArray, i),
+								   DynArray_get(locationsQueue, i),
 								   matchWhole)) {
 			/*ignore the beginning of the queue which is irrelevant */
 			firstLocation++;
 			continue;
 		}
 		
-		func = DynArray_get(functionCallsArray, i);
+		func = DynArray_get(functionCallsQueue, i);
 		if (func == popIdentifier) {
 			numIdentifiers++;
 		} else if (func == popConstant) {
@@ -76,25 +76,25 @@ static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE
 		}
 	}
 	
-	int identifierQPos = DynArray_getLength(identifiersArray) - numIdentifiers;
+	int identifierQPos = DynArray_getLength(identifiersQueue) - numIdentifiers;
 	if (identifierQPos < 0) identifierQPos = 0;
-	int constantQPos = DynArray_getLength(constantsArray) - numConstants;
+	int constantQPos = DynArray_getLength(constantsQueue) - numConstants;
 	if (constantQPos < 0) constantQPos = 0;
 	
 	/* dequeue function/location pairs until location matches input location */
-	for (i = firstLocation; i < DynArray_getLength(locationsArray); ) {
+	for (i = firstLocation; i < DynArray_getLength(locationsQueue); ) {
 		
 		/* if there is a beginning call, make it */
 		if (beginCall) {
-			loc = DynArray_get(locationsArray, i);
+			loc = DynArray_get(locationsQueue, i);
 			beginCall(*loc);
 			beginCall = NULL;
 		}
 		
 		/* remove function and location from the queues */
-		loc = DynArray_removeAt(locationsArray, i);
+		loc = DynArray_removeAt(locationsQueue, i);
 		assert(loc != NULL);
-		func = DynArray_removeAt(functionCallsArray, i);
+		func = DynArray_removeAt(functionCallsQueue, i);
 		assert(func != NULL);
 		
 		(*func)(*loc);
@@ -107,10 +107,10 @@ static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE
 			void (*function)(YYLTYPE, char*);
 			
 			if (func == popIdentifier) {
-				queue = identifiersArray;
+				queue = identifiersQueue;
 				function = registerIdentifier;
 			} else {
-				queue = constantsArray;
+				queue = constantsQueue;
 				function = registerConstant;
 			}
 			assert(queue);
@@ -125,7 +125,7 @@ static void popUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE
 		freeLocations(loc, NULL);
 	}
 	
-	assert(DynArray_getLength(functionCallsArray) == DynArray_getLength(locationsArray));
+	assert(DynArray_getLength(functionCallsQueue) == DynArray_getLength(locationsQueue));
 }
 
 static void doNothing(YYLTYPE location) {}
@@ -153,15 +153,15 @@ void h_endFile(YYLTYPE location) {
  * parsing begins.
  */
 void h_beginProgram() {
-	functionCallsArray = DynArray_new(0);
-	locationsArray = DynArray_new(0);
-	identifiersArray = DynArray_new(0);
-	constantsArray = DynArray_new(0);
+	functionCallsQueue = DynArray_new(0);
+	locationsQueue = DynArray_new(0);
+	identifiersQueue = DynArray_new(0);
+	constantsQueue = DynArray_new(0);
 	
-	assert(functionCallsArray != NULL);
-	assert(locationsArray != NULL);
-	assert(identifiersArray != NULL);
-	assert(constantsArray != NULL);
+	assert(functionCallsQueue != NULL);
+	assert(locationsQueue != NULL);
+	assert(identifiersQueue != NULL);
+	assert(constantsQueue != NULL);
 	beginProgram();
 	lastCalled_set(beginProgram);
 }
@@ -173,17 +173,17 @@ void h_endProgram(YYLTYPE location) {
 	endProgram(location);
 	/* don't need to set lastCalledFunction because program is ending */
 	
-	assert(functionCallsArray != NULL);
-	assert(locationsArray != NULL);
+	assert(functionCallsQueue != NULL);
+	assert(locationsQueue != NULL);
 	
 	// Free the function arrays
-	DynArray_map(locationsArray, freeLocations, NULL);
-	DynArray_free(locationsArray);
-	DynArray_free(functionCallsArray);
-	DynArray_map(identifiersArray, freeText, NULL);
-	DynArray_free(identifiersArray);
-	DynArray_map(constantsArray, freeText, NULL);
-	DynArray_free(constantsArray);
+	DynArray_map(locationsQueue, freeLocations, NULL);
+	DynArray_free(locationsQueue);
+	DynArray_free(functionCallsQueue);
+	DynArray_map(identifiersQueue, freeText, NULL);
+	DynArray_free(identifiersQueue);
+	DynArray_map(constantsQueue, freeText, NULL);
+	DynArray_free(constantsQueue);
 }
 /*------------------------------------------------*/
 void h_registerDefineIntegralType(YYLTYPE location) {
@@ -191,48 +191,44 @@ void h_registerDefineIntegralType(YYLTYPE location) {
 }
 
 /*------------ Declarations ----------------------*/
-static int inDeclarator = 0;
-
 void h_registerIdentifier(YYLTYPE location) {
-	addFunctionAndLocationToStacks(popIdentifier,location);
+	enqueueFunctionAndLocation(popIdentifier,location);
 }
 
 void h_registerIdentifierText(char* identifier) {
-	DynArray_add(identifiersArray, strdup(identifier));
+	DynArray_add(identifiersQueue, strdup(identifier));
 }
 
 void h_registerConstant(YYLTYPE location) {
-	addFunctionAndLocationToStacks(popConstant, location);
+	enqueueFunctionAndLocation(popConstant, location);
 }
 
 void h_registerConstantText(char* constant) {
-	DynArray_add(constantsArray, strdup(constant));
+	DynArray_add(constantsQueue, strdup(constant));
 }
 
 void h_endDeclaration(YYLTYPE location) {
-	popUntil(location, 0, beginDeclaration);
+	dequeueUntil(location, 0, beginDeclaration);
 	endDeclaration(location);
 	lastCalled_set(endDeclaration);
 }
 
 void h_beginDirectDeclarator(YYLTYPE location) {
-	inDeclarator++;
-	addFunctionAndLocationToStacks(doNothing,location);
+	enqueueFunctionAndLocation(doNothing,location);
 }
 
 void h_endDirectDeclarator(YYLTYPE location) {
-	inDeclarator--;
-	addFunctionAndLocationToStacks(doNothing, location);
+	enqueueFunctionAndLocation(doNothing, location);
 }
 
 void h_endExpressionStatement(YYLTYPE location) {
-	popUntil(location, 0, beginStatement);
+	dequeueUntil(location, 0, beginStatement);
 	endStatement(location);
 	lastCalled_set(endStatement);
 }
 
 void h_registerExpression(YYLTYPE location) {
-	popUntil(location, 0, NULL);
+	dequeueUntil(location, 0, NULL);
 }
 
 /*------------ Function ----------------------*/
@@ -241,26 +237,26 @@ void h_beginFunctionDefinition(YYLTYPE location) {
 	lastCalled_set(beginFunctionDefinition);
 	
 	/* send appropriate calls for declaration_specifier, declarator etc */
-	popUntil(location, 0, NULL);
+	dequeueUntil(location, 0, NULL);
 }
 
 void h_beginParameterList(YYLTYPE location) {
-	addFunctionAndLocationToStacks(beginParameterList, location);
+	enqueueFunctionAndLocation(beginParameterList, location);
 }
 
 void h_registerParameter(YYLTYPE location) {
-	addFunctionAndLocationToStacks(registerParameter, location);
+	enqueueFunctionAndLocation(registerParameter, location);
 }
 
 void h_endParameterList(YYLTYPE location) {
-	addFunctionAndLocationToStacks(endParameterList, location);
+	enqueueFunctionAndLocation(endParameterList, location);
 }
 /*------------ Typedef ----------------------*/
 
 void h_registerTypedef(YYLTYPE location) {
 	/* add a call to doNothing so declarations can match on the right
 	   beginning location (the typedef) */
-	addFunctionAndLocationToStacks(doNothing, location);
+	enqueueFunctionAndLocation(doNothing, location);
 }
 
 /*----- Declaration Specifiers --------------*/
@@ -271,7 +267,7 @@ static void h_registerDeclarationSpecifiers(YYLTYPE location) {
 
 /* Type specifiers: */
 static void h_registerTypeSpecifier(YYLTYPE location) {
-	addFunctionAndLocationToStacks(h_registerDeclarationSpecifiers, location);
+	enqueueFunctionAndLocation(h_registerDeclarationSpecifiers, location);
 }
 
 void h_registerVoid(YYLTYPE location) {h_registerTypeSpecifier(location);}
@@ -289,12 +285,12 @@ void h_registerTypeName(YYLTYPE location) {h_registerTypeSpecifier(location);}
 
 /* Type qualifiers */
 static void h_registerTypeQualifier(YYLTYPE location) {
-	addFunctionAndLocationToStacks(h_registerDeclarationSpecifiers, location);
+	enqueueFunctionAndLocation(h_registerDeclarationSpecifiers, location);
 }
 
 void h_registerConst(YYLTYPE location) { 
 	h_registerTypeQualifier(location);
-	addFunctionAndLocationToStacks(registerConst, location);
+	enqueueFunctionAndLocation(registerConst, location);
 }
 
 void h_registerVolatile(YYLTYPE location) {
@@ -304,7 +300,7 @@ void h_registerVolatile(YYLTYPE location) {
 
 /* Storage class specifiers */
 static void h_registerStorageClass(YYLTYPE location) {
-	addFunctionAndLocationToStacks(h_registerDeclarationSpecifiers, location);
+	enqueueFunctionAndLocation(h_registerDeclarationSpecifiers, location);
 }
 
 void h_registerExtern(YYLTYPE location) {h_registerStorageClass(location);}
