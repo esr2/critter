@@ -663,6 +663,121 @@ turn call the administrator defined checks. While these checks could be written 
 themselves, it is conventional to separate them into their own functions (and files) in order to preserve 
 the readability of the sax.c file and the code in general.
 
+Unfortunately some handlers cannot actually be called at the time the construction is recognized. This 
+is due to the fact that Bison executes actions as they are encountered inside each grammar rule. At the 
+beginning of a rule, Bison would not know which rule it was actually matching when it needed to 
+execute the action. In all the rules listed in \refCode \ref{grammar}, the action is preceded by some 
+distinguishing token (like \lstinline{WHILE}) or by the entire rule. However \refCode \ref{hookGrammar} 
+shows how some rules that both need actions at the beginning of the statement and lack distinguishing 
+tokens. Specifically we would like to know when we start the beginning of a function definition but we 
+cannot be sure that we are in a function definition until Bison finishes parsing the signature. To fix this 
+issue I have added the hooks module. This module intercepts what would be normal calls within the 
+SAX framework and then reorders them at the appropriate time. Each call into the module does one of 
+two things: enqueues a SAX level function call and its location or dequeues any item after a specified 
+location (\refCode \ref{hooksQueues}). With the beginning of a function, all the elements of the 
+signature are placed on the queues and then dequeued when \lstinline{h_beginFunctionDefinition} is 
+called. Another reason for the hooks module is to make the appropriate calls into the Sax layer 
+regarding \lstinline{IDENTIFIER}s and numeric constants. Bison only deals with the tokens as opposed 
+to their text whereas Flex deals with the actual text. The hooks module takes separate calls from both 
+programs regarding the location and the actual text of \lstinline{IDENTIFIER}s and constants and routes 
+them into a combined call into the SAX layer. This can best be seen in \refCode \ref{handlerTimeline}.
+
+\begin{figure}
+\caption{Additional Excerpt of the Grammar}
+\label{hookGrammar}
+\begin{lstlisting}[language=Caml, escapechar=\%]
+declarator
+	: pointer direct_declarator
+	| direct_declarator
+	;
+
+direct_declarator
+	: IDENTIFIER			 %\underline{\{h\_registerIdentifier(@\$);\}}%
+	| '(' declarator ')'
+	| direct_declarator '['  %\underline{\{h\_beginDirectDeclarator(@1);\}}% constant_expression ']'	 %\underline{\{h\_endDirectDeclarator(@\$);\}}%
+	| direct_declarator '['  %\underline{\{h\_beginDirectDeclarator(@1);\}}% ']'						%\underline{\{h\_endDirectDeclarator(@\$);\}}%
+	| direct_declarator '('  %\underline{\{h\_beginDirectDeclarator(@1);\}}% parameter_type_list ')'	%\underline{\{h\_endDirectDeclarator(@\$);\}}%
+	| direct_declarator '('  %\underline{\{h\_beginDirectDeclarator(@1);\}}% identifier_list ')'		%\underline{\{h\_endDirectDeclarator(@\$);\}}%
+	| direct_declarator '('  %\underline{\{h\_beginDirectDeclarator(@1);\}}% ')'						%\underline{\{h\_endDirectDeclarator(@\$);\}}%
+	;
+
+
+function_definition
+	: declaration_specifiers declarator %\underline{\{h\_beginFunctionDefinition(@2);\}}% declaration_list compound_statement %\underline{\{endFunctionDefinition(@\$);\}}%
+	| declaration_specifiers declarator %\underline{\{h\_beginFunctionDefinition(@2);\}}%} compound_statement %\underline{\{endFunctionDefinition(@\$);\}}%
+	| declarator %\underline{\{h\_beginFunctionDefinition(@1);\}}% declaration_list compound_statement %\underline{\{endFunctionDefinition(@\$);\}}%
+	| declarator %\underline{\{h\_beginFunctionDefinition(@1);\}}% compound_statement %\underline{\{endFunctionDefinition(@\$);\}}
+	;
+\end{lstlisting}
+\end{figure}
+
+\begin{figure}
+\caption{Representation of the hooks module}
+\label{hooksQueues}
+\begin{center}
+\begin{subfigure}[t]{.4\linewidth}
+	\caption{}
+	\label{hooksQueuesA}
+	\includegraphics[scale=0.5]{hooksQueuesPartA.pdf}
+\end{subfigure}
+\begin{subfigure}[t]{.4\linewidth}
+	\caption{}
+	\label{hooksQueuesB}
+	\includegraphics[scale=0.5]{hooksQueuesPartB.pdf}
+\end{subfigure} \\
+\vspace{4mm}
+\begin{subfigure}[t]{.4\linewidth}
+	\caption{}
+	\label{hooksQueuesC}
+	\includegraphics[scale=0.5]{hooksQueuesPartC.pdf}
+\end{subfigure}
+\begin{subfigure}[t]{.4\linewidth}
+	\caption{}
+	\label{hooksQueuesD}
+	\includegraphics[scale=0.5]{hooksQueuesPartD.pdf}
+\end{subfigure}
+\end{center}
+\small{(\subref{hooksQueuesA}) The initial queue with functions associated to locations 11, 12 and 13. \\(\subref{hooksQueuesB}) The queue after another function/location pair has been enqueued. \\ (\subref{hooksQueuesC}) The call at location 15 causes a call into the Sax layer followed by every stored call after the given location (12) in the queue. \\ (\subref{hooksQueuesD}) The resulting queue. }
+\end{figure}
+
+\begin{figure}
+\caption{Timeline of event handler calls}
+\label{handlerTimeline}
+\begin{center}
+\begin{tabular}{llc}
+\toprule
+Hooks & Sax  & Relevant Code\\
+\midrule
+h\_registerIdentifierText & & \lstinline!example! \\
+h\_registerIdentifier & & \lstinline!example! \\
+h\_beginParameterList & & \lstinline!(! \\
+h\_registerIdentifierText & & \lstinline!a! \\
+h\_registerIdentifier & & \lstinline!a! \\
+h\_registerParameter & & \lstinline!int a! \\
+h\_registerIdentifierText & & \lstinline!b! \\
+h\_registerIdentifier & & \lstinline!b! \\
+h\_registerParameter & & \lstinline!double b! \\
+h\_endParameterList & & \lstinline!)! \\
+h\_beginFunctionDefinition & beginFunctionDefinition & \\
+ & registerIdentifier & \lstinline!example! \\
+ & beginParameterList & \lstinline!(! \\
+ & registerParameter & \lstinline!int a! \\
+ & registerIdentifier & \lstinline!a! \\
+ & registerParameter & \lstinline!double b!\\
+ & registerIdentifier & \lstinline!b!\\
+ & endParameterList & \lstinline!)!\\
+N/A & beginCompoundStatement & \lstinline!{!\\
+\ldots & \ldots & \lstinline!...! \\
+N/A & endCompoundStatement & \lstinline!}!\\
+N/A & endFunctionDefinition \\
+ \bottomrule
+\end{tabular}
+\end{center}
+\small{The timeline of calls into the hooks and sax module for:
+ \lstinline!void example(int a, double b) {...}!
+}
+\end{figure}
+
 \section{How Checks Are Written}
 
 Minimally, each check needs access to the location of the code construct in case an error needs to be 
