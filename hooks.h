@@ -60,4 +60,4 @@ void h_registerStatic(YYLTYPE location);
 void h_registerAuto(YYLTYPE location);
 void h_registerRegister(YYLTYPE location);
 
-#endif HOOKS_INCLUDED
+#endif
