@@ -22,4 +22,4 @@ int isLocationAbove(const void *element1, const void *element2);
 int isLocationBelow(const void *element1, const void *element2);
 int isLocationWithin(const void *element1, const void *element2);
 
-#endif LOCATIONS_INCLUDED
+#endif

@@ -24,4 +24,4 @@ char* comment_getCommentWithin(YYLTYPE location, YYLTYPE *returnLocation);
 int comment_isContentful(const char* text);
 int comment_contains(const char* text, const char* needle, int ignoreCase);
 
-#endif COMMENTS_INCLUDED
+#endif
