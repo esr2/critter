@@ -862,6 +862,17 @@ void isMagicNumber(YYLTYPE location, int progress, char* constant) {
 \end{center}
 \end{figure}
 
+Additionally, there are two helper modules designed to facilitate writing checks: Locations and 
+Comments. The Locations module contains a several functions to manipulate \lstinline{YYLTYPE}s.  
+Specifically it contains methods to compare locations in various directions/distances as well as 
+allocate, copy and free \lstinline{YYLTYPE}s. The Comments module tracks all the comments found 
+while running \programName. Comment contents and locations are registered through calls from the 
+Sax layer and are stored in a dynamic array. Additionally the module provides the ability to search 
+through this array to find comments in or near a certain location (using the methods from Locations). 
+Finally Comments provides a couple of useful functions when analyzing the comment itself: 
+determining if a comment has words (as opposed to a deliminating comment in the form of 
+\lstinline{/*----*/} etc.) and if a comment contains a word (with or without case sensitivity).
+
 \chapter{Conventions}
 
 \section{Sax}
