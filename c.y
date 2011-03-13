@@ -26,6 +26,10 @@
 		ERROR_NORMAL,
 		ERROR_LOW,
 	};
+    
+    void lyyerror(enum errorLevel priority, YYLTYPE t, char *s);
+    void yyerror(char *s);
+    void flyyerror(enum errorLevel priority, YYLTYPE location, char* format, ...);
 #endif
 	
 # define YYLLOC_DEFAULT(Current, Rhs, N)								\
@@ -524,7 +528,7 @@ void lyyerror(enum errorLevel priority, YYLTYPE t, char *s) {
 	fprintf(stderr, "%s\n", s);
 }
 
-yyerror(char *s)
+void yyerror(char *s)
 {
 	lyyerror(ERROR_HIGH, yylloc, s);
 }
