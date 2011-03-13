@@ -562,7 +562,20 @@ The set of predefined checks are listed below in Table \ref{predefinedChecks}.
 
 \chapter{How \programName Works}
 
+Figure \ref{moduleInteraction} shows how \programName is divided up into multiple semi-autonomous modules. Each of these has a unique function and is designed to keep the code as clean as possible. The ``Knowledge Barrier'' distinguishes the easily customizable and understandable modules from those which should not be modified without extreme caution. These modules in turn can be conceptually grouped into three categories: \hyperref[parsingTheCode]{Parsing the Code}, \hyperref[howChecksAreCalled]{How Checks are Called} and \hyperref[howChecksAreWritten]{How Checks are Written}.
+
+\begin{figure}[h]
+\caption{Module Interaction of \programName}
+\label{moduleInteraction}
+\begin{center}
+\processifversion{PRINT}{\includegraphics[scale=0.6]{ClassInteractionPrint}}
+\processifversion{COLOR}{\includegraphics[scale=0.6]{ClasInteractionColor}}
+\end{center}
+\end{figure}
+
+
 \section{Parsing the Code}
+\label{parsingTheCode}
 
 \programName is built on top of Bison and Flex, a parser generator and a lexical analyzer 
 respectively. These two programs each take in a specification file (which define a set of tokens and a 
@@ -648,6 +661,7 @@ header files, it simplified the interface between the main module and the lexer/
 
 
 \section{How Checks are Called}
+\label{howChecksAreCalled}
 
 \programName is event based and is largely inspired by SAX\cite{saxHomepage}. SAX is a 
 framework which allows programmers to use event handlers to parse XML files. SAX typically uses
@@ -780,6 +794,7 @@ N/A & endFunctionDefinition \\
 \newpage
 
 \section{How Checks Are Written}
+\label{howChecksAreWritten}
 
 Minimally, each check needs access to the location of the code construct in case an error needs to be 
 produced. However, checks often need additional information regarding the surrounding context of 
@@ -849,17 +864,6 @@ void isMagicNumber(YYLTYPE location, int progress, char* constant) {
 }
 \end{lstlisting}
 \small{Throw an error on encountering a magic number outside of a declaration.}
-\end{figure}
-
-
-
-\begin{figure}
-\caption{Module Interaction of \programName}
-\label{moduleInteraction}
-\begin{center}
-\processifversion{PRINT}{\includegraphics[scale=0.55]{ClassInteractionPrint}}
-\processifversion{COLOR}{\includegraphics[scale=0.55]{ClasInteractionColor}}
-\end{center}
 \end{figure}
 
 Additionally, there are two helper modules designed to facilitate writing checks: Locations and 
