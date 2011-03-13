@@ -150,18 +150,18 @@ bother one's peers with another round of reviews, allowing the entire team to be
 \chapter{Related Products}
 
 There are some tools that try to fill the semantic error checking gap. Each approaches the 
-problem differently, but all succeed in finding some semantic errors. Three such tools are Splint \cite
-{splint-manual} , PMD \cite{pmd}, and Checkstyle \cite{checkstyle}.
+problem differently, but all succeed in finding some semantic errors. Three such tools are Splint\cite
+{splint-manual} , PMD\cite{pmd}, and Checkstyle\cite{checkstyle}.
 
  \todoin{add explicit comparison between these tools and my tool}
 \section{Splint}
 Splint is a tool for ``statically checking C programs for security vulnerabilities and programming 
-mistakes" \cite[p.\ 9]{splint-manual}. It works exactly as my program does from the students'
+mistakes"\cite[p.\ 9]{splint-manual}. It works exactly as my program does from the students'
 perspective, i.e.\ as a command-line program which prints warnings and errors to \lstinline{stdout}. 
 Splint displays warnings about basic semantic errors like assignments with mismatched types and 
 ignored return values. With more effort, programmers can add annotations (i.e.\ fancy comments) that 
 give Splint a specification to check against. These annotations allow for stronger checks like memory 
-management, null pointers and ``violations of information hiding'' \cite[p. 9]{splint-manual}. An 
+management, null pointers and ``violations of information hiding''\cite[p. 9]{splint-manual}. An 
 example of annotations in action are the following abstract type declarations (\refCode \ref{splint-annotations}).
 
 \begin{figure}[h]
@@ -186,7 +186,7 @@ including warnings that encourage them to start adding annotations.  For some as
 \lstinline{/*@null@*/} annotations I think this has worked okay, but for others like abstract types, 
 memory management, etc. I don't think it has worked very well, and the warnings on these issues tend 
 to either make developers want to stop using Splint, or at least just turn off all the warnings of that type, 
-rather than start adding the annotations needed to enable better checking. \cite{evans-email} 
+rather than start adding the annotations needed to enable better checking.\cite{evans-email} 
 \end{quote}
 
 \section{PMD and Checkstyle}
@@ -196,7 +196,7 @@ Basic Rules, Coupling Rules, etc. Some checks also deal explicitly with a certai
 library or platform like Android, Jakarta and JUnit. PMD functions by passing source code into a 
 JavaCC-generated parser and receiving an Abstract Syntax Tree (a.k.a.\ AST, a tree-based model of 
 the source code). PMD then traverses the AST and calls each rule in the RuleSet to check for any
-violations. This pattern of examining a tree of nodes is called the Visitor Pattern \cite{design-patterns}. 
+violations. This pattern of examining a tree of nodes is called the Visitor Pattern\cite{design-patterns}. 
 The RuleSet is an XML file that can be edited to augment the functionality of PMD with customized 
 rules. Rules are written in their own classes and extend a base implementation. The rule itself can 
 override three functions (start, visit and end) to perform various checks against the source code based 
@@ -630,18 +630,18 @@ iteration_statement
 \end{lstlisting}
 \end{figure} 
 
-Instead of writing them from scratch, I found the Flex and Bison specification files online 
-\cite{originalGrammar} and have modified them to add additional functionality. The only major 
+Instead of writing them from scratch, I found the Flex and Bison specification files 
+online\cite{originalGrammar} and have modified them to add additional functionality. The only major 
 modification of the actual grammar was to add the ability to recognize and dynamically add 
 \lstinline{typdef} definitions as types. These type names are stored in an internal symbol table and the 
 lexer checks to make sure that any potential \lstinline{IDENTIFIER}s are not already listed there. In 
 order to accommodate the inclusion of header files, I had to expand the given lexer functionality to 
 transfer control between files. The specific method of using a stack of buffers/files is heavily inspired 
-from the examples in the O'Reily Flex \& Bison book \cite{flex-and-bison}. When transferring to a 
+from the examples in the O'Reily Flex \& Bison book\cite{flex-and-bison}. When transferring to a 
 different file, the lexer adds the current file to a stack with its file pointer, internal state, and current line 
 number. When it reaches the end of the file, the lexer pops the current file off the stack and goes back 
-to its previous state. The end of program occurs when there are no more files on the stack. 
-\footnote{\programName starts by adding all of the given files to the stack and dynamically adding 
+to its previous state. The end of program occurs when there are no more files on the 
+stack.\footnote{\programName starts by adding all of the given files to the stack and dynamically adding 
 additional header files. While this pre-loading is not strictly in concordance with the model of adding 
 header files, it simplified the interface between the main module and the lexer/parser.} 
 \todo{Add that I added a comment state?}
@@ -649,7 +649,7 @@ header files, it simplified the interface between the main module and the lexer/
 
 \section{How Checks are Called}
 
-\programName is event based and is largely inspired by SAX \cite{saxHomepage}. SAX is a 
+\programName is event based and is largely inspired by SAX\cite{saxHomepage}. SAX is a 
 framework which allows programmers to use event handlers to parse XML files. SAX typically uses
 event handlers for the beginning and end of each XML element as well as to capture the text in 
 between. \programName calls event handlers at the beginning and end of constructs (functions, 
