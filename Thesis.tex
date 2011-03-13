@@ -526,6 +526,7 @@ recognizes a variable inside a declaration. The administrator can write their ow
 to be invoked at each of the relevant callback points.
 
 The set of predefined checks are listed below in Table \ref{predefinedChecks}.
+\todoin{about the currently implemented checks -- aka some are for educational purposes (the two types of isFunctionTooLong) and some are my own arbitrary style choices (checkIfElsePlacement)}
 
 \begin{table}
 \caption{Predefined Checks}
@@ -606,6 +607,7 @@ have also added a \lstinline{filename} field in order to produce more accurate c
 messages across a set of files.) \programName calls the event handlers from these actions, passing in 
 the location of the relevant construction (see \refCode \ref{grammar}, where actions are underlined). 
 Some actions are `hidden' in subroutines in order to avoid ambiguities within the grammar.
+\todoin{explain the difference between a begin location and an end location}
 
 \begin{figure} 
 \caption{Excerpt of the Grammar}
@@ -695,6 +697,7 @@ regarding \lstinline{IDENTIFIER}s and numeric constants. Bison only deals with t
 to their text whereas Flex deals with the actual text. The hooks module takes separate calls from both 
 programs regarding the location and the actual text of \lstinline{IDENTIFIER}s and constants and routes 
 them into a combined call in the SAX layer. This can best be seen in \refCode \ref{handlerTimeline}.
+\todoin{Hooks is not complete: common constructs are implemented but not everything (like operators)}
 
 \begin{figure}
 \caption{Additional Excerpt of the Grammar}
@@ -879,7 +882,7 @@ determining if a comment has words (as opposed to a deliminating comment in the 
 
 \appendix
 \chapter{Conventions}
-
+\todoin{DynArray uses}
 \section{Sax}
 
 \section{Hooks}
