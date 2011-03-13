@@ -777,17 +777,40 @@ N/A & endFunctionDefinition \\
  \lstinline!void example(int a, double b) {...}!
 }
 \end{figure}
+\newpage
 
 \section{How Checks Are Written}
 
 Minimally, each check needs access to the location of the code construct in case an error needs to be 
 produced. However, checks often need additional information regarding the surrounding context of 
 the possible error. A simple example is the check against using magic numbers (\refCode 
-\ref{checkWithContext}). \programName should only throw an error when it finds an magic number 
-inside a normal statement (as opposed to a declaration where it is necessary to use a magic number). 
-This check then needs to know every time a declaration begins and ends as well as each time a 
-magic number is found. Alternatively, one can set global variables regarding the context and minimize 
-the number of parameters to each check.
+\ref{checkWithContext}). Many programmers consider using numeric constants directly inside the code 
+very poor style and recommend defining a variable to hold that value. \programName should therefore 
+only throw an error when it finds an magic number inside a normal statement (as opposed to inside a 
+declaration where it is necessarily defined). This check then needs to know every time a declaration 
+begins and ends as well as each time a number is found. Alternatively, one can set global 
+variables regarding the context and minimize the number of parameters to each check.
+
+\newcommand{\yyerror}{\lstinline{yyerror}\xspace}
+\newcommand{\lyyerror}{\lstinline{lyyerror}\xspace}
+\newcommand{\lyyerrorf}{\lstinline{lyyerrorf}\xspace}
+
+In order to throw an error, the administrator can use one of three error functions: \yyerror, \lyyerror, and 
+\lyyerrorf. Each of these functions outputs an error message to \lstinline{stderr} preceded by the error's 
+location in the code and a warning level (as seen in \refCode \ref{errorExample}). \yyerror and \lyyerrorf 
+are each wrappers to \lyyerror, which takes in an error level (\lstinline{enum errorLevel}), a location 
+(\lstinline{YYLTYPE}) and an error message (\lstinline{char *}). In essence, \lyyerror is really a wrapper 
+to \lstinline{fprintf} and defines the formatting of all the error messages/locations. It is also the location 
+to change the string value of the different error levels (currently, \lstinline{ERROR_HIGH}=``big 
+problem'', \lstinline{ERROR_NORMAL}=``error'', and \lstinline{ERROR_LOW}=``low priority'').  
+\lyyerrorf, instead of taking in an error message, takes a format string and a variable argument list 
+which, through \lstinline{vsprintf} it uses to create an error message. It then passes the newly created 
+message to \lyyerror with the rest of its arguments. \yyerror only takes an error message and calls 
+\lyyerror with Bison's internal location in the code and a default high error level. This is because 
+\yyerror is called internally through Bison to represent syntax errors. \yyerror is the only predefined 
+error reporting function; \lyyerror is an extension suggested by O'Reily\cite{bison-and-flex} when using 
+location tracking with Bison/Flex (the `l' represents the variable location). \lyyerrorf was created in the 
+likes of \lstinline{printf} to deal with formatted error messages in one consolidated location.
 
 \begin{figure}
 \caption{Check with additional context}
