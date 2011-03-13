@@ -248,7 +248,7 @@ public class CountRule extends AbstractJavaRule {
 \end{figure}
 
 Checkstyle mimics PMD in function but provides different checks out of the box (namely those 
-regarding duplicate code, class design, whitespace, etc). It also uses the Visitor Pattern and 
+regarding duplicate code, class design, whitespace, etc.). It also uses the Visitor Pattern and 
 provides ways to examine the beginning and ends of the tree as well as each node. New rules are 
 added through an XML file and similarly passed to Checkstyle at runtime. Here is example check 
 which determines how many methods are in a class (see \refCode \ref{checkstyle-rule}).
@@ -675,8 +675,8 @@ header files, it simplified the interface between the main module and the lexer/
 framework which allows programmers to use event handlers to parse XML files. SAX typically uses
 event handlers for the beginning and end of each XML element as well as to capture the text in 
 between. \programName calls event handlers at the beginning and end of constructs (functions, 
-declarations, statements, parameter lists, etc) as well as when it finds singular elements (variable 
-names, \lstinline{break} statements, parameters, etc). In the code, handlers are prefaced by the words 
+declarations, statements, parameter lists, etc.) as well as when it finds singular elements (variable 
+names, \lstinline{break} statements, parameters, etc.). In the code, handlers are prefaced by the words 
 \lstinline{begin}, \lstinline{end} and \lstinline{register} to signal at what point each is called (as shown 
 in \refCode \ref{grammar}). Each handler is passed, at minimum, the location of the relevant code (in 
 the case of \lstinline{IDENTIFIER}s and numeric constants, the handler is also passed the relevant 
