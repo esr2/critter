@@ -703,8 +703,18 @@ regarding \lstinline{IDENTIFIER}s and numeric constants. Bison only deals with t
 to their text whereas Flex deals with the actual text. The hooks module takes separate calls from both 
 programs regarding the location and the actual text of \lstinline{IDENTIFIER}s and constants and routes 
 them into a combined call in the SAX layer. This can best be seen in \refCode \ref{handlerTimeline}.
-\todoin{Hooks is not complete: common constructs are implemented but not everything (like operators)}
-\todoin{lastCalledFunction stuff}
+
+The Hooks and Sax modules are not complete. Handlers for major and common constructs, as well as 
+the beginning and end of each file and the program, have been implemented. Smaller items, like the 
+registration of the different operators and data types have yet to be implemented. The addition of further 
+handlers is very possible although should only be done after fully comprehending how the system 
+works. Specifically, it is critical to route handlers through Hooks only when they occur inside statements 
+and declarations (as well as anything else which is reordered) and through Sax otherwise.
+
+In addition to the basic SAX style system, I have implemented one shortcut to help identify code context 
+without an excess of global variables. Every time a handler is called, it sets the 
+\lstinline{lastCalledFunction} (through a setter). Checks can then use this variable to easily figure out 
+what the previous context was without additional calls or variables.
 
 \begin{figure}
 \caption{Additional Excerpt of the Grammar}
