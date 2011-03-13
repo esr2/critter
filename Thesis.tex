@@ -897,6 +897,16 @@ Finally Comments provides a couple of useful functions when analyzing the commen
 determining if a comment has words (as opposed to a deliminating comment in the form of 
 \lstinline{/*----*/} etc.) and if a comment contains a word (with or without case sensitivity).
 
+There are some coding styles which are very hard for \programName to check. For example, when 
+checking that each global variable has a comment, it is trivial to check if there is a comment before that 
+declaration. However, if the comment appears after the declaration (as is common in some header 
+files), \programName is unable to find the comment. This is because \programName, at the end of a 
+declaration, has not read or stored the following comment. There are two solutions to this issue. The 
+first is a creative hack in which one stores every location of a global variable and then searches for 
+comments after each location at the end of the file. The second and preferred solution is to change the 
+coding standard to have comments precede declarations.
+
+
 \appendix
 \chapter{Conventions and Necessities}
 \todoin{DynArray uses}
