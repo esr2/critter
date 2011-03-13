@@ -60,7 +60,7 @@ static void dequeueUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYL
 	/* first find how many popIdentifiers and popConstants exist in the 
 	   functionCallsArray so we know where to start the queues */
 	for (i = 0; i < DynArray_getLength(locationsQueue); i++) {
-		if (!locationIsLessOrEqual(location, 
+		if (!locationIsBeforeOrEqual(location, 
 								   DynArray_get(locationsQueue, i),
 								   matchWhole)) {
 			/*ignore the beginning of the queue which is irrelevant */
