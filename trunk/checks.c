@@ -24,7 +24,7 @@ void isFileTooLong(YYLTYPE location) {
 	int MAX_FILE_LENGTH = 200;
 	
 	if (location.first_line > MAX_FILE_LENGTH) {
-		flyyerror(ERROR_NORMAL,
+		lyyerrorf(ERROR_NORMAL,
 				  location, 
 				  "File is too long, should be less than %d lines",
 				  MAX_FILE_LENGTH);
@@ -42,7 +42,7 @@ void hasBraces(YYLTYPE location, char* construct) {
 			return;
 		}
 		
-		flyyerror(ERROR_NORMAL,
+		lyyerrorf(ERROR_NORMAL,
 				  location, 
 				  "Please use braces after all %s statements",
 				  construct);
@@ -57,7 +57,7 @@ void isFunctionTooLongByLines(YYLTYPE location) {
 	int MAX_FUNCTION_LENGTH = 55;
 	
 	if (location.last_line - location.first_line + 1 >= MAX_FUNCTION_LENGTH) {
-		flyyerror(ERROR_NORMAL,
+		lyyerrorf(ERROR_NORMAL,
 				  location, 
 				  "Function is too long by line count, should be less than %d lines",
 				  MAX_FUNCTION_LENGTH);
@@ -80,7 +80,7 @@ void isFunctionTooLongByStatements(YYLTYPE location, int progress) {
 			break;
 		case END:
 			if (statementCount >= MAX_FUNCTION_LENGTH) {
-				flyyerror(ERROR_NORMAL,
+				lyyerrorf(ERROR_NORMAL,
 						  location, 
 						  "Function is too long by statement count, should be less than %d statements",
 						  MAX_FUNCTION_LENGTH);
@@ -114,7 +114,7 @@ void tooManyParameters(YYLTYPE location, int progress) {
 			break;
 		case END:
 			if (numParameters >= MAX_NUM_PARAMETERS && nestedListLevel == 0) {
-				flyyerror(ERROR_HIGH,
+				lyyerrorf(ERROR_HIGH,
 						  location,
 						  "Please use less than %d function parameters, you used %d",
 						  MAX_NUM_PARAMETERS, numParameters);
@@ -141,7 +141,7 @@ void checkForComment(YYLTYPE location, char* construct) {
 
 	if (text == NULL) {
 		// comment not found
-		flyyerror(ERROR_HIGH,
+		lyyerrorf(ERROR_HIGH,
 				  location,
 				  "Please include a descriptive comment above each %s",
 				  construct);
@@ -202,7 +202,7 @@ void switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase) {
 		case END:
 			if (numCases != numBreaks) {
 				int missing = numCases - numBreaks;
-				flyyerror(ERROR_HIGH,
+				lyyerrorf(ERROR_HIGH,
 						  location, 
 						  "Each case/default in a switch statement should have a break statement, you're missing %d",
 						  missing);
@@ -295,7 +295,7 @@ void isVariableNameTooShort(YYLTYPE location, int progress, char* identifier) {
 						}
 					}
 					
-					flyyerror(ERROR_NORMAL,
+					lyyerrorf(ERROR_NORMAL,
 							  location, 
 							  "Variable/function name '%s' is too short",
 							  identifier);
@@ -378,7 +378,7 @@ void isLoopTooLong(YYLTYPE location) {
 	int MAX_LOOP_LENGTH = 35;
 	
 	if (location.last_line - location.first_line + 1 >= MAX_LOOP_LENGTH) {
-		flyyerror(ERROR_NORMAL,
+		lyyerrorf(ERROR_NORMAL,
 				  location, 
 				  "Loop is too long, should be less than %d lines; consider pulling out the code into its own function",
 				  MAX_LOOP_LENGTH);
@@ -407,7 +407,7 @@ void isCompoundStatementEmpty(YYLTYPE location, int progress) {
 				else if (context == beginDoWhile) { parent = "doWhile loops"; }
 				
 				if (parent) {
-					flyyerror(ERROR_HIGH, location, "Do not use empty %s", parent);
+					lyyerrorf(ERROR_HIGH, location, "Do not use empty %s", parent);
 				} else {
 					lyyerror(ERROR_HIGH, location, "Do not use empty block statements");
 				}
@@ -431,7 +431,7 @@ void tooManyFunctionsInFile(YYLTYPE location, int progress) {
 			break;
 		case END:
 			if (numFunctions > MAX_FUNCTIONS_PER_FILE) {
-				flyyerror(ERROR_LOW,
+				lyyerrorf(ERROR_LOW,
 						  location, 
 						  "There are too many functions in this file. Please limit yourself to %d",
 						  MAX_FUNCTIONS_PER_FILE);
