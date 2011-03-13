@@ -566,9 +566,15 @@ Checkstyle\cite{checkstyle} as well as my own experience.
 
 \chapter{How \programName Works}
 
-Figure \ref{moduleInteraction} shows how \programName is divided up into multiple semi-autonomous modules. Each of these has a unique function and is designed to keep the code as clean as possible. The ``Knowledge Barrier'' distinguishes the easily customizable and understandable modules from those which should not be modified without extreme caution. These modules in turn can be conceptually grouped into three categories: \hyperref[parsingTheCode]{Parsing the Code}, \hyperref[howChecksAreCalled]{How Checks are Called} and \hyperref[howChecksAreWritten]{How Checks are Written}.
+Figure \ref{moduleInteraction} shows how \programName is divided up into multiple semi-autonomous 
+modules. Each of these has a unique function and is designed to keep the code as clean as possible. 
+The ``Knowledge Barrier'' distinguishes the easily customizable and understandable modules from 
+those which should not be modified without extreme caution. These modules in turn can be 
+conceptually grouped into three categories: \hyperref[parsingTheCode]{Parsing the Code}, 
+\hyperref[howChecksAreCalled]{How Checks are Called} and 
+\hyperref[howChecksAreWritten]{How Checks are Written}.
 
-\begin{figure}[h]
+\begin{figure}[h!]
 \caption{Module Interaction of \programName}
 \label{moduleInteraction}
 \begin{center}
@@ -576,7 +582,6 @@ Figure \ref{moduleInteraction} shows how \programName is divided up into multipl
 \processifversion{COLOR}{\includegraphics[scale=0.6]{ClasInteractionColor}}
 \end{center}
 \end{figure}
-
 
 \section{Parsing the Code}
 \label{parsingTheCode}
