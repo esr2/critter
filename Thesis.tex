@@ -609,8 +609,11 @@ this information in a \lstinline{YYLTYPE} structure. (Normally a \lstinline{YYLT
 have also added a \lstinline{filename} field in order to produce more accurate checks and error 
 messages across a set of files.) \programName calls the event handlers from these actions, passing in 
 the location of the relevant construction (see \refCode \ref{grammar}, where actions are underlined). 
-Some actions are `hidden' in subroutines in order to avoid ambiguities within the grammar.
-\todoin{explain the difference between a begin location and an end location}
+Some actions are `hidden' in subroutines in order to avoid ambiguities within the grammar. Locations 
+passed from the middle of a rule (all the ones passed to \lstinline{begin} handlers) only represent the 
+location of a that segment as opposed to the entire construct. For example, in \refCode \ref{grammar}, 
+\lstinline{beginWhile} will only be passed the location of the word \lstinline{while} whereas 
+\lstinline{endWhile} will be passed the location of the entire \lstinline{while} loop.
 
 \begin{figure} 
 \caption{Excerpt of the Grammar}
@@ -675,12 +678,12 @@ between. \programName calls event handlers at the beginning and end of construct
 declarations, statements, parameter lists, etc) as well as when it finds singular elements (variable 
 names, \lstinline{break} statements, parameters, etc). In the code, handlers are prefaced by the words 
 \lstinline{begin}, \lstinline{end} and \lstinline{register} to signal at what point each is called (as shown 
-in \refCode \ref{grammar}). Each handler is passed, at minimum, the location of the relevant code; 
-however, \lstinline{begin} handlers only know the location of the beginning of the construct since the 
-entire construct has not been read yet. Each of these event handlers exist in the file sax.c/h which in 
-turn call the administrator defined checks. While these checks could be written into the event handlers 
-themselves, it is conventional to separate them into their own functions (and files) in order to preserve 
-the readability of the sax.c file and the code in general.
+in \refCode \ref{grammar}). Each handler is passed, at minimum, the location of the relevant code (in 
+the case of \lstinline{IDENTIFIER}s and numeric constants, the handler is also passed the relevant 
+text). Each of these event handlers exist in the file sax.c/h which in turn call the administrator defined 
+checks. While these checks could be written into the event handlers themselves, it is conventional to 
+separate them into their own functions (and files) in order to preserve the readability of the sax.c file 
+and the code in general.
 
 Unfortunately some handlers cannot actually be called at the time the construction is recognized. This 
 is due to the fact that Bison executes actions as they are encountered inside each grammar rule. At the 
