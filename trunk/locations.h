@@ -13,7 +13,7 @@
 #include "c.tab.h"
 
 int locationsAreEqual(YYLTYPE location, YYLTYPE* other, int checkAll);
-int locationIsLessOrEqual(YYLTYPE location, YYLTYPE* other, int checkAll);
+int locationIsBeforeOrEqual(YYLTYPE location, YYLTYPE* other, int checkAll);
 void freeLocations(void* element, void* extra);
 YYLTYPE* allocateLocation(YYLTYPE location);
 YYLTYPE* copyLocation(YYLTYPE* dest, YYLTYPE* src);

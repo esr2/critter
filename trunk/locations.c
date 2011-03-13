@@ -40,7 +40,7 @@ int locationsAreEqual(YYLTYPE location, YYLTYPE* other, int checkAll) {
 	return 1;
 }
 
-int locationIsLessOrEqual(YYLTYPE location, YYLTYPE* other, int checkAll) {
+int locationIsBeforeOrEqual(YYLTYPE location, YYLTYPE* other, int checkAll) {
 	if (strcmp(location.filename, (*other).filename) != 0) {
 		return 0;
 	}
