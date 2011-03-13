@@ -29,7 +29,7 @@
     
     void lyyerror(enum errorLevel priority, YYLTYPE t, char *s);
     void yyerror(char *s);
-    void flyyerror(enum errorLevel priority, YYLTYPE location, char* format, ...);
+    void lyyerrorf(enum errorLevel priority, YYLTYPE location, char* format, ...);
 #endif
 	
 # define YYLLOC_DEFAULT(Current, Rhs, N)								\
@@ -533,7 +533,7 @@ void yyerror(char *s)
 	lyyerror(ERROR_HIGH, yylloc, s);
 }
 
-void flyyerror(enum errorLevel priority, YYLTYPE location, char* format, ...) {
+void lyyerrorf(enum errorLevel priority, YYLTYPE location, char* format, ...) {
 	char error[500];
 	va_list arg_ptr;
 	
