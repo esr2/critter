@@ -525,8 +525,11 @@ example, checking for a minimum length of each variable name happens when \progr
 recognizes a variable inside a declaration. The administrator can write their own checks as functions 
 to be invoked at each of the relevant callback points.
 
-The set of predefined checks are listed below in Table \ref{predefinedChecks}.
-\todoin{about the currently implemented checks -- aka some are for educational purposes (the two types of isFunctionTooLong) and some are my own arbitrary style choices (checkIfElsePlacement)}
+The set of predefined checks are listed below in Table \ref{predefinedChecks}. These checks reflect 
+two main purposes: demonstration of the various abilities of \programName and my own arbitrary style 
+choices. Many of these style choices represent ideas from a variety of sources including Fowler's Bad 
+Smells of Code\cite{refactoring}, Google's style guide\cite{googleStyle}, PMD\cite{pmd} and 
+Checkstyle\cite{checkstyle} as well as my own experience.
 
 \begin{table}
 \caption{Predefined Checks}
@@ -698,6 +701,7 @@ to their text whereas Flex deals with the actual text. The hooks module takes se
 programs regarding the location and the actual text of \lstinline{IDENTIFIER}s and constants and routes 
 them into a combined call in the SAX layer. This can best be seen in \refCode \ref{handlerTimeline}.
 \todoin{Hooks is not complete: common constructs are implemented but not everything (like operators)}
+\todoin{lastCalledFunction stuff}
 
 \begin{figure}
 \caption{Additional Excerpt of the Grammar}
@@ -881,18 +885,27 @@ determining if a comment has words (as opposed to a deliminating comment in the 
 \lstinline{/*----*/} etc.) and if a comment contains a word (with or without case sensitivity).
 
 \appendix
-\chapter{Conventions}
+\chapter{Conventions and Necessities}
 \todoin{DynArray uses}
 \section{Sax}
+\begin{itemize}
+\item When adding new calls, use the ``\lstinline{begin}'', ``\lstinline{register}'' and ``\lstinline{end}'' prefixes where \lstinline{begin} and \lstinline{end} are used with larger constructs and \lstinline{register} is used with constructs that are conceptually a single item (like a parameter).
+\item Always make sure to add the \lstinline{lastCalled_set} function for any handlers that do not go through the Hooks module.
+\item Be careful to do memory management at a file level. Most of management is done at a program wide level because files are added onto a stack. This means that for three files, \programName sees three calls to \lstinline{beginFile} and before any of the \lstinline{endFile} calls.
+\item Keep all actual checks outside of the Sax handlers to improve code readability.
+\end{itemize}
 
 \section{Hooks}
+\begin{itemize}
+\item Prefix all calls that go through the hooks module with ``\lstinline{h_}''.
+
+\end{itemize}
 
 \section{Checks}
-
 \begin{itemize}
 \item All error messages should be passed to their respective function without an ending newline; one 
 will be added so that each error message appears on one line.
-
+\item Use local static variables as opposed to global variables to determine context within checks.
 \end{itemize}
 
 \nocite{*}
