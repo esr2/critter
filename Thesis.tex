@@ -680,7 +680,7 @@ called. Another reason for the hooks module is to make the appropriate calls int
 regarding \lstinline{IDENTIFIER}s and numeric constants. Bison only deals with the tokens as opposed 
 to their text whereas Flex deals with the actual text. The hooks module takes separate calls from both 
 programs regarding the location and the actual text of \lstinline{IDENTIFIER}s and constants and routes 
-them into a combined call into the SAX layer. This can best be seen in \refCode \ref{handlerTimeline}.
+them into a combined call in the SAX layer. This can best be seen in \refCode \ref{handlerTimeline}.
 
 \begin{figure}
 \caption{Additional Excerpt of the Grammar}
@@ -842,6 +842,9 @@ void isMagicNumber(YYLTYPE location, int progress, char* constant) {
 
 \nocite{*}
 \bibliographystyle{plain}
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{Bibliography}
 \bibliography{Bibliography}
 
 \end{document}  
