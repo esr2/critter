@@ -32,7 +32,8 @@ void isFileTooLong(YYLTYPE location) {
 }
 
 /**
- * Check if there are braces surrounding an if statement.
+ * Check if there are braces surrounding an if, else, for, while and do while
+ * statement.
  */
 void hasBraces(YYLTYPE location, char* construct) {
 	if (lastCalled_get() != endCompoundStatement) {
