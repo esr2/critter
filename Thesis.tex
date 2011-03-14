@@ -63,6 +63,9 @@
 \usepackage{caption, subcaption}
 \ExecuteOptions{tight,TABTOPCAP}
 
+\usepackage{longtable}
+\usepackage{multirow}
+
 \usepackage{appendix}
 
 %for title page
@@ -688,7 +691,8 @@ the case of \lstinline{IDENTIFIER}s and numeric constants, the handler is also p
 text). Each of these event handlers exist in the file sax.c/h which in turn call the administrator defined 
 checks. While these checks could be written into the event handlers themselves, it is conventional to 
 separate them into their own functions (and files) in order to preserve the readability of the sax.c file 
-and the code in general.
+and the code in general. A list of predefined checks, their function signatures and the handlers which 
+call them are listed in Table \ref{predefinedChecksFunctions}.
 
 Unfortunately some handlers cannot actually be called at the time the construction is recognized. This 
 is due to the fact that Bison executes actions as they are encountered inside each grammar rule. At the 
@@ -698,9 +702,9 @@ distinguishing token (like \lstinline{WHILE}) or by the entire rule. However \re
 shows how some rules that both need actions at the beginning of the statement and lack distinguishing 
 tokens. Specifically we would like to know when we start the beginning of a function definition but we 
 cannot be sure that we are in a function definition until Bison finishes parsing the signature. To fix this 
-issue I have added the hooks module. This module intercepts what would be normal calls within the 
+issue I have added the Hooks module. This module intercepts what would be normal calls within the 
 SAX framework and then reorders them at the appropriate time. Each call into the module does one of 
-two things: enqueues a SAX level function call and its location or dequeues any item after a specified 
+two things: enqueues a Sax level function call and its location or dequeues any item after a specified 
 location (\refCode \ref{hooksQueues}). With the beginning of a function, all the elements of the 
 signature are placed on the queues and then dequeued when \lstinline{h_beginFunctionDefinition} is 
 called. Another reason for the hooks module is to make the appropriate calls into the Sax layer 
@@ -921,6 +925,71 @@ taught this course for many years, graded these 10 submissions. \todoin{Add how 
 performed against Dondero's grading}
 
 \appendix
+\chapter{}
+\newcommand{\saxColSize}{6cm}
+\newcommand{\vertSize}{3mm}
+
+\begin{longtable}{p{10cm} p{\saxColSize}}
+ \caption{Predefined Check Functions and their Relevant Handlers}
+ \label{predefinedChecksFunctions} \\
+\toprule
+Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
+\endfirsthead
+\toprule
+Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
+\endhead
+\hline
+\multicolumn{2}{c}{Continued}\\
+\bottomrule
+\endfoot
+\bottomrule
+\endlastfoot
+
+		\lstinline!isFileTooLong(YYLTYPE location)! & \multirow{2}{\saxColSize}{endFile} \\*
+			 Check if the file exceeds a maximum length.  \vspace{\vertSize} \\
+		\lstinline!hasBraces(YYLTYPE location, char* construct)! & \multirow{2}{\saxColSize}{endWhile, endDoWhile, endFor, endIf, endElse} \\*
+			 Check if there are braces surrounding an if statement. \vspace{\vertSize} \\
+		\lstinline!isFunctionTooLongByLines(YYLTYPE location)! & \multirow{2}{\saxColSize}{endFunctionDefinition} \\*
+			 Check if a function exceeds a maximum line count. \vspace{\vertSize} \\
+		\lstinline!isFunctionTooLongByStatements(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{beginFunctionDefinition, endFunctionDefinition, endStatement} \\*
+			 Checks if a function exceeds a maximum statement count. \vspace{\vertSize} \\
+		\lstinline!tooManyParameters(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{beginParameterList, registerParameter, endParameterList} \\*
+			 Check if there are too many parameters in the function declaration. \vspace{\vertSize} \\
+		\lstinline!CPlusPlusComments(YYLTYPE location)! & \multirow{2}{\saxColSize}{N/A (Called from the Lexer)} \\ *
+		Throw an error on C++ style single line comments. \vspace{\vertSize} \\
+		\lstinline!checkForComment(YYLTYPE location, char* construct)!  & \multirow{2}{\saxColSize}{endFile (also from \lstinline!globalHasComment!)} \\*
+			 Check for comments before some construct. \vspace{\vertSize} \\
+		\lstinline!switchHasDefault(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{beginSwitch, registerDefault, endSwitch} \\*
+		 Check that each \lstinline!switch! statement has a \lstinline!default! case. \vspace{\vertSize} \\
+		\lstinline!switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase)! & \multirow{2}{\saxColSize}{beginSwitch, registerDefault, registerCase, registerBreak, endSwitch} \\*
+		 Check that each \lstinline!switch! case has a \lstinline!break! statement. \vspace{\vertSize} \\
+		\lstinline!tooDeeplyNested(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{beginCompoundStatement, endCompoundStatement} \\*
+		 Check whether a region of code (i.e. a compound statement) nests too deeply. \vspace{\vertSize} \\
+		\lstinline!useEnumNotConstOrDefine(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{beginParameterList, endParameterList, registerDefineIntegralType, registerConst} \\*
+			 Advises using \lstinline!enum! instead of \lstinline!const! or \lstinline!#define! for declarations. \vspace{\vertSize} \\
+		\lstinline!neverUseGotos(YYLTYPE location)! & \multirow{2}{\saxColSize}{registerGoto} \\*
+			 Throw an error on any use of a \lstinline!GOTO! statement. \vspace{\vertSize} \\
+		\lstinline!isVariableNameTooShort(YYLTYPE location, int progress, char* identifier)! & \multirow{2}{\saxColSize}{registerIdentifier, beginDeclaration, endDeclaration} \\*
+		 Check if a variable's name exceeds a minimum length. \vspace{\vertSize} \\
+		\lstinline!isMagicNumber(YYLTYPE location, int progress, char* constant)! & \multirow{2}{\saxColSize}{registerConstant, beginDeclaration, endDeclaration} \\*
+			 Throw an error on encountering a magic number outside of a declaration. \vspace{\vertSize} \\
+		\lstinline!globalHasComment(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{beginFunctionDefinition, endFunctionDefinition, endDeclaration} \\*
+			 Check if each global variable has a comment. \vspace{\vertSize} \\
+		\lstinline!isLoopTooLong(YYLTYPE location)! & \multirow{2}{\saxColSize}{endWhile, endDoWhile, endFor} \\ *
+			Check if the loop length exceeds a maximum length. \vspace{\vertSize} \\
+		\lstinline!isCompoundStatementEmpty(YYLTYPE location, int progress)!  & \multirow{2}{\saxColSize}{beginCompoundStatement, endCompoundStatement} \\ *
+			Check if the compound statement is empty. \vspace{\vertSize} \\
+		\lstinline!tooManyFunctionsInFile(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{endFile, beginFunctionDefinition} \\*
+			 Check if there are too many functions in a file. \vspace{\vertSize} \\
+		\lstinline!checkIfElsePlacement(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{endIf, beginElse} \\ *
+			Throw an error based on the placement of the else statement relative to the if statement.  \vspace{\vertSize} \\
+		\lstinline!validateComment(YYLTYPE location, enum commandType command, char* text)! & \multirow{2}{\saxColSize}{beginFunctionDefinition, endFunctionDefinition, beginParameterList, endParameterList, registerIdentifier, beginCompoundStatement, registerReturnSomething} \\ *
+			Check if function comments have the appropriate contents. Specifically check that the comment mentions each parameter (by name) and what the function returns. \vspace{\vertSize} \\
+
+\vspace{1mm}
+\end{longtable}
+
+
 \chapter{Conventions and Necessities}
 \todoin{DynArray uses}
 \section{Sax}
@@ -942,6 +1011,7 @@ performed against Dondero's grading}
 \item All error messages should be passed to their respective function without an ending newline; one 
 will be added so that each error message appears on one line.
 \item Use local static variables as opposed to global variables to determine context within checks.
+\item Phrase check function names as questions or commands.
 \end{itemize}
 
 \nocite{*}
