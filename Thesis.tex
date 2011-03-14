@@ -568,6 +568,7 @@ Checkstyle\cite{checkstyle} as well as my own experience.
 \end{table}
 
 \chapter{How \programName Works}
+\label{howItWorks}
 
 Figure \ref{moduleInteraction} shows how \programName is divided up into multiple semi-autonomous 
 modules. Each of these has a unique function and is designed to keep the code as clean as possible. 
@@ -915,6 +916,30 @@ first is a creative hack in which one stores every location of a global variable
 comments after each location at the end of the file. The second and preferred solution is to change the 
 coding standard to have comments precede declarations.
 
+\chapter{How to Use \programName}
+
+\section{Students}
+Find out from your professor where you should find their version of \programName. After following their installation instructions, go to your working directory from the command line. Type 
+``\lstinline{critTer *.c}'' (or if you only want to check one or two files, type their names instead of the 
+\lstinline{*.c}). \todo{used the word critTer here!!} \programName will output any warnings about your 
+code to \lstinline{stderr}.
+
+\section{Professors}
+
+\subsection{Use}
+The best use of \programName is as an automated grading system. It is simple to assign a point 
+reduction system based on the number of errors \programName returns over a submission. For 
+example, one might deduct a two points per high error level message, a point per normal error level 
+message and a half a point per low error level message. Not only does it reduce the work needed to 
+grade a submission, by allowing students to pre-check their work, the submissions become easier to 
+read with good, consistent style.
+
+\subsection{Customization}
+Before customizing the code, please make sure you both understand how \programName works (see Chapter \ref{howItWorks} on page \pageref{howItWorks}) and have looked through the Code Conventions in Appendix \ref{conventions} on page \pageref{conventions}).
+\subsubsection{Add a Check}
+
+\subsubsection{Add a Handler}
+
 \chapter{Evaluation}
 
 Throughout development \programName was run against a series of final project submissions for 
@@ -991,6 +1016,8 @@ Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
 
 
 \chapter{Conventions and Necessities}
+\label{conventions}
+
 \todoin{DynArray uses}
 \section{Sax}
 \begin{itemize}
