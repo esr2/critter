@@ -13,6 +13,7 @@
 %code requires {
 #ifndef YYLTYPE
 #define YYLTYPE YYLTYPE
+    /* code defined here (and only here) will appear in the header file */
 	typedef struct YYLTYPE {
 		int first_line;
 		int first_column;
