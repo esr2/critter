@@ -41,10 +41,10 @@ static void enqueueFunctionAndLocation(void (*f)(YYLTYPE), YYLTYPE location) {
 }
 
 /**
- * Pop functions/locations off the large stacks until a location on the stack
+ * Dequeue functions/locations off the large queues until a location on the stack
  * matches the given location. MatchWhole controls whether it has to be a full
  * match or just the first line/column. BeginCall is called on first location
- * and can be null. All functions that are popped are called in the proper order.
+ * and can be null. All functions that are dequeued are called in the proper order.
  */
 static void dequeueUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYLTYPE)) {
 	assert(DynArray_getLength(functionCallsQueue) == DynArray_getLength(locationsQueue));
@@ -81,7 +81,7 @@ static void dequeueUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYL
 	int constantQPos = DynArray_getLength(constantsQueue) - numConstants;
 	if (constantQPos < 0) constantQPos = 0;
 	
-	/* dequeue function/location pairs until location matches input location */
+	/* dequeue function/location pairs after the starting location */
 	for (i = firstLocation; i < DynArray_getLength(locationsQueue); ) {
 		
 		/* if there is a beginning call, make it */
@@ -101,7 +101,7 @@ static void dequeueUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYL
 		lastCalled_set(func);
 		
 		/* call special functions for identifiers and constants in order to pass the
-		 actual text */
+		   actual text */
 		if (func == popIdentifier || func == popConstant) { 
 			DynArray_T queue = NULL;
 			void (*function)(YYLTYPE, char*);
