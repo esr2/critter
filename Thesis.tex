@@ -808,8 +808,45 @@ void switchHasDefault(YYLTYPE location, int progress) {
 \small{\lstinline{switchHasDefault} is called from \lstinline{beginSwitch} with \lstinline{BEGINNING}, \lstinline{endSwitch} with \lstinline{END} and \lstinline{registerDefault} with \lstinline{MIDDLE}.}
 \end{figure}
 
-
 \subsubsection{Add a Handler}
+
+If you want to add a handler, be advised, you will have to edit the grammar file. If you screw up this file, it 
+will break \programName. Having said that, creating a handler is actually quite trivial assuming you are 
+careful. The first step is to figure out which grammar rule(s) are relevant to the event you would like to 
+capture. In some cases this is incredibly trivial, in others it takes a little more effort to understand what the 
+grammar is describing. My only advice is, upon confusion, start with something you want to understand 
+and perform DFS through the different components until you find a rule you do understand. 
+
+After finding the grammar rule, adding an \lstinline{register} or \lstinline{end} handler is very simple: 
+define the handler in sax.c/h and add the action ``\lstinline!{newHandler(@X);}!'' after the component you 
+want to recognize. The \lstinline{@X} references the location of either the component (where \lstinline{X} 
+= the number of the component) or the entire rule (where \lstinline{X} = `\lstinline{$}'). \refCode 
+\ref{grammar} and \refCode \ref{hookGrammar} show examples of these calls. Unfortunately adding 
+\lstinline{begin} handlers can be much more difficult than the previous cases although, in principle, the 
+process is identical. This is due to the possibility of adding ambiguities to the grammar (if this happens, 
+Bison will complain). The first rule of thumb is actions should never be the first thing in a rule; they 
+should always appear after (at least) one component. If this is inadequate, you should try burying the 
+action inside a subroutine (like \lstinline{beginFOR} and \lstinline{beginIF} in \refCode \ref{grammar}).
+
+There are two reasons to route your handler through the Hooks module instead of going directly to Sax; 
+the most likely reason is the event occurs inside a construct that already goes through Hooks. 
+Declarations, function signatures, statements go through Hooks currently. This means that events like 
+\lstinline{registerConst} must also go through Hooks in order to be released to Sax at the right time (see 
+\autoref{howChecksAreCalled}). The second motive is the reason why those constructs already go 
+through Hooks:  it is the the only way of getting an accurate \lstinline{begin} handler. By this I mean it is 
+either impossible or very hard/complicated to create a \lstinline{begin} handler in the right spot in the 
+grammar such that it comes before all its components. These constructs dequeue all the appropriate 
+previous calls once the \lstinline{h_endX} handler is called.
+
+If you do not need to go through Hooks, after defining the action in the grammar file and the handler in 
+both sax.c and sax.h, all you need to do is call \lstinline{lastCalled_set()} from the handler. If the new 
+handler needs to go through Hooks, you need to create two handlers: \lstinline{newHandler} in Sax and 
+\lstinline{h_newHandler} in Hooks. If the event just needs to be released at the correct time (i.e. it 
+appears in a hooked construct), the Hooks handler should call \lstinline{enqueueFunctionAndLocation} 
+to enqueue the Sax handler. If the handler needs to dequeue elements, it should call 
+\lstinline{dequeueUntil}, then the sax handler directly and finally \lstinline{lastCalled_set()} from inside 
+the Hooks handler. 
+
 
 \chapter{Evaluation}
 
