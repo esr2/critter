@@ -660,7 +660,7 @@ which, through \lstinline{vsprintf} it uses to create an error message. It then 
 message to \lyyerror with the rest of its arguments. \yyerror only takes an error message and calls 
 \lyyerror with Bison's internal location in the code and a default high error level. This is because 
 \yyerror is called internally through Bison to represent syntax errors. \yyerror is the only predefined 
-error reporting function; \lyyerror is an extension suggested by O'Reily\cite{bison-and-flex} when using 
+error reporting function; \lyyerror is an extension suggested by O'Reily\cite{flex-and-bison} when using 
 location tracking with Bison/Flex (the `l' represents the variable location). \lyyerrorf was created in the 
 likes of \lstinline{printf} to deal with formatted error messages in one consolidated location.
 
