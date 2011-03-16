@@ -60,7 +60,7 @@
 \includeversion{PRINT}
 \excludeversion{COLOR}
 
-\usepackage{caption, subcaption}
+\usepackage[font={sf, small}, labelfont=bf]{caption, subcaption}
 \ExecuteOptions{tight,TABTOPCAP}
 
 \usepackage{longtable}
@@ -93,8 +93,6 @@
 \chapter{Problem Description}
 
 \begin{table}%[h]
-	\caption{Error Checking}
-	\label{errorChecking}
 	\begin{center}
 	\begin{tabular}{ccc}
 		\toprule
@@ -106,6 +104,8 @@
 		\bottomrule
 	\end{tabular}
 	\end{center}
+	\caption{Error Checking}
+	\label{errorChecking}
 \end{table}
 
 When one writes, one encounters three different types of errors: syntactic, semantic and substantive.  
@@ -172,13 +172,12 @@ management, null pointers and ``violations of information hiding''\cite[p. 9]{sp
 example of annotations in action are the following abstract type declarations (\refCode \ref{splint-annotations}).
 
 \begin{figure}[h]
-\caption{Splint Annotations} 
-\label{splint-annotations}
 \begin{lstlisting}[frame=single, language=C]
 typedef /*@abstract@*/ /*@mutable@*/ char *mstring;
 typedef /*@abstract@*/ /*@immutable@*/ int weekDay;
 \end{lstlisting}
-\small{These annotations define \lstinline{mstring} and \lstinline{weekDay} as abstract types and further specify that they are mutable/immutable respectively.}
+\caption[Splint Annotations]{Splint Annotations which define \lstinline{mstring} and \lstinline{weekDay} as abstract types and further specify that they are mutable/immutable respectively.} 
+\label{splint-annotations}
 \end{figure}
 
 While these annotations provide an extensive feature set, they are a huge inconvenience. They 
@@ -222,8 +221,6 @@ many expressions are in the source code (see \refCode \ref{pmd-rule}).
 
 \todo{remove the import/package lines?}
 \begin{figure}
-\caption[Example PMD Rule]{Example PMD Rule}
-\label{pmd-rule}
 \begin{lstlisting}[language=Java]
 package net.sourceforge.pmd.rules;
 
@@ -260,7 +257,8 @@ public class CountRule extends AbstractJavaRule {
 	}
 }
 \end{lstlisting}
-\small{This rule counts the number of expressions in the source code.}
+\caption[Example PMD Rule]{Example PMD rule which counts the number of expressions in the source code.}
+\label{pmd-rule}
 \end{figure}
 
 Checkstyle provides similar functionality to PMD in that it checks Java code for semantic errors.  It was 
@@ -272,8 +270,6 @@ Checkstyle at runtime. Here is example check which determines how many methods a
 \refCode \ref{checkstyle-rule}).
 
 \begin{figure}
-\caption[Example Checkstyle Check]{Example Checkstyle Check}
-\label{checkstyle-rule}
 \begin{lstlisting}[language=Java]
 package com.mycompany.checks;
 import com.puppycrawl.tools.checkstyle.api.*;
@@ -307,7 +303,8 @@ public class MethodLimitCheck extends Check
    }
 }
 \end{lstlisting}
-\small{This check counts the number of methods in a class.}
+\caption[Example Checkstyle Check]{Example Checkstyle check which counts the number of methods in a class.}
+\label{checkstyle-rule}
 \end{figure}
 
 PMD and Checkstyle are great tools and have been integrated into many popular IDEs. However, 
@@ -331,8 +328,6 @@ given order, stopping to read through any locally included header files. Upon en
 \lstinline{stderr} (an example is shown in \refCode \ref{errorExample}). 
 
 \begin{figure}
-\caption{Example Error and Corresponding Message}
-\label{errorExample}
 \begin{subfigure}[b]{.5\linewidth}
 \caption{test.c}
 \label{errorExampleCode}
@@ -349,7 +344,8 @@ given order, stopping to read through any locally included header files. Upon en
 test.c:92.22-92.23: big problem: Do not use magic numbers
 \end{lstlisting}
 \end{subfigure}
-\small{Here, \programName is complaining that the for loop's exit condition contains a `magic number', in this case 5. The error message contains the location of the error, the warning level and then the error message.}
+\caption[Example Error and Corresponding Message]{Example Error and Corresponding Message. Here, \programName is complaining that the for loop's exit condition contains a `magic number', in this case `5'. The error message contains the location of the error, the warning level and then the error message.}
+\label{errorExample}
 \end{figure}
 
 The administrator is responsible for defining the set of checked semantic errors. \programName 
@@ -366,8 +362,6 @@ Smells of Code\cite{refactoring}, Google's style guide\cite{googleStyle}, PMD\ci
 Checkstyle\cite{checkstyle} as well as my own experience.
 
 \begin{table}
-\caption{Predefined Checks}
-\label{predefinedChecks}
 	\begin{center}
 	\begin{tabular}{l p{10cm}}
 		\toprule
@@ -396,6 +390,8 @@ Checkstyle\cite{checkstyle} as well as my own experience.
 		\bottomrule
 	\end{tabular}
 	\end{center}
+\caption{Predefined Checks}
+\label{predefinedChecks}
 \end{table}
 
 \chapter{How \programName Works}
@@ -410,12 +406,12 @@ conceptually grouped into three categories: \hyperref[parsingTheCode]{Parsing th
 \hyperref[howChecksAreWritten]{How Checks are Written}.
 
 \begin{figure}[h!]
-\caption{Module Interaction of \programName}
-\label{moduleInteraction}
 \begin{center}
 \processifversion{PRINT}{\includegraphics[scale=0.6]{ClassInteractionPrint}}
 \processifversion{COLOR}{\includegraphics[scale=0.6]{ClasInteractionColor}}
 \end{center}
+\caption{Module Interaction of \programName}
+\label{moduleInteraction}
 \end{figure}
 
 \section{Parsing the Code}
@@ -456,8 +452,6 @@ location of a that segment as opposed to the entire construct. For example, in \
 \lstinline{endWhile} will be passed the location of the entire \lstinline{while} loop.
 
 \begin{figure} 
-\caption{Excerpt of the Grammar}
-\label{grammar}
 \begin{lstlisting}[language=Caml, escapechar=\%]
 parameter_list
 	: parameter_declaration											%\underline{\{h\_registerParameter(@\$);\}}%
@@ -489,6 +483,8 @@ iteration_statement
 	| FOR beginFOR '(' declaration expression_statement expression ')' statement	%\underline{\{endFor(@\$);\}}%
 
 \end{lstlisting}
+\caption{Excerpt of the Grammar}
+\label{grammar}
 \end{figure} 
 
 Instead of writing them from scratch, I found the Flex and Bison specification files 
@@ -524,7 +520,7 @@ text). Each of these event handlers exist in the file sax.c/h which in turn call
 checks. While these checks could be written into the event handlers themselves, it is conventional to 
 separate them into their own functions (and files) in order to preserve the readability of the sax.c file 
 and the code in general. A list of predefined checks, their function signatures and the handlers which 
-call them are listed in Table \ref{predefinedChecksFunctions}.
+call them are listed in Appendix \ref{predefinedChecksFunctions}.
 
 Unfortunately some handlers cannot actually be called at the time the construction is recognized. This 
 is due to the fact that Bison executes actions as they are encountered inside each grammar rule. At the 
@@ -558,8 +554,6 @@ without an excess of global variables. Every time a handler is called, it sets t
 what the previous context was without additional calls or variables.
 
 \begin{figure}
-\caption{Additional Excerpt of the Grammar}
-\label{hookGrammar}
 \begin{lstlisting}[language=Caml, escapechar=\%]
 declarator
 	: pointer direct_declarator
@@ -584,11 +578,11 @@ function_definition
 	| declarator %\underline{\{h\_beginFunctionDefinition(@1);\}}% compound_statement %\underline{\{endFunctionDefinition(@\$);\}}
 	;
 \end{lstlisting}
+\caption{Additional Excerpt of the Grammar}
+\label{hookGrammar}
 \end{figure}
 
 \begin{figure}
-\caption{Representation of the hooks module}
-\label{hooksQueues}
 \begin{center}
 \begin{subfigure}[t]{.4\linewidth}
 	\caption{}
@@ -612,12 +606,11 @@ function_definition
 	\includegraphics[scale=0.5]{hooksQueuesPartD.pdf}
 \end{subfigure}
 \end{center}
-\small{(\subref{hooksQueuesA}) The initial queue with functions associated to locations 11, 12 and 13. \\(\subref{hooksQueuesB}) The queue after another function/location pair has been enqueued. \\ (\subref{hooksQueuesC}) The call at location 15 causes a call into the Sax layer followed by every stored call after the given location (12) in the queue. \\ (\subref{hooksQueuesD}) The resulting queue. }
+\caption[Representation of the Hooks Module]{Representation of the Hooks Module. \\(\subref{hooksQueuesA}) The initial queue with functions associated to locations 11, 12 and 13. \\(\subref{hooksQueuesB}) The queue after another function/location pair has been enqueued. \\ (\subref{hooksQueuesC}) The call at location 15 causes a call into the Sax layer followed by every stored call after the given location (12) in the queue. \\ (\subref{hooksQueuesD}) The resulting queue.}
+\label{hooksQueues}
 \end{figure}
 
 \begin{figure}
-\caption{Timeline of event handler calls}
-\label{handlerTimeline}
 \begin{center}
 \begin{tabular}{llc}
 \toprule
@@ -648,9 +641,8 @@ N/A & endFunctionDefinition \\
  \bottomrule
 \end{tabular}
 \end{center}
-\small{The timeline of calls into the hooks and sax module for:
- \lstinline!void example(int a, double b) {...}!
-}
+\caption[Timeline of Event Handler Calls]{Timeline of event handler calls into the hooks and sax module for: \lstinline!void example(int a, double b) \{...\}!}
+\label{handlerTimeline}
 \end{figure}
 \newpage
 
@@ -689,8 +681,6 @@ location tracking with Bison/Flex (the `l' represents the variable location). \l
 likes of \lstinline{printf} to deal with formatted error messages in one consolidated location.
 
 \begin{figure}
-\caption{Check with additional context}
-\label{checkWithContext}
 \begin{lstlisting}[language=C]
 void isMagicNumber(YYLTYPE location, int progress, char* constant) {
 	int acceptableNumbers[3] = {0, 1, 2};
@@ -724,7 +714,8 @@ void isMagicNumber(YYLTYPE location, int progress, char* constant) {
 	}
 }
 \end{lstlisting}
-\small{Throw an error on encountering a magic number outside of a declaration.}
+\caption[\programName Check with Additional Context]{\programName check with additional context that throws an error on encountering a magic number outside of a declaration.}
+\label{checkWithContext}
 \end{figure}
 
 Additionally, there are two helper modules designed to facilitate writing checks: Locations and 
@@ -750,7 +741,7 @@ coding standard to have comments precede declarations.
 \chapter{How to Use \programName}
 
 \section{Students}
-Find out from your professor where you should find their version of \programName. After following their installation instructions, go to your working directory\todo{mention only from working directory issue?} 
+Find out from your professor where you should find their version of \programName. After following their installation instructions, go to your working directory \todo{mention only from working directory issue?} 
 from the command line. Type ``\lstinline{critTer *.c}'' (or if you only want to check one or two files, type 
 their names instead of the \lstinline{*.c}). \todo{used the word critTer here!!} \programName will output 
 any warnings about your code to \lstinline{stderr}.
@@ -798,8 +789,6 @@ error level and either an error message or format string and arguments respectiv
 information see \autoref{howChecksAreWritten} on page \pageref{howChecksAreWritten}).
 
 \begin{figure}
-\caption{An Example Check with Contextual Processing}
-\label{addCheckExample}
 \begin{lstlisting}[language=C]
 /**
  * Check that each switch statement has a default case.
@@ -823,11 +812,13 @@ void switchHasDefault(YYLTYPE location, int progress) {
 			}
 			started = 0;
 			break;
-		default: break;
+		default: 
+			break;
 	}
 }
 \end{lstlisting}
-\small{\lstinline{switchHasDefault} is called from \lstinline{beginSwitch} with \lstinline{BEGINNING}, \lstinline{endSwitch} with \lstinline{END} and \lstinline{registerDefault} with \lstinline{MIDDLE}.}
+\caption[\programName Check with Contextual Processing]{\programName Check with Contextual Processing. \lstinline{switchHasDefault} is called from \lstinline{beginSwitch} with \lstinline{BEGINNING}, \lstinline{endSwitch} with \lstinline{END} and \lstinline{registerDefault} with \lstinline{MIDDLE}.}
+\label{addCheckExample}
 \end{figure}
 
 \subsubsection{Add a Handler}
@@ -885,13 +876,13 @@ performed against Dondero's grading}
 \appendixpage
 \addappheadtotoc
 
-\chapter{}
+\chapter{Predefined Check Functions and their Relevant Handlers}
+ \label{predefinedChecksFunctions}
 \newcommand{\saxColSize}{6cm}
 \newcommand{\vertSize}{3mm}
 
+\addcontentsline{lot}{table}{~\ref{predefinedChecksFunctions} \hspace{4mm}Predefined Check Functions and their Relevant Handlers}
 \begin{longtable}{p{10cm} p{\saxColSize}}
- \caption{Predefined Check Functions and their Relevant Handlers}
- \label{predefinedChecksFunctions} \\
 \toprule
 Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
 \endfirsthead
