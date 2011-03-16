@@ -155,13 +155,15 @@ bother one's peers with another round of reviews, allowing the entire team to be
 \chapter{Related Products}
 
 There are some tools that try to fill the semantic error checking gap. Each approaches the 
-problem differently, but all succeed in finding some semantic errors. Three such tools are Splint\cite
-{splint-manual} , PMD\cite{pmd}, and Checkstyle\cite{checkstyle}.
+problem differently, but all succeed in finding some semantic errors. Three such tools are 
+\hyperref[sec:splint]{Splint}\cite{splint-manual} , \hyperref[sec:pmdAndCheckstyle]{PMD}\cite{pmd}, and 
+\hyperref[sec:pmdAndCheckstyle]{Checkstyle}\cite{checkstyle}.
 
- \todoin{add explicit comparison between these tools and my tool}
 \section{Splint}
+\label{sec:splint}
+
 Splint is a tool for ``statically checking C programs for security vulnerabilities and programming 
-mistakes"\cite[p.\ 9]{splint-manual}. It works exactly as my program does from the students'
+mistakes"\cite[p.\ 9]{splint-manual}. It works exactly as \programName does from the students'
 perspective, i.e.\ as a command-line program which prints warnings and errors to \lstinline{stdout}. 
 Splint displays warnings about basic semantic errors like assignments with mismatched types and 
 ignored return values. With more effort, programmers can add annotations (i.e.\ fancy comments) that 
@@ -194,9 +196,19 @@ to either make developers want to stop using Splint, or at least just turn off a
 rather than start adding the annotations needed to enable better checking.\cite{evans-email} 
 \end{quote}
 
+While they may behave similarly, Splint and \programName are completely different. The biggest 
+difference is their realms of inspection. Splint checks the ``correctness'' of code, allowing for bug 
+prevention and refactoring. \programName checks the style of code which makes it more readable, 
+indirectly allowing for bug prevention and refactoring. They also differ in how they specify what to check. 
+Splint uses a configuration file and command line arguments to determine which of the several hundred 
+pre-defined messages and warnings to display. In contrast, \programName allows an administrator to 
+write their own checks and always runs every check that is defined.
+
 \section{PMD and Checkstyle}
-PMD is a tool for checking Java Code that is integrated into a dozen or so different popular IDEs.
-PMD comes premade with over 250 checks broken up mostly by purpose such as Braces Rules, 
+\label{sec:pmdAndCheckstyle}
+
+PMD is a tool for checking Java code that is integrated into a dozen or so different popular IDEs.
+PMD comes pre-made with over 250 checks broken up mostly by purpose such as Braces Rules, 
 Basic Rules, Coupling Rules, etc. Some checks also deal explicitly with a certain 
 library or platform like Android, Jakarta and JUnit. PMD functions by passing source code into a 
 JavaCC-generated parser and receiving an Abstract Syntax Tree (a.k.a.\ AST, a tree-based model of 
@@ -205,12 +217,12 @@ violations. This pattern of examining a tree of nodes is called the Visitor Patt
 The RuleSet is an XML file that can be edited to augment the functionality of PMD with customized 
 rules. Rules are written in their own classes and extend a base implementation. The rule itself can 
 override three functions (start, visit and end) to perform various checks against the source code based 
-on the nodes in the AST. Here is the ``dummy" example from the PMD website which counts how 
+on the nodes in the AST. Here is the ``dummy'' example from the PMD website which counts how 
 many expressions are in the source code (see \refCode \ref{pmd-rule}).
-\todoin{why PMD doesn't work}
 
+\todo{remove the import/package lines?}
 \begin{figure}
-\caption[Example PMD Rule]{Example PMD Rule counting the number expressions}
+\caption[Example PMD Rule]{Example PMD Rule}
 \label{pmd-rule}
 \begin{lstlisting}[language=Java]
 package net.sourceforge.pmd.rules;
@@ -248,19 +260,19 @@ public class CountRule extends AbstractJavaRule {
 	}
 }
 \end{lstlisting}
+\small{This rule counts the number of expressions in the source code.}
 \end{figure}
 
-Checkstyle mimics PMD in function but provides different checks out of the box (namely those 
-regarding duplicate code, class design, whitespace, etc.). It also uses the Visitor Pattern and 
-provides ways to examine the beginning and ends of the tree as well as each node. New rules are 
-added through an XML file and similarly passed to Checkstyle at runtime. Here is example check 
-which determines how many methods are in a class (see \refCode \ref{checkstyle-rule}).
-\todoin{pad this out into its own}
-\nocite{framaC}
+Checkstyle provides similar functionality to PMD in that it checks Java code for semantic errors.  It was 
+designed to help programmers adhere to coding standards and later developed checks for bug 
+prevention, class design problems, etc. Accordingly, Checkstyle provides different checks out of the box 
+(namely those regarding duplicate code, class design, whitespace, etc.). Like PMD, it uses an AST and 
+the Visitor Pattern to check code. Custom rules are registered through an XML file and passed to 
+Checkstyle at runtime. Here is example check which determines how many methods are in a class (see 
+\refCode \ref{checkstyle-rule}).
 
 \begin{figure}
-\caption[Example Checkstyle Check]{Example Checkstyle Check counting the number of methods in 
-a class}
+\caption[Example Checkstyle Check]{Example Checkstyle Check}
 \label{checkstyle-rule}
 \begin{lstlisting}[language=Java]
 package com.mycompany.checks;
@@ -295,7 +307,19 @@ public class MethodLimitCheck extends Check
    }
 }
 \end{lstlisting}
+\small{This check counts the number of methods in a class.}
 \end{figure}
+
+PMD and Checkstyle are great tools and have been integrated into many popular IDEs. However, 
+because they only work for Java, they do not satisfy my problem: semantic error checking in C. In 
+essence PMD/Checkstyle and \programName perform very similarly; however, they are built upon 
+entirely different frameworks. The use of the Visitor Pattern and an AST requires PMD and Checkstyle to 
+read though the entirety of the code before they can produce any errors. In contrast, \programName 
+performs error checking as the code is read. PMD and Checkstyle also contain graphical user interfaces 
+both to aid writing checks and to find errors (the latter due to their integration with IDEs). \programName, 
+on the other hand, produces textual errors from the command line. Furthermore, the \programName must 
+be recompiled to take advantage of new checks as opposed to responding at runtime to a configuration 
+file.
 
 \chapter{What \programName Does}
 
