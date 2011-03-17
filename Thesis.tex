@@ -110,7 +110,7 @@ enforce coding standards or help grade and teach ``good style'' to students.
 		\midrule
 		Syntactic & Spell Check & Compiler \\
 		Semantic & Grammar Check & \\ 
-		Substantive & Audience/Grader & User/Tests \\
+		Substantive & Audience\slash Grader & User\slash Tests \\
 		\bottomrule
 	\end{tabular}
 	\end{center}
@@ -127,7 +127,7 @@ technically valid but hard to understand. Finally, illogical arguments and malfu
 imply errors in the ideas behind the text. 
 There are tools to help one find these errors in both literature and code (see Table \ref
 {errorChecking}). Spelling and grammar check exist in nearly every word processor; the reader 
-highlights substantive errors in literature. With code, the compiler shows semantic errors and the user/
+highlights substantive errors in literature. With code, the compiler shows semantic errors and the user\slash 
 testing reveal substantive errors. Yet semantic error checking for code has been addressed by 
 relatively few tools.
 
@@ -186,7 +186,7 @@ example of annotations in action are the following abstract type declarations (\
 typedef /*@abstract@*/ /*@mutable@*/ char *mstring;
 typedef /*@abstract@*/ /*@immutable@*/ int weekDay;
 \end{lstlisting}
-\caption[Splint Annotations]{Splint Annotations which define \lstinline{mstring} and \lstinline{weekDay} as abstract types and further specify that they are mutable/immutable respectively.} 
+\caption[Splint Annotations]{Splint Annotations which define \lstinline{mstring} and \lstinline{weekDay} as abstract types and further specify that they are mutable\slash immutable respectively.} 
 \label{splint-annotations}
 \end{figure}
 
@@ -229,7 +229,7 @@ override three functions (start, visit and end) to perform various checks agains
 on the nodes in the AST. The ``dummy'' example from the PMD website which counts how 
 many expressions are in the source code is shown in \refCode \ref{pmd-rule}.
 
-\todo{remove the import/package lines?}
+\todo{remove the import\slash package lines?}
 \begin{figure}
 \begin{lstlisting}[language=Java]
 package net.sourceforge.pmd.rules;
@@ -319,7 +319,7 @@ public class MethodLimitCheck extends Check
 
 PMD and Checkstyle are great tools and have been integrated into many popular IDEs. However, 
 because they only work for Java, they do not satisfy my problem: semantic error checking in C. In 
-essence PMD/Checkstyle and \programName perform very similarly; however, they are built upon 
+essence PMD\slash Checkstyle and \programName perform very similarly; however, they are built upon 
 entirely different frameworks. The use of the Visitor Pattern and an AST requires PMD and Checkstyle to 
 read though the entirety of the code before they can produce any errors. In contrast, \programName 
 performs error checking as the code is read. PMD and Checkstyle also contain graphical user interfaces 
@@ -503,14 +503,14 @@ modification of the actual grammar was to add the ability to recognize and dynam
 \lstinline{typdef} definitions as types. These type names are stored in an internal symbol table and the 
 lexer checks to make sure that any potential \lstinline{IDENTIFIER}s are not already listed there. In 
 order to accommodate the inclusion of header files, I had to expand the given lexer functionality to 
-transfer control between files. The specific method of using a stack of buffers/files is heavily inspired 
-from the examples in the O'Reily Flex \& Bison book\cite{flex-and-bison}. When transferring to a 
+transfer control between files. The specific method of using a stack of buffers\slash files is heavily 
+inspired from the examples in the O'Reily Flex \& Bison book\cite{flex-and-bison}. When transferring to a 
 different file, the lexer adds the current file to a stack with its file pointer, internal state, and current line 
 number. When it reaches the end of the file, the lexer pops the current file off the stack and goes back 
 to its previous state. The end of program occurs when there are no more files on the 
 stack.\footnote{\programName starts by adding all of the given files to the stack and dynamically adding 
 additional header files. While this pre-loading is not strictly in concordance with the model of adding 
-header files, it simplified the interface between the main module and the lexer/parser.} 
+header files, it simplified the interface between the main module and the lexer\slash parser.} 
 \todo{Add that I added a comment state?}
 
 
@@ -617,7 +617,7 @@ function_definition
 	\includegraphics[scale=0.5]{hooksQueuesPartD.pdf}
 \end{subfigure}
 \end{center}
-\caption[Representation of the Hooks Module]{Representation of the Hooks Module. \\(\subref{hooksQueuesA}) The initial queue with functions associated to locations 11, 12 and 13. \\(\subref{hooksQueuesB}) The queue after another function/location pair has been enqueued. \\ (\subref{hooksQueuesC}) The call at location 15 causes a call into the Sax layer followed by every stored call after the given location (12) in the queue. \\ (\subref{hooksQueuesD}) The resulting queue.}
+\caption[Representation of the Hooks Module]{Representation of the Hooks Module. \\(\subref{hooksQueuesA}) The initial queue with functions associated to locations 11, 12 and 13. \\(\subref{hooksQueuesB}) The queue after another function\slash location pair has been enqueued. \\ (\subref{hooksQueuesC}) The call at location 15 causes a call into the Sax layer followed by every stored call after the given location (12) in the queue. \\ (\subref{hooksQueuesD}) The resulting queue.}
 \label{hooksQueues}
 \end{figure}
 
@@ -679,8 +679,8 @@ In order to throw an error, the administrator can use one of three error functio
 location in the code and a warning level (as seen in \refCode \ref{errorExample}). \yyerror and \lyyerrorf 
 are each wrappers to \lyyerror, which takes in an error level (\lstinline{enum errorLevel}), a location 
 (\lstinline{YYLTYPE}) and an error message (\lstinline{char *}). In essence, \lyyerror is really a wrapper 
-to \lstinline{fprintf} and defines the formatting of all the error messages/locations. It is also the location 
-to change the string value of the different error levels (currently, \lstinline{ERROR_HIGH}=``big 
+to \lstinline{fprintf} and defines the formatting of all the error messages\slash locations. It is also the 
+location to change the string value of the different error levels (currently, \lstinline{ERROR_HIGH}=``big 
 problem'', \lstinline{ERROR_NORMAL}=``error'', and \lstinline{ERROR_LOW}=``low priority'').  
 \lyyerrorf, instead of taking in an error message, takes a format string and a variable argument list, 
 which it uses with \lstinline{vsprintf} to create an error message. It then passes the newly created 
@@ -688,8 +688,8 @@ message to \lyyerror with the rest of its arguments. \yyerror only takes an erro
 \lyyerror with Bison's internal location in the code and a default high error level. This is because 
 \yyerror is called internally through Bison to represent syntax errors. \yyerror is the only predefined 
 error reporting function; \lyyerror is an extension suggested by O'Reily\cite{flex-and-bison} when using 
-location tracking with Bison/Flex (the `l' represents the variable location). \lyyerrorf was created in the 
-likes of \lstinline{printf} to deal with formatted error messages in one consolidated location.
+location tracking with Bison\slash Flex (the `l' represents the variable location). \lyyerrorf was created in 
+the likes of \lstinline{printf} to deal with formatted error messages in one consolidated location.
 
 \begin{figure}
 \begin{lstlisting}[language=C]
@@ -731,7 +731,7 @@ void isMagicNumber(YYLTYPE location, int progress, char* constant) {
 
 Additionally, there are two helper modules designed to facilitate writing checks: Locations and 
 Comments. The Locations module contains a several functions to manipulate \lstinline{YYLTYPE}s.  
-Specifically it contains methods to compare locations in various directions/distances as well as 
+Specifically it contains methods to compare locations in various directions\slash distances as well as 
 allocate, copy and free \lstinline{YYLTYPE}s. The Comments module tracks all the comments found 
 while running \programName. Comment contents and locations are registered through calls from the 
 Sax layer and are stored in a dynamic array. Additionally the module provides the ability to search 
@@ -859,15 +859,15 @@ first tactic to avoid this issue is to never have actions as the first element i
 appear after (at least) one component. If this approach is insufficient, you should try burying the 
 action inside a subroutine (like \lstinline{beginFOR} and \lstinline{beginIF} in \refCode \ref{grammar}).
 
-There are only two reasons to route your new handler through the Hooks module instead of going directly to Sax; 
-the most likely reason is the event occurs inside a construct that already goes through Hooks. 
-Declarations, function signatures, and statements currently go through Hooks. This means that events like 
-\lstinline{registerConst} must also go through Hooks in order to be released to Sax at the right time (see 
-\autoref{howChecksAreCalled}). The second motive is the reason why those constructs already go 
-through Hooks:  it is the the only way of getting an accurate \lstinline{begin} handler. By this I mean it is 
-either impossible or very hard/complicated to create a \lstinline{begin} handler in the right spot in the 
-grammar such that it comes before all its components. These constructs dequeue all the appropriate 
-previous calls once the \lstinline{h_endXX} handler is called.
+There are only two reasons to route your new handler through the Hooks module instead of going 
+directly to Sax; the most likely reason is the event occurs inside a construct that already goes through 
+Hooks. Declarations, function signatures, and statements currently go through Hooks. This means that 
+events like \lstinline{registerConst} must also go through Hooks in order to be released to Sax at the right 
+time (see \autoref{howChecksAreCalled}). The second motive is the reason why those constructs 
+already go through Hooks:  it is the the only way of getting an accurate \lstinline{begin} handler. By this I 
+mean it is either impossible or very hard\slash complicated to create a \lstinline{begin} handler in the 
+right spot in the grammar such that it comes before all its components. These constructs dequeue all the 
+appropriate previous calls once the \lstinline{h_endXX} handler is called.
 
 If you do not need to go through Hooks, after defining the action in the grammar file and the handler in 
 both sax.c and sax.h, all you need to do is call \lstinline{lastCalled_set()} from the handler. If the new 
@@ -994,7 +994,7 @@ will be added so that each error message appears on one line.
 \item Use local static variables as opposed to global variables to determine context within checks.
 \item Phrase check function names as questions or commands.
 \item To compare entire locations use the methods in the Locations module. Comparing single elements can be done inline. 
-\item Be careful not to free things which were either never allocated (the current location passed to the Sax/Hook handler), might be shared between objects (filename strings) or will be freed on its own later (comment texts and locations).
+\item Be careful not to free things which were either never allocated (the current location passed to the Sax\slash Hook handler), might be shared between objects (filename strings) or will be freed on its own later (comment texts and locations).
 \end{itemize}
 
 \nocite{*}
