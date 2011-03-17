@@ -179,7 +179,7 @@ give Splint a specification to check against. These annotations allow for strong
 management, null pointers and ``violations of information hiding''\cite[p. 9]{splint-manual}. An 
 example of annotations in action are the following abstract type declarations (\refCode \ref{splint-annotations}).
 
-\begin{figure}[h]
+\begin{figure}
 \begin{lstlisting}[frame=single, language=C]
 typedef /*@abstract@*/ /*@mutable@*/ char *mstring;
 typedef /*@abstract@*/ /*@immutable@*/ int weekDay;
@@ -191,7 +191,7 @@ typedef /*@abstract@*/ /*@immutable@*/ int weekDay;
 While these annotations provide an extensive feature set, they are a huge inconvenience. They 
 require programmers to specifically write their code to meet the specification, not only of the client, but 
 also of the tool. For new programmers (often the ones who need the most error checking), these 
-annotations are almost impossible to implement on top of learning to program as suggested by  
+annotations are almost impossible to implement on top of learning to program, as suggested by  
 David Evans (one of the authors) in a private email. He states:
 \begin{quote} \singlespacing
 One of the goals of the original design of 
@@ -224,8 +224,8 @@ violations. This pattern of examining a tree of nodes is called the Visitor Patt
 The RuleSet is an XML file that can be edited to augment the functionality of PMD with customized 
 rules. Rules are written in their own classes and extend a base implementation. The rule itself can 
 override three functions (start, visit and end) to perform various checks against the source code based 
-on the nodes in the AST. Here is the ``dummy'' example from the PMD website which counts how 
-many expressions are in the source code (see \refCode \ref{pmd-rule}).
+on the nodes in the AST. The ``dummy'' example from the PMD website which counts how 
+many expressions are in the source code is shown in \refCode \ref{pmd-rule}.
 
 \todo{remove the import/package lines?}
 \begin{figure}
@@ -274,8 +274,8 @@ designed to help programmers adhere to coding standards and later developed chec
 prevention, class design problems, etc. Accordingly, Checkstyle provides different checks out of the box 
 (namely those regarding duplicate code, class design, whitespace, etc.). Like PMD, it uses an AST and 
 the Visitor Pattern to check code. Custom rules are registered through an XML file and passed to 
-Checkstyle at runtime. Here is example check which determines how many methods are in a class (see 
-\refCode \ref{checkstyle-rule}).
+Checkstyle at runtime. An example check which determines how many methods are in a class is shown 
+in \refCode \ref{checkstyle-rule}.
 
 \begin{figure}
 \begin{lstlisting}[language=Java]
@@ -330,25 +330,25 @@ file.
 
 \programName reads in a set of C source code files and determines if they contain any of the 
 specified semantic errors. It is run through the command line inside one's 
-working directory. \programName is given a list of .c/h files to check and reads through each in the 
+working directory. \programName is given a list of .c files to check and reads through each in the 
 given order, stopping to read through any locally included header files. Upon encountering an error,
 \programName prints out the full location of the error, a warning level and an error message to 
 \lstinline{stderr} (an example is shown in \refCode \ref{errorExample}). 
 
 \begin{figure}
-\begin{subfigure}[b]{.5\linewidth}
+\begin{subfigure}[b]{.49\linewidth}
 \caption{test.c}
 \label{errorExampleCode}
-\begin{lstlisting}[numbers=left, firstnumber=92,xleftmargin=1cm]
+\begin{lstlisting}[numbers=left, firstnumber=92, xleftmargin=.8cm]
 	for (int q = 0; q<5; q++) {
 		printf("hi");
 	}
 \end{lstlisting}
 \end{subfigure}
-\begin{subfigure}[b]{.5\linewidth}
+\begin{subfigure}[b]{.49\linewidth}
 \caption{stderr}
 \label{errorExampleStderr}
-\begin{lstlisting}[xleftmargin=1cm]
+\begin{lstlisting}[xleftmargin=.7cm]
 test.c:92.22-92.23: big problem: Do not use magic numbers
 \end{lstlisting}
 \end{subfigure}
@@ -371,7 +371,7 @@ Checkstyle\cite{checkstyle} as well as my own experience.
 
 \begin{table}
 	\begin{center}
-	\begin{tabular}{l p{10cm}}
+	\begin{tabular}{l p{9cm}}
 		\toprule
 		Check Name & Purpose \\
 		\midrule
