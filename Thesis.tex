@@ -861,7 +861,14 @@ to enqueue the Sax handler. If the handler needs to dequeue elements, it should 
 the Hooks handler. 
 
 \subsection{Compilation, Testing and Installation}
-\todo{add information of how to compile/install}
+
+\programName contains a Makefile which contains targets for compilation, testing and installation. To 
+compile the given version of \programName (or a customized version without additional files), simply 
+type ``\lstinline{make}''. To compile \programName with additional files, edit the \lstinline{all} target to 
+include the new files and then type ``\lstinline{make}''. To install \programName (i.e. copy into 
+\lstinline{/usr/local/bin/}) type ``\lstinline{make install}''.
+
+\todo{add information of how to test}
 
 \chapter{Evaluation}
 
