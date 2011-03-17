@@ -954,27 +954,32 @@ Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
 \chapter{Conventions and Necessities}
 \label{conventions}
 
-\todoin{DynArray uses}
-\section{Sax}
+\section{General}
+
+\begin{itemize}
+\item use the DynArray class to handle persistent arrays, stacks and queues. It is a dynamically growing array which holds void pointers. This is the base implementation of how comments are stored and the Hook module queues.
+
+\end{itemize}
+
+\section{Sax and Hooks Modules}
+
 \begin{itemize}
 \item When adding new calls, use the ``\lstinline{begin}'', ``\lstinline{register}'' and ``\lstinline{end}'' prefixes where \lstinline{begin} and \lstinline{end} are used with larger constructs and \lstinline{register} is used with constructs that are conceptually a single item (like a parameter).
 \item Always make sure to add the \lstinline{lastCalled_set} function for any handlers that do not go through the Hooks module.
-\item Be careful to do memory management at a file level. Most of management is done at a program wide level because files are added onto a stack. This means that for three files, \programName sees three calls to \lstinline{beginFile} and before any of the \lstinline{endFile} calls.
+\item Be careful of doing memory management at a file level. Most of it is done at a program wide level because files are added onto a stack. This means that for three files, \programName sees three calls to \lstinline{beginFile} and before any of the \lstinline{endFile} calls. This makes it far easier to have allocation and releasing of memory at the single \lstinline{beginProgram} and \lstinline{endProgram} calls.
 \item Keep all actual checks outside of the Sax handlers to improve code readability.
+\item Prefix all calls that go through the Hooks module with ``\lstinline{h_}''.
 \end{itemize}
 
-\section{Hooks}
-\begin{itemize}
-\item Prefix all calls that go through the hooks module with ``\lstinline{h_}''.
+\section{Checks Module}
 
-\end{itemize}
-
-\section{Checks}
 \begin{itemize}
 \item All error messages should be passed to their respective function without an ending newline; one 
 will be added so that each error message appears on one line.
 \item Use local static variables as opposed to global variables to determine context within checks.
 \item Phrase check function names as questions or commands.
+\item To compare entire locations use the methods in the Locations module. Comparing single elements can be done inline. 
+\item Be careful not to free things which were either never allocated (the current location passed to the Sax/Hook handler), might be shared between objects (filename strings) or will be freed on its own later (comment texts and locations).
 \end{itemize}
 
 \nocite{*}
