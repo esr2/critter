@@ -1,4 +1,6 @@
 \documentclass[12pt]{report}
+%\documentclass[12pt, twoside]{report}
+%\documentclass[12pt, draft]{report}
 \usepackage{setspace}
 \usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
 \geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
@@ -8,6 +10,18 @@
 \usepackage{amssymb}
 \usepackage{epstopdf}
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+\usepackage{fancyhdr}
+\setlength{\headheight}{15pt}
+\pagestyle{fancy}
+\fancyhead{}
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter.\ #1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[RE]{\rightmark}
+\fancyhead[LO]{\leftmark}
+
+\pagestyle{plain}
 
 %todonotes
 \usepackage{todonotes}
@@ -77,6 +91,7 @@
 
 \cleardoublepage
 \pagenumbering{arabic}
+\pagestyle{fancy}
 
 \chapter{Problem Description}
 
