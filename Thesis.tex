@@ -43,17 +43,6 @@
 \usepackage[pdfauthor={ErinRosenbaum},pagebackref=true,pdftex]{hyperref}
 %pdftitle={\projectname}
 
-\newcounter{checkCounter}
-\usepackage{ifthen}
-\newcommand\chk[2][default]{\noindent%
-  \refstepcounter{checkCounter} \thecheckCounter \hspace{1mm}
-  \ifthenelse{\equal{#1}{default}}{
-    #2 \label{#2} }{
-    #2 \label{#1}
-  }
-}
-\newcommand\chkref[1]{\hspace{.1mm} \ref{#1} \hspace{2mm}#1}
-
 \usepackage{color}
 
 \usepackage{versions}
