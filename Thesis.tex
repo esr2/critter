@@ -351,12 +351,14 @@ given order, stopping to read through any locally included header files. Upon en
 \caption{stderr}
 \label{errorExampleStderr}
 \begin{lstlisting}[xleftmargin=.7cm]
+$ critTer test.c
 test.c:92.22-92.23: big problem: Do not use magic numbers
 \end{lstlisting}
 \end{subfigure}
 \caption[Example Error and Corresponding Message]{Example Error and Corresponding Message. Here, \programName is complaining that the for loop's exit condition contains a `magic number', in this case `5'. The error message contains the location of the error, the warning level and then the error message.}
 \label{errorExample}
 \end{figure}
+\todo{used word critTer here}
 
 The administrator is responsible for defining the set of checked semantic errors. \programName 
 comes with a set of predefined checks that the administrator may use or discard at their discretion. 
