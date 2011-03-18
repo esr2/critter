@@ -207,11 +207,13 @@ rather than start adding the annotations needed to enable better checking.\cite{
 
 While they may behave similarly, Splint and \programName are completely different. The biggest 
 difference is their realms of inspection. Splint checks the ``correctness'' of code, allowing for bug 
-prevention and refactoring. \programName checks the style of code which makes it more readable, 
-indirectly allowing for bug prevention and refactoring. They also differ in how they specify what to check. 
-Splint uses a configuration file and command line arguments to determine which of the several hundred 
-pre-defined messages and warnings to display. In contrast, \programName allows an administrator to 
-write their own checks and always runs every check that is defined.
+prevention and refactoring. These checks for correctness sometimes provide semantic error checking as 
+well when the errors themselves overlap (``correctness'' can often be about how something should be as 
+opposed to strictly incorrect code). \programName checks the style of code which makes it more
+readable, indirectly allowing for bug prevention and refactoring. They also differ in how they specify what 
+to check. Splint uses a configuration file and command line arguments to determine which of the several 
+hundred pre-defined messages and warnings to display. In contrast, \programName allows an 
+administrator to write their own checks and always runs every check that is defined.
 
 \section{PMD and Checkstyle}
 \label{sec:pmdAndCheckstyle}
