@@ -891,7 +891,15 @@ type ``\lstinline{make}''. To compile \programName with additional files, edit t
 include the new files and then type ``\lstinline{make}''. To install \programName (i.e. copy into 
 \lstinline{/usr/local/bin/}) type ``\lstinline{make install}''.
 
-\todoin{add information of how to test}
+Testing can be accomplished by typing ``\lstinline{make test}'' which uses two shell scripts to run the 
+local version of \programName over a set of test files and then compares the new output to the previous 
+output. The first script, \lstinline{runOnTests.sh}, has a set of paths over which to run \programName. The 
+error messages are piped to \lstinline{output.txt} after the old output has been copied to 
+\lstinline{output_old.txt}. The second script, \lstinline{checkTestOutput.sh}, uses a list of all the error 
+messages and \lstinline{grep} to break apart the output files check by check. The script then 
+\lstinline{diff}s each section of the files to determine if a check has been broken. In order to add new 
+checks to the testing mechanism, one simply needs to add the check's function name and a significant 
+(non-variable) part of the error message into the appropriate arrays inside \lstinline{runOnTests.sh}.
 
 \chapter{Evaluation}
 
@@ -1000,6 +1008,7 @@ will be added so that each error message appears on one line.
 \item Phrase check function names as questions or commands.
 \item To compare entire locations use the methods in the Locations module. Comparing single elements can be done inline. 
 \item Be careful not to free things which were either never allocated (the current location passed to the Sax\slash Hook handler), might be shared between objects (filename strings) or will be freed on its own later (comment texts and locations).
+\item When adding a new check, add the function name and a significant (non-variable) part of the error message to the arrays in \lstinline{runOnTests.sh}. If changing the error message of an existing check, make sure to update the arrays.
 \end{itemize}
 
 \nocite{*}
