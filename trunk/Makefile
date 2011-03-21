@@ -5,7 +5,8 @@ run:
 
 test:
 	if test -e output.txt; then cp output.txt output_old.txt; fi
-	tester.sh 2> output.txt
+	runOnTests.sh 2> output.txt
+	checkTestOutput.sh
 
 all: generate main.c checks.c dynarray.c sax.c comments.c hooks.c locations.c
 	gcc main.c c.tab.c checks.c dynarray.c sax.c comments.c hooks.c locations.c -o critTer
