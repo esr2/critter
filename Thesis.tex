@@ -89,12 +89,12 @@
 \listoftodos
 
 \begin{abstract}
-Semantic errors cause poorly written or hard to read code. Sadly, relatively few tools have addressed 
-semantic error checking and even fewer are customizable or written for C. \programName (Critique from 
-the Terminal) fills this gap by providing a tool to check for administrator defined semantic errors in C 
-code. It uses a SAX style of event based programming to produce errors as the code is being read. 
-Administrators can use the predefined checks or create their own to enforce coding standards or help 
-grade and teach ``good style'' to students.
+Semantic errors cause poorly written and\slash or hard to read code. Sadly, relatively few tools have 
+addressed semantic error checking and even fewer are customizable or written for C. \programName 
+(Critique from the Terminal) fills this gap by providing a tool to check for administrator defined semantic 
+errors in C code. It uses a SAX style of event based programming to produce errors as the code is being 
+read. Administrators can use the predefined checks or create their own to enforce coding standards or 
+help grade and teach ``good style'' to students.
 \end{abstract}
 
 \tableofcontents
@@ -133,15 +133,15 @@ imply errors in the ideas behind the text.
 There are tools to help one find these errors in both literature and code (see \autoref{errorChecking}). 
 Spelling and grammar check exist in nearly every word processor; the reader highlights substantive 
 errors in literature. With code, the compiler shows semantic errors and the user\slash 
-testing reveal substantive errors. Yet semantic error checking for code has been addressed by 
+testing reveals substantive errors. Yet semantic error checking for code has been addressed by 
 relatively few tools.
 
 From a different point of view, this problem can be formulated in terms of software quality. 
 Namely, there are two perspectives on software quality: that of the user and that of the programmer. 
 Users evaluate software on whether or not it behaves as it ought to. In contrast, programmers evaluate 
 software on whether or not it is easily maintainable. Minimally, maintainability implies that 
-code is easy to read and update. Evaluating the user's perspective of a program is common and most 
-easily accomplished through automated testing. Though it is possible to evaluate the programmers' 
+code is easy to read and update. Evaluating the user's perspective of a program is common practice and 
+most easily accomplished through automated testing. Though it is possible to evaluate the programmer's 
 perspective, tools that do so only check for certain qualities. Unfortunately, code quality is 
 subjective, any tool that only performs pre-defined inspections will never be satisfactory to every 
 programmer.
@@ -165,12 +165,15 @@ able to contribute immediately. Poorly organized or written code makes this daun
 onerous. Most successful software companies make use of a codified internal style but the 
 enforcement of this policy falls to the employees. Many transgressions are simply due to inattention 
 and could easily be solved by an automated reminder system. Such a tool would reduce the need to 
-bother one's peers with another round of reviews, allowing the entire team to be more productive. 
+bother one's peers with another round of code reviews, allowing the entire team to be more productive. 
 
 \chapter{Related Products}
 
-There are some tools that try to fill the semantic error checking gap. Each approaches the 
-problem differently, but all succeed in finding some semantic errors. Three such tools are 
+Many tools exist to help improve code. Minimally, compilers often produce warnings about unused code 
+or poorly placed comparisons\slash assignments. Tools like Clang\cite{clang} and Uno\cite{Uno} go 
+even further and look for bugs such as uninitialized variables, out of bounds array indexing and memory 
+errors. Some tools try to fill the semantic error checking gap. Each approaches the problem differently, 
+but all succeed in finding some semantic errors. Three such tools are 
 \hyperref[sec:splint]{Splint}\cite{splint-manual} , \hyperref[sec:pmdAndCheckstyle]{PMD}\cite{pmd}, and 
 \hyperref[sec:pmdAndCheckstyle]{Checkstyle}\cite{checkstyle}.
 
@@ -178,7 +181,7 @@ problem differently, but all succeed in finding some semantic errors. Three such
 \label{sec:splint}
 
 Splint is a tool for ``statically checking C programs for security vulnerabilities and programming 
-mistakes"\cite[p.\ 9]{splint-manual}. It works exactly as \programName does from the students'
+mistakes"\cite[p.\ 9]{splint-manual}. It works exactly as \programName does from the user's
 perspective, i.e.\ as a command-line program which prints warnings and errors to \lstinline{stdout}. 
 Splint displays warnings about basic semantic errors like assignments with mismatched types and 
 ignored return values. With more effort, programmers can add annotations (i.e.\ fancy comments) that 
@@ -376,10 +379,13 @@ to be invoked at each of the relevant callback points.
 
 The set of predefined checks are listed below in \autoref{predefinedChecks}. These checks reflect 
 two main purposes: demonstration of the various abilities of \programName and my own arbitrary style 
-choices. Many of these style choices represent ideas from a variety of sources including Fowler's Bad 
-Smells of Code\cite{refactoring}, Google's style guide\cite{googleStyle}, Code 
-Complete\cite{code-complete}, C-Style\cite{standards} PMD\cite{pmd} and Checkstyle\cite{checkstyle},
-as well as my own experience.
+choices. In order to show off some of the power of \programName, I wrote a variety of checks that show 
+the various distinct elements that can be examined. Some checks, like isFunctionTooLongByLines and 
+isFunctionTooLongByStatements, are really two different implementations of the same check. The style 
+choices I made represent ideas from a variety of sources including Fowler's Bad Smells of 
+Code\cite{refactoring}, Google's style guide\cite{googleStyle}, Code Complete\cite{code-complete}, 
+C-Style: Standards and Guidelines\cite{standards} PMD\cite{pmd} and Checkstyle\cite{checkstyle}, as 
+well as my own experience.
 
 \begin{table}
 	\begin{center}
@@ -453,23 +459,23 @@ even if it is included from another file. Standard header files (such as \lstinl
 \lstinline{strings.h}) are not read because they define types within preprocessor directives (which 
 \programName cannot evaluate and therefore cannot recognize as a type). To adjust for this issue, the 
 lexer instead contains a hack for determining if character strings in the code are \lstinline{IDENTIFIER}s 
-or type names. Namely, the lexer does a string compare against common types defined in headers 
-such as \lstinline{size_t}, \lstinline{FILE}, \lstinline{pid_t}, etc. If any of these hardcoded checks pass, 
-then the lexer tells the parser it has found a type name instead of an \lstinline{IDENTIFIER}.
+or type names. Namely, the lexer does a string comparison against common types defined in standard 
+headers such as \lstinline{size_t}, \lstinline{FILE}, \lstinline{pid_t}, etc. If any of these hardcoded checks 
+pass, then the lexer tells the parser it has found a type name instead of an \lstinline{IDENTIFIER}.
 
-Each grammar rule can contain multiple actions which consist of C code. These actions can 
-also reference the location of the entire rule or any of single component of it through the prebuilt 
-location mechanism. Bison and Flex track the location of any token or grammar construct. They store 
+Bison and Flex track the location of any token or grammar construct. They store 
 this information in a \lstinline{YYLTYPE} structure. (Normally a \lstinline{YYLTYPE} contains 4 fields, 
 \lstinline{first_line}, \lstinline{first_column}, \lstinline{last_line} and \lstinline{last_column}; however, I 
 have also added a \lstinline{filename} field in order to produce more accurate checks and error 
-messages across a set of files.) \programName calls the event handlers from these actions, passing in 
+messages across a set of files.) Each grammar rule can contain multiple actions which consist of C code. 
+These actions can reference the location of the entire rule, or any of single component of it, through this 
+prebuilt location mechanism. \programName calls the event handlers from these actions, passing in 
 the location of the relevant construction (see \autoref{grammar}, where actions are underlined). 
 Some actions are `hidden' in subroutines in order to avoid ambiguities within the grammar. Locations 
 passed from the middle of a rule (all the ones passed to \lstinline{begin} handlers) only represent the 
 location of that segment as opposed to the entire construct. For example, in \autoref{grammar}, 
-\lstinline{beginWhile} will only be passed the location of the word ``\lstinline{while}'' whereas 
-\lstinline{endWhile} will be passed the location of the entire \lstinline{while} loop.
+\lstinline{beginIf} will only be passed the location of the word ``\lstinline{if}'' whereas 
+\lstinline{endIf} will be passed the location of the entire \lstinline{if} statement.
 
 \begin{figure} 
 \begin{lstlisting}[language=Caml, escapechar=\%]
@@ -533,8 +539,8 @@ event handlers for the beginning and end of each XML element as well as to captu
 between. \programName calls event handlers at the beginning and end of constructs (functions, 
 declarations, statements, parameter lists, etc.) as well as when it finds singular elements (variable 
 names, \lstinline{break} statements, parameters, etc.). In the code, handlers are prefaced by the words 
-\lstinline{begin}, \lstinline{end} and \lstinline{register} to signal at what point each is called (as shown 
-in \autoref{grammar}). Each handler is passed, at minimum, the location of the relevant code (in 
+``\lstinline{begin}'', ``\lstinline{end}'' and ``\lstinline{register}'' to signal at what point each is called (as 
+shown in \autoref{grammar}). Each handler is passed, at minimum, the location of the relevant code (in 
 the case of \lstinline{IDENTIFIER}s and numeric constants, the handler is also passed the relevant 
 text). Each of these event handlers exist in the file sax.c/h which in turn call the administrator defined 
 checks. While these checks could be written into the event handlers themselves, it is conventional to 
@@ -1014,6 +1020,9 @@ will be added so that each error message appears on one line.
 \item Be careful not to free things which were either never allocated (the current location passed to the Sax\slash Hook handler), might be shared between objects (filename strings) or will be freed on its own later (comment texts and locations).
 \item When adding a new check, add the function name and a significant (non-variable) part of the error message to the arrays in \lstinline{runOnTests.sh}. If changing the error message of an existing check, make sure to update the arrays.
 \end{itemize}
+
+\chapter{Progression of Development}
+\todoin{Add generalized version history}
 
 \nocite{*}
 \bibliographystyle{plain}
