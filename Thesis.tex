@@ -1027,7 +1027,51 @@ will be added so that each error message appears on one line.
 \end{itemize}
 
 \chapter{Progression of Development}
-\todoin{Add generalized version history}
+
+\programName's development has been reasonably linear and has consisted of slowly adding modules 
+as situations arose. Getting the Bison and Flex to parse the sample C code took a significant portion of 
+time at the beginning; especially the added elements such as tracking \lstinline{typedef}s and 
+dynamically reading header files. Once the code could be read without issue, the next step was to start 
+adding some minimal checks.
+
+The first version of \programName consisted of the Main, Grammar and Lexer, and Checks modules 
+(although they were not conceived as such at that point). At this stage, Checks contained four checks 
+which were called directly from the actions in the grammar (\autoref{1.0grammar}). Comment tracking 
+had been implemented inside Checks and was passed a different value for the beginning, middle and 
+end of a comment. Context was determined by setting an enumerated value for the statement as a whole 
+(underlined in \autoref{1.0grammar}). While this version was functional, it involved tedious manipulation 
+of the grammar as well as very little ability to perform contextual processing.
+
+\begin{figure}
+\begin{lstlisting}[language=Caml, escapechar=\%]
+selection_statement
+	: IF '(' expression ')' statement {%\underline{\$\$ = IF\_SELECTION;}% ifHasBraces($5, @$);}
+	| IF '(' expression ')' statement ELSE statement {%\underline{\$\$ = IF\_ELSE\_SELECTION;}% ifHasBraces($5, @$); ifHasBraces($7, @$);}
+	| SWITCH '(' expression ')' statement
+	;
+\end{lstlisting}
+\caption[Version 1.0 Grammar Excerpt]{Version 1.0 Grammar Excerpt where \lstinline{ifHasBraces} is a check that determines if an \lstinline{if} statement had braces.}
+\label{1.0grammar}
+\end{figure}
+
+This dependency on the grammar file was the motivation to change the framework in version 2. The first 
+step was to adopt the SAX style of processing. The alternative was to try to use an AST and Visitor 
+Pattern (like PMD and Checkstyle) but this would have involved a lot of overhead to write the framework 
+code. The SAX style is relatively lightweight and was the far easier (and simpler) alternative. The 
+transition from version 1 to version 2 was fairly painless and immediately allowed for additional checks to 
+be added. The comment tracking system was moved into its own module and all of the previous 
+enumerated value contexts were removed. However, in adding more checks, I realized that some calls 
+into the Sax module were simply not going to be in the right order. 
+
+This problem prompted final version (3) which added the Hooks module. The inspiration behind the 
+hooks module was the queue of function pointers. The insight of storing the pointers to the event 
+handlers made this entire implementation (and version) possible. After adding the Hooks module, I was 
+able to add even more checks and focus on cleaning up the code. In the process of adding more checks, 
+I decided to store the last called event handler in order to minimize the number of handlers any given 
+check needed to be called from. This eventually lead to the \lstinline{lastCalledFunction} methods.  At 
+this point I moved all the code regarding \lstinline{YYLTYPE}s into the Locations module and added finer 
+grain methods to find relevant comments by location. 
+
 
 \nocite{*}
 \bibliographystyle{plain}
