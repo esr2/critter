@@ -239,7 +239,6 @@ override three functions (start, visit and end) to perform various checks agains
 on the nodes in the AST. The ``dummy'' example from the PMD website which counts how 
 many expressions are in the source code is shown in \autoref{pmd-rule}.
 
-\todo{remove the import\slash package lines?}
 \begin{figure}
 \begin{lstlisting}[language=Java]
 package net.sourceforge.pmd.rules;
@@ -526,9 +525,12 @@ number. When it reaches the end of the file, the lexer pops the current file off
 to its previous state. The end of program occurs when there are no more files on the 
 stack.\footnote{\programName starts by adding all of the given files to the stack and dynamically adding 
 additional header files. While this pre-loading is not strictly in concordance with the model of adding 
-header files, it simplified the interface between the main module and the lexer\slash parser.} 
-\todo{Add that I added a comment state?}
+header files, it simplified the interface between the main module and the lexer\slash parser.
 
+Additionally, the lexer reads in header filenames without any additional context about the path of the 
+current file. Because of this, \programName is unable to find and read header files that are included from 
+within subdirectories. It is relatively rare within an academic context to break a single program into 
+subdirectories and accordingly I decided not to focus on this issue.} 
 
 \section{How Checks are Called}
 \label{howChecksAreCalled}
@@ -553,8 +555,8 @@ is due to the fact that Bison executes actions as they are encountered inside ea
 beginning of a rule, Bison would not know which rule it was actually matching when it needed to 
 execute the action. In all the rules listed in \autoref{grammar}, the action is preceded by some 
 distinguishing token (like \lstinline{WHILE}) or by the entire rule. However, \autoref{hookGrammar} 
-shows how some rules that both need actions at the beginning of the statement and lack distinguishing 
-tokens. Specifically we would like to know when we start the beginning of a function definition but we 
+shows some rules that both need actions at the beginning of the statement and lack distinguishing 
+tokens. Specifically we would like to know when we start the beginning of a function definition, but we 
 cannot be sure that we are in a function definition until Bison finishes parsing the signature. To fix this 
 issue I have added the Hooks module. This module intercepts what would be normal calls within the 
 SAX framework and then reorders them at the appropriate time. Each call into the Hooks module does 
@@ -572,7 +574,7 @@ the beginning and end of each file and the program, have been implemented. Small
 registration of the different operators and data types, have yet to be implemented. The addition of further 
 handlers is very possible although should only be done after fully comprehending how the system 
 works. Specifically, it is critical to route handlers through Hooks only when they occur inside statements 
-and declarations (as well as anything else which is reordered) and through Sax otherwise.
+and declarations (as well as anything else which is reordered in Hooks) and through Sax otherwise.
 
 In addition to the basic SAX style system, I have implemented one shortcut to help identify code context 
 without an excess of global variables. Every time a handler is called, it sets the 
@@ -695,8 +697,9 @@ location in the code and a warning level (as seen in \autoref{errorExample}). \y
 are each wrappers to \lyyerror, which takes in an error level (\lstinline{enum errorLevel}), a location 
 (\lstinline{YYLTYPE}) and an error message (\lstinline{char *}). In essence, \lyyerror is really a wrapper 
 to \lstinline{fprintf} and defines the formatting of all the error messages\slash locations. It is also the 
-location to change the string value of the different error levels (currently, \lstinline{ERROR_HIGH}=``big 
-problem'', \lstinline{ERROR_NORMAL}=``error'', and \lstinline{ERROR_LOW}=``low priority'').  
+location to change the string value of the different error levels.\footnote{Currently, 
+\lstinline{ERROR_HIGH}=``big problem'', \lstinline{ERROR_NORMAL}=``error'', and 
+\lstinline{ERROR_LOW}=``low priority''.}  
 \lyyerrorf, instead of taking in an error message, takes a format string and a variable argument list, 
 which it uses with \lstinline{vsprintf} to create an error message. It then passes the newly created 
 message to \lyyerror with the rest of its arguments. \yyerror only takes an error message and calls 
@@ -704,7 +707,7 @@ message to \lyyerror with the rest of its arguments. \yyerror only takes an erro
 \yyerror is called internally through Bison to represent syntax errors. \yyerror is the only predefined 
 error reporting function; \lyyerror is an extension suggested by O'Reily\cite{flex-and-bison} when using 
 location tracking with Bison\slash Flex (the `l' represents the variable location). \lyyerrorf was created in 
-the likes of \lstinline{printf} to deal with formatted error messages in one consolidated location.
+the likes of \lstinline{printf} to deal with formatted error messages in one consolidated function.
 
 \begin{figure}
 \begin{lstlisting}[language=C]
@@ -749,11 +752,12 @@ Comments. The Locations module contains a several functions to manipulate \lstin
 Specifically it contains methods to compare locations in various directions\slash distances as well as 
 allocate, copy and free \lstinline{YYLTYPE}s. The Comments module tracks all the comments found 
 while running \programName. Comment contents and locations are registered through calls from the 
-Sax layer and are stored in a dynamic array. Additionally the module provides the ability to search 
-through this array to find comments in or near a certain location (using the methods from Locations). 
-Finally Comments provides a couple of useful functions when analyzing the comment itself: 
-determining if a comment has words (as opposed to a delimiting comment in the form of 
-\lstinline{/*----*/} etc.) and if a comment contains a string (with or without case sensitivity).
+Sax layer and are stored in a dynamic array. Adjacent comments are recognized and combined into one 
+larger comment. Additionally the module provides the ability to search through this array to find 
+comments in or near a certain location (using the methods from Locations). Finally Comments provides a 
+couple of useful functions when analyzing the comment itself: determining if a comment has words (as 
+opposed to a delimiting comment in the form of \lstinline{/*----*/} etc.) and if a comment contains a string 
+(with or without case sensitivity).
 
 There are some coding styles which are very hard for \programName to check. For example, when 
 checking that each global variable has a comment, it is trivial to check if there is a comment before that 
@@ -767,9 +771,10 @@ coding standard to have comments precede declarations.
 \chapter{How to Use \programName}
 
 \section{Users}
-Find out from your administrator where you should find their version of \programName. After following their installation instructions, go to your working directory \todo{mention only from working directory issue?} 
-from the command line. Type ``\lstinline{critTer *.c}'' (or if you only want to check one or two files, type 
-their names instead of the \lstinline{*.c}). \todo{used the word critTer here!!} \programName will output 
+Find out from your administrator where you should find their version of \programName. After following 
+their installation instructions, go to your working directory from the command line. Type 
+``\lstinline{critTer *.c}'' (or if you only want to check one or two files, type their names instead of the 
+\lstinline{*.c}). \todo{used the word critTer here!!} \programName will output 
 any warnings about your code to \lstinline{stderr}.
 
 \section{Administrators}
@@ -777,13 +782,13 @@ any warnings about your code to \lstinline{stderr}.
 \subsection{Use}
 In academics, the best use of \programName is as an automated grading system. It is simple to assign a 
 point reduction system based on the number of errors \programName returns over a submission. For 
-example, one might deduct a two points per high error level message, a point per normal error level 
-message and a half a point per low error level message. Not only does it reduce the work needed to 
-grade a submission, but by allowing students to pre-check their work, the submissions become easier 
+example, one might deduct a two point penalty per high error level message, a point per normal error 
+level message and a half a point per low error level message. Not only does it reduce the work needed 
+to grade a submission, but by allowing students to pre-check their work, the submissions become easier 
 to read through good, consistent style.
 
 In industry, \programName should be used by programmers before submitting code to a repository or to 
-peer reviews. This creates and automated reminder system against any code does not adhere to the 
+peer reviews. This creates and automated reminder system against any code that does not adhere to the 
 accepted coding standards. This makes the code base more consistent and readable without direct 
 peer enforcement. Furthermore, the team can be more productive when they spend less time correcting 
 semantic errors.
@@ -888,7 +893,7 @@ If you do not need to go through Hooks, after defining the action in the grammar
 both sax.c and sax.h, all you need to do is call \lstinline{lastCalled_set()} from the handler. If the new 
 handler needs to go through Hooks, you need to create two handlers: \lstinline{newHandler} in Sax and 
 \lstinline{h_newHandler} in Hooks (where \lstinline{h_newHandler} is called from the action in the 
-grammar file). If the event just needs to be released at the correct time (i.e. it appears in a hooked 
+grammar file). If the event just needs to be released at the correct time (i.e. it appears within a hooked 
 construct), the Hooks handler should call \lstinline{enqueueFunctionAndLocation} to enqueue the Sax 
 handler. If the handler needs to dequeue elements, it should call \lstinline{dequeueUntil}, followed by the 
 sax handler and \lstinline{lastCalled_set()}.
@@ -996,7 +1001,7 @@ Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
 
 \begin{itemize}
 \item Use the DynArray class to handle persistent arrays, stacks and queues. It is a dynamically growing array which holds void pointers. This is the base implementation of how comments are stored as well as the Hook module queues.
-
+\item To change the tab size, edit the \lstinline{count} function inside c.l.
 \end{itemize}
 
 \section{Sax and Hooks Modules}
@@ -1017,7 +1022,7 @@ will be added so that each error message appears on one line.
 \item Use local static variables as opposed to global variables to determine context within checks.
 \item Phrase check function names as questions or commands.
 \item To compare entire locations use the methods in the Locations module. Comparing single elements can be done inline. 
-\item Be careful not to free things which were either never allocated (the current location passed to the Sax\slash Hook handler), might be shared between objects (filename strings) or will be freed on its own later (comment texts and locations).
+\item Be careful not to free things which were either never allocated (e.g.\ the current location passed to the Sax\slash Hook handler), might be shared between objects (e.g.\ filename strings) or will be freed on its own later (e.g.\ comment texts and locations).
 \item When adding a new check, add the function name and a significant (non-variable) part of the error message to the arrays in \lstinline{runOnTests.sh}. If changing the error message of an existing check, make sure to update the arrays.
 \end{itemize}
 
