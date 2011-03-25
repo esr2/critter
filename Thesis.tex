@@ -402,7 +402,7 @@ well as my own experience.
 		switchHasDefault & Check that each \lstinline!switch! statement has a \lstinline!default! case. \\
 		switchCasesHaveBreaks & Check that each \lstinline!switch! case has a \lstinline!break! statement. \\
 		tooDeeplyNested & Check whether a region of code (i.e. a compound statement) nests too deeply. \\
-		useEnumNotConstOrDefine & Advises using \lstinline!enum! instead of \lstinline!const! or \lstinline!#define! for declarations. \\
+		useEnumNotDefine & Advises using \lstinline!enum! instead of \lstinline!#define! for declarations. \\
 		neverUseGotos & Throw an error on any use of a \lstinline!GOTO! statement. \\
 		isVariableNameTooShort & Check if a variable's name exceeds a minimum length. \\
 		isMagicNumber & Throw an error on encountering a magic number outside of a declaration. \\
@@ -969,8 +969,8 @@ Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
 		 Check that each \lstinline!switch! case has a \lstinline!break! statement. \vspace{\vertSize} \\
 		\lstinline!tooDeeplyNested(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{beginCompoundStatement, endCompoundStatement} \\*
 		 Check whether a region of code (i.e. a compound statement) nests too deeply. \vspace{\vertSize} \\
-		\lstinline!useEnumNotConstOrDefine(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{beginParameterList, endParameterList, registerDefineIntegralType, registerConst} \\*
-			 Advises using \lstinline!enum! instead of \lstinline!const! or \lstinline!#define! for declarations. \vspace{\vertSize} \\
+		\lstinline!useEnumNotDefine(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{registerDefineIntegralType} \\*
+			 Advises using \lstinline!enum! instead of \lstinline!#define! for declarations. \vspace{\vertSize} \\
 		\lstinline!neverUseGotos(YYLTYPE location)! & \multirow{2}{\saxColSize}{registerGoto} \\*
 			 Throw an error on any use of a \lstinline!GOTO! statement. \vspace{\vertSize} \\
 		\lstinline!isVariableNameTooShort(YYLTYPE location, int progress, char* identifier)! & \multirow{2}{\saxColSize}{registerIdentifier, beginDeclaration, endDeclaration} \\*
