@@ -243,25 +243,12 @@ void tooDeeplyNested(YYLTYPE location, int progress) {
 }
 
 /**
- * Advises using enum instead of const or #define for declarations.
+ * Advises using enum instead of #define for declarations.
  */
-void useEnumNotConstOrDefine(YYLTYPE location, int progress) {
-	static int inParameterList = 0;
-	
-	switch (progress) {
-		case BEGINNING:
-			inParameterList = 1;
-			break;
-		case MIDDLE:
-			if (!inParameterList) {
-				//lyyerror(ERROR_NORMAL, location, "It would be better to use enum to define integral constants");
-			}
-			break;
-		case END:
-			inParameterList = 0;
-		default:
-			break;
-	}
+void useEnumNotDefine(YYLTYPE location) {
+	lyyerror(ERROR_NORMAL, 
+			 location, 
+			 "It would be better to use enum to define integral constants");
 }
 
 /**

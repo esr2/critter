@@ -103,7 +103,6 @@ void endFunctionDefinition(YYLTYPE location) {
 
 void beginParameterList(YYLTYPE location) {
 	tooManyParameters(location, BEGINNING);
-	useEnumNotConstOrDefine(location, BEGINNING);
 	validateComment(location, BEGIN_PARAM_LIST, NULL);
 }
 
@@ -113,7 +112,6 @@ void registerParameter(YYLTYPE location) {
 
 void endParameterList(YYLTYPE location) {
 	tooManyParameters(location, END);
-	useEnumNotConstOrDefine(location, END);
 	validateComment(location, END_PARAM_LIST, NULL);
 }
 
@@ -235,11 +233,11 @@ void endStatement(YYLTYPE location) {
 }
 
 void registerDefineIntegralType(YYLTYPE location) {
-	useEnumNotConstOrDefine(location, MIDDLE);
+	useEnumNotDefine(location);
 }
 
 void registerConst(YYLTYPE location) {
-	useEnumNotConstOrDefine(location, MIDDLE);
+
 }
 
 /* Jump Statements */

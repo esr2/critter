@@ -38,7 +38,7 @@ void checkForComment(YYLTYPE location, char* construct);
 void switchHasDefault(YYLTYPE location, int progress);
 void switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase);
 void tooDeeplyNested(YYLTYPE location, int progress);
-void useEnumNotConstOrDefine(YYLTYPE location, int progress);
+void useEnumNotDefine(YYLTYPE location);
 void neverUseGotos(YYLTYPE location);
 void isVariableNameTooShort(YYLTYPE location, int progress, char* identifier);
 void isMagicNumber(YYLTYPE location, int progress, char* constant);
