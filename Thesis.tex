@@ -90,11 +90,11 @@
 
 \begin{abstract}
 Semantic errors cause poorly written and\slash or hard to read code. Sadly, relatively few tools have 
-addressed semantic error checking and even fewer are customizable or written for C. \programName 
-(Critique from the Terminal) fills this gap by providing a tool to check for administrator defined semantic 
-errors in C code. It uses a SAX style of event based programming to produce errors as the code is being 
-read. Administrators can use the predefined checks or create their own to enforce coding standards or 
-help grade and teach ``good style'' to students.
+addressed automated semantic error checking and even fewer are customizable or written for C. 
+\programName (Critique from the Terminal) fills this gap by providing a tool to check for administrator 
+defined semantic errors in C code. It uses a SAX style of event based programming to produce errors as 
+the code is being read. Administrators can use the predefined checks or create their own to enforce 
+coding standards or help grade and teach ``good style'' to students.
 \end{abstract}
 
 \tableofcontents
@@ -921,7 +921,7 @@ checks to the testing mechanism, one simply needs to add the check's function na
 Throughout development \programName was run against a series of final project submissions for 
 Princeton University's Introduction to Programming Systems\cite{cos217}. These submissions were 
 anonymized and represent 10 years of submissions. Of the 650 submissions, 10 were chosen at 
-random across many different semesters to be used for evaluation. Dr. Robert Dondero, who has 
+random across many different semesters to be used for a final evaluation. Dr. Robert Dondero, who has 
 taught this course for many years, graded these 10 submissions. \todoin{Add how \programName 
 performed against Dondero's grading}
 
@@ -929,12 +929,12 @@ performed against Dondero's grading}
 \appendixpage
 \addappheadtotoc
 
-\chapter{Predefined Check Functions and their Relevant Handlers}
+\chapter{Predefined Check Functions and their Relevant Event Handlers}
  \label{predefinedChecksFunctions}
 \newcommand{\saxColSize}{6cm}
 \newcommand{\vertSize}{3mm}
 
-\addcontentsline{lot}{table}{~\ref{predefinedChecksFunctions} \hspace{4mm}Predefined Check Functions and their Relevant Handlers}
+\addcontentsline{lot}{table}{~\ref{predefinedChecksFunctions} \hspace{4mm}Predefined Check Functions and their Relevant Event Handlers}
 \begin{longtable}{p{10cm} p{\saxColSize}}
 \toprule
 Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
