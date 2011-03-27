@@ -1,7 +1,7 @@
 default: all
 
 run: 
-	critTer test.c
+	./critTer test.c
 
 test:
 	if test -e output.txt; then cp output.txt output_old.txt; fi
