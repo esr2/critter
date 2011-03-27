@@ -387,6 +387,7 @@ C-Style: Standards and Guidelines\cite{standards} PMD\cite{pmd} and Checkstyle\c
 well as my own experience.
 
 \begin{table}
+\small
 	\begin{center}
 	\begin{tabular}{l p{9cm}}
 		\toprule
@@ -412,6 +413,7 @@ well as my own experience.
 		tooManyFunctionsInFile & Check if there are too many functions in a file. \\
 		checkIfElsePlacement & Throw an error based on the placement of the else statement relative to the if statement.  \\
 		validateComment & Check if function comments have the appropriate contents. Specifically check that the comment mentions each parameter (by name) and what the function returns. \\
+		validatePointerParameters & Check if each pointer type parameter into a function is mentioned within an \lstinline!assert()! before being used. \\
 		\bottomrule
 	\end{tabular}
 	\end{center}
@@ -988,8 +990,9 @@ Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
 		\lstinline!checkIfElsePlacement(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{endIf, beginElse} \\ *
 			Throw an error based on the placement of the else statement relative to the if statement.  \vspace{\vertSize} \\
 		\lstinline!validateComment(YYLTYPE location, enum commandType command, char* text)! & \multirow{2}{\saxColSize}{beginFunctionDefinition, endFunctionDefinition, beginParameterList, endParameterList, registerIdentifier, beginCompoundStatement, registerReturnSomething} \\ *
-			Check if function comments have the appropriate contents. Specifically check that the comment mentions each parameter (by name) and what the function returns. \vspace{\vertSize} \\
-
+			Check if function comments have the appropriate contents. Specifically check that the comment mentions each parameter (by name) and what the function returns. \vspace{\vertSize} \\ \\
+		\lstinline!validatePointerParameters(YYLTYPE location, enum commandType command, char* identifier)! & \multirow{2}{\saxColSize}{beginFunctionDefinition, endFunctionDefinition, beginParameterList, registerParameter, endParameterList, registerIdentifier, registerPointer, endStatement} \\ *
+			Check if each pointer type parameter into a function is mentioned within an \lstinline!assert()! before being used. \vspace{\vertSize} \\ \\ \\
 \vspace{1mm}
 \end{longtable}
 
