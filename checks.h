@@ -21,9 +21,12 @@ enum {
 enum commandType {
 	BEGIN_FUNCTION,
 	BEGIN_PARAM_LIST,
-	FOUND_IDENTIFIER,
+	REGISTER_PARAM,
 	END_PARAM_LIST,
 	BEGIN_FUNCTION_BODY,
+	FOUND_IDENTIFIER,
+	FOUND_POINTER,
+	END_STATEMENT,
 	RETURNING,
 	END_FUNCTION
 };
@@ -48,5 +51,5 @@ void isCompoundStatementEmpty(YYLTYPE location, int progress);
 void tooManyFunctionsInFile(YYLTYPE location, int progress);
 void checkIfElsePlacement(YYLTYPE location, int progress);
 void validateComment(YYLTYPE location, enum commandType command, char* text);
-
+void validatePointerParameters(YYLTYPE location, enum commandType command, char* identifier);
 #endif

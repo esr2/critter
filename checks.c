@@ -626,3 +626,89 @@ void validateComment(YYLTYPE location, enum commandType command, char* text) {
 	}
 
 }
+
+/**
+ * Check if each pointer type parameter into a function is mentioned within
+ * an assert() before being used. This check will most likely produce a couple
+ * of false warnings (ie throw an error on a proper use of the pointer) because
+ * it is only checking for asserts.
+ */
+void validatePointerParameters(YYLTYPE location, enum commandType command, char* identifier) {
+	static DynArray_T parameterNames = NULL;
+	static int lastIdentifierWasAssert = 0;
+	static int inParameterList;
+	static int parameterIsAPointer;
+	static int inFunction = 0;
+	
+	switch (command) {
+		case BEGIN_FUNCTION:
+			inFunction = 1;
+			parameterNames = DynArray_new(0);
+			lastIdentifierWasAssert = 0;
+			inParameterList = 0;
+			parameterIsAPointer = 0;
+			break;
+		case BEGIN_PARAM_LIST:
+			inParameterList++;
+			break;
+		case REGISTER_PARAM:
+			/* called after all elements in a parameter */
+			parameterIsAPointer = 0;
+			break;
+		case END_PARAM_LIST:
+			inParameterList--;
+			break;
+		case FOUND_IDENTIFIER:
+			if (!inFunction) {
+				return;
+			}
+			
+			if (inParameterList == 1) {
+				/* if the parameter is a pointer, store the name */
+				if (parameterIsAPointer) {
+					DynArray_add(parameterNames, strdup(identifier));
+				}
+				
+				return;
+			}
+			
+			
+			if (strcmp("assert", identifier) == 0) {
+				lastIdentifierWasAssert = 1;
+			} else {
+				int numParameters = DynArray_getLength(parameterNames);
+				int i;
+				for (i = 0; i < numParameters; i++) {
+					if (strcmp(identifier, DynArray_get(parameterNames, i)) == 0) {
+						/* identifier matches a parameter name */
+						if (!lastIdentifierWasAssert) {
+							lyyerrorf(ERROR_NORMAL, location,
+									  "Do you want to validate %s through an assert?", identifier);
+						}
+						/* remove the parameter from the list */
+						char* name = (char*)DynArray_removeAt(parameterNames, i);
+						free(name);
+						break;
+					}
+				}
+			}
+			break;
+		case FOUND_POINTER:
+			if (inFunction && inParameterList == 1) {
+				parameterIsAPointer = 1;
+			}
+			break;
+		case END_STATEMENT:
+			lastIdentifierWasAssert = 0;
+			break;
+		case END_FUNCTION:
+			/* free each parameter name and the list */
+			DynArray_map(parameterNames, freeText, NULL);
+			DynArray_free(parameterNames);
+			inFunction = 0;
+			break;
+		default:
+			break;
+	}
+	
+}

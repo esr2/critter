@@ -70,6 +70,8 @@ void endDeclaration(YYLTYPE location);
 void beginStatement(YYLTYPE location);
 void endStatement(YYLTYPE location);
 
+void registerPointer(YYLTYPE location);
+
 void registerDefineIntegralType(YYLTYPE location);
 
 void registerConst(YYLTYPE location);

@@ -251,6 +251,13 @@ void h_registerParameter(YYLTYPE location) {
 void h_endParameterList(YYLTYPE location) {
 	enqueueFunctionAndLocation(endParameterList, location);
 }
+
+/*------------ Pointer ----------------------*/
+
+void h_registerPointer(YYLTYPE location) {
+	enqueueFunctionAndLocation(registerPointer, location);
+}
+
 /*------------ Typedef ----------------------*/
 
 void h_registerTypedef(YYLTYPE location) {
