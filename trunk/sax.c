@@ -92,6 +92,7 @@ void beginFunctionDefinition(YYLTYPE location) {
 	globalHasComment(location, BEGINNING);
 	tooManyFunctionsInFile(location, MIDDLE);
 	validateComment(location, BEGIN_FUNCTION, NULL);
+	validatePointerParameters(location, BEGIN_FUNCTION, NULL);
 }
 
 void endFunctionDefinition(YYLTYPE location) {
@@ -99,20 +100,24 @@ void endFunctionDefinition(YYLTYPE location) {
 	isFunctionTooLongByStatements(location, END);
 	globalHasComment(location, END);
 	validateComment(location, END_FUNCTION, NULL);
+	validatePointerParameters(location, END_FUNCTION, NULL);
 }
 
 void beginParameterList(YYLTYPE location) {
 	tooManyParameters(location, BEGINNING);
 	validateComment(location, BEGIN_PARAM_LIST, NULL);
+	validatePointerParameters(location, BEGIN_PARAM_LIST, NULL);
 }
 
 void registerParameter(YYLTYPE location) {
 	tooManyParameters(location, MIDDLE);
+	validatePointerParameters(location, REGISTER_PARAM, NULL);
 }
 
 void endParameterList(YYLTYPE location) {
 	tooManyParameters(location, END);
 	validateComment(location, END_PARAM_LIST, NULL);
+	validatePointerParameters(location, END_PARAM_LIST, NULL);
 }
 
 /*-- Iteration (not called through hook) ---*/
@@ -194,6 +199,7 @@ void endSwitch(YYLTYPE location) {
 void registerIdentifier(YYLTYPE location, char* identifier) {
 	isVariableNameTooShort(location, MIDDLE, identifier);
 	validateComment(location, FOUND_IDENTIFIER, identifier);
+	validatePointerParameters(location, FOUND_IDENTIFIER, identifier);
 }
 
 void registerConstant(YYLTYPE location, char* constant) {
@@ -230,6 +236,11 @@ void beginStatement(YYLTYPE location) {
 
 void endStatement(YYLTYPE location) {
 	isFunctionTooLongByStatements(location, MIDDLE);
+	validatePointerParameters(location, END_STATEMENT, NULL);
+}
+
+void registerPointer(YYLTYPE location) {
+	validatePointerParameters(location, FOUND_POINTER, NULL);
 }
 
 void registerDefineIntegralType(YYLTYPE location) {

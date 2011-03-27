@@ -350,10 +350,9 @@ type_direct_declarator
 	| type_direct_declarator '(' ')'
 	;
 
-
 pointer
-	: '*'
-	| '*' type_qualifier_list
+	: '*' {h_registerPointer(@$);}
+	| '*' type_qualifier_list {h_registerPointer(@1);}
 	| '*' pointer
 	| '*' type_qualifier_list pointer
 	;
