@@ -55,6 +55,7 @@ void endFile(YYLTYPE location) {
 	
 	isFileTooLong(location);
 	tooManyFunctionsInFile(location, END);
+	doFunctionsHaveCommonPrefix(location, END, "file");
 }
 
 /**
@@ -63,6 +64,8 @@ void endFile(YYLTYPE location) {
  */
 void beginProgram() {
 	comment_intializeComments();
+	YYLTYPE location = {0, 0, 0, 0, NULL};
+	doFunctionsHaveCommonPrefix(location, BEGINNING, NULL);
 }
 
 /**
@@ -70,6 +73,7 @@ void beginProgram() {
  */
 void endProgram(YYLTYPE location) {
 	comment_freeComments();
+	doFunctionsHaveCommonPrefix(location, END, NULL);
 }
 
 /*--- Comments (not called through hook) ---*/
@@ -93,6 +97,7 @@ void beginFunctionDefinition(YYLTYPE location) {
 	tooManyFunctionsInFile(location, MIDDLE);
 	validateComment(location, BEGIN_FUNCTION, NULL);
 	validatePointerParameters(location, BEGIN_FUNCTION, NULL);
+	doFunctionsHaveCommonPrefix(location, MIDDLE, NULL);
 }
 
 void endFunctionDefinition(YYLTYPE location) {
@@ -101,6 +106,7 @@ void endFunctionDefinition(YYLTYPE location) {
 	globalHasComment(location, END);
 	validateComment(location, END_FUNCTION, NULL);
 	validatePointerParameters(location, END_FUNCTION, NULL);
+	doFunctionsHaveCommonPrefix(location, END, "function");
 }
 
 void beginParameterList(YYLTYPE location) {
@@ -200,6 +206,7 @@ void registerIdentifier(YYLTYPE location, char* identifier) {
 	isVariableNameTooShort(location, MIDDLE, identifier);
 	validateComment(location, FOUND_IDENTIFIER, identifier);
 	validatePointerParameters(location, FOUND_IDENTIFIER, identifier);
+	doFunctionsHaveCommonPrefix(location, MIDDLE, identifier);
 }
 
 void registerConstant(YYLTYPE location, char* constant) {
