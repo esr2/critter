@@ -712,3 +712,53 @@ void validatePointerParameters(YYLTYPE location, enum commandType command, char*
 	}
 	
 }
+
+void doFunctionsHaveCommonPrefix(YYLTYPE location, int progress, char* identifier) {
+	static DynArray_T functionNames;
+	static DynArray_T functionLocations;
+	static int functionNameIsFound;
+	static int inFunction;
+	
+	/* ASSUMPTION: the first identifier to appear after a begin function call
+	 is the name of the function */
+	
+	switch (progress) {
+		case BEGINNING:
+			functionNames = DynArray_new(0);
+			functionLocations = DynArray_new(0);
+			functionNameIsFound = 0;
+			inFunction = 0;
+			break;
+		case MIDDLE:
+			if (identifier == NULL) {
+				/* beginning of the function, reset if name has been found */
+				functionNameIsFound = 0;
+				inFunction = 1;
+			} else if (inFunction && !functionNameIsFound) {
+				functionNameIsFound = 1;
+				DynArray_add(functionNames, strdup(identifier));
+				DynArray_add(functionLocations, allocateLocation(location));
+			}
+			break;
+		case END:
+			if (identifier && strcmp(identifier, "file") == 0) {
+				/* end of file */
+				
+				/* go through array and find all entries where the location
+				   matches the current file name. Check these entries for a
+				   common prefix and then remove them from the arrays */
+			} else if (identifier && strcmp(identifier, "function") == 0) {
+				inFunction = 0;
+			} else {
+				/* end of program */
+				DynArray_map(functionLocations, freeLocations, NULL);
+				DynArray_free(functionLocations);
+				DynArray_map(functionNames, freeText, NULL);
+				DynArray_free(functionNames);
+			}
+			break;
+		default:
+			break;
+	}
+	
+}
