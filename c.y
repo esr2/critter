@@ -267,9 +267,9 @@ type_specifier
 	;
 
 struct_or_union_specifier
-	: struct_or_union IDENTIFIER '{' {h_registerIdentifier(@2);} struct_declaration_list '}'
+	: struct_or_union IDENTIFIER '{' struct_declaration_list '}'
 	| struct_or_union '{' struct_declaration_list '}'
-	| struct_or_union IDENTIFIER	{h_registerIdentifier(@2);}
+	| struct_or_union IDENTIFIER
 	;
 
 struct_or_union
