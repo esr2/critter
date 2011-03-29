@@ -130,6 +130,14 @@ static void dequeueUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYL
 
 static void doNothing(YYLTYPE location) {}
 
+void h_removeIdentifierText() {
+	/* remove the last enqueued identifier text because I'm not going to call
+	   register identifier for this occurence (enums, structs, etc) */
+	int length = DynArray_getLength(identifiersQueue);
+	char* extraIdentifier = DynArray_removeAt(identifiersQueue, length-1);
+	free(extraIdentifier);
+}
+
 /*------------ Overall ----------------------*/
 /**
  * Called at the beginning of each file before parsing 

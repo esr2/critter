@@ -19,6 +19,7 @@ void h_endProgram(YYLTYPE location);
 
 void h_registerDefineIntegralType(YYLTYPE location);
 
+void h_removeIdentifierText();
 void h_registerIdentifier(YYLTYPE location);
 void h_registerIdentifierText(char* identifier);
 void h_registerConstant(YYLTYPE location);
