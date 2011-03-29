@@ -64,9 +64,9 @@ int column = 1;
 
 %%
 
-"/*" 				{beginComment(yylloc); BEGIN(COMMENT); }
-<COMMENT>"*/"				{endComment(yylloc); BEGIN(INITIAL); }
-<COMMENT>([^*]|\n)+|.		{registerComment(yytext);}
+"/*" 				{count(); beginComment(yylloc); BEGIN(COMMENT); }
+<COMMENT>"*/"				{count(); endComment(yylloc); BEGIN(INITIAL); }
+<COMMENT>([^*]|\n)+|.		{count(); registerComment(yytext);}
 <COMMENT><<EOF>>			{yyerror("Unterminated comment"); return 0; }
 "//"			{CPlusPlusComments(yylloc); beginComment(yylloc); BEGIN(CPP);}
 <CPP>.*			{registerComment(yytext);}
@@ -198,14 +198,18 @@ L?\"(\\.|[^\\"])*\"	{ count(); return(STRING_LITERAL); }
 void count() {
 	int i;
 
-	for (i = 0; yytext[i] != '\0'; i++)
+	for (i = 0; yytext[i] != '\0'; i++) {
 		if (yytext[i] == '\n') {
+			if (column >= 80) {
+				yyerror("Line is too long");
+			}
 			column = 1;
 		} else if (yytext[i] == '\t') {
 			column += 4 - (column % 4);
 		} else {
 			column++;
 		}
+	}
 }
 
 /**
