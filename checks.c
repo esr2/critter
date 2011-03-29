@@ -747,6 +747,85 @@ void doFunctionsHaveCommonPrefix(YYLTYPE location, int progress, char* identifie
 				/* go through array and find all entries where the location
 				   matches the current file name. Check these entries for a
 				   common prefix and then remove them from the arrays */
+				
+				/*struct prefix {
+					char* prefix;
+					int count;
+					struct prefix * next;
+				};
+				
+				struct prefix * head = NULL;
+				
+				int numFunctions = DynArray_getLength(functionNames);
+				int underscores[numFunctions];
+				
+				for (int i = 0; i < numFunctions; i++) {
+					char * name = DynArray_get(functionNames, i);
+					char * underscore = strchr(name, '_');
+					
+					if (underscore == NULL) {
+						underscores[i] = 0;
+					} else {
+						underscores[i] = (int)(underscore - name);
+					}
+					
+				}*/
+				
+				/* grab all the relevant names */
+				DynArray_T functionsInFile = DynArray_new(0);
+				int i, j;
+				for (i = 0; i < DynArray_getLength(functionNames); ) {
+					YYLTYPE * loc = DynArray_get(functionLocations, i);
+					if (strcmp(loc->filename, location.filename) == 0) {
+						/* function is in file, move it to the local array */
+						DynArray_add(functionsInFile, DynArray_removeAt(functionNames, i));
+						loc = DynArray_removeAt(functionLocations, i);
+						freeLocations(loc, NULL);
+					} else {
+						i++;
+					}
+				}
+				
+				/* throw error on first mismatch and stop checking at first underscore */
+				int numNames = DynArray_getLength(functionsInFile);
+				if (numNames == 0) {
+					DynArray_free(functionsInFile);
+					return;
+				}
+				char * names[numNames];
+				DynArray_toArray(functionsInFile, (void**)&names);
+				size_t length = strlen(names[0]);
+				
+				
+				int foundMismatch = 0;
+				for (i = 0; i < length; i++) {
+					char c = names[0][i];
+					if (c == '_' & i >=3) {
+						/* assume we've found the end of the prefix and stop
+						   checking the function names */
+						break;
+					}
+					
+					for (j = 1; j < numNames; j++) {
+						if (names[j][i] != c) {
+							foundMismatch = 1;
+							break;
+						}
+					}
+					if (foundMismatch) { 
+						break;
+					}
+				}
+				
+				if (foundMismatch) {
+					lyyerror(ERROR_NORMAL,
+							 location, 
+							 "Please prefix all function names with a reasonable module name");
+				}
+				
+				DynArray_map(functionsInFile, freeText, NULL);
+				DynArray_free(functionsInFile);
+				
 			} else if (identifier && strcmp(identifier, "function") == 0) {
 				inFunction = 0;
 			} else {
