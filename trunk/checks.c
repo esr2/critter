@@ -841,3 +841,36 @@ void doFunctionsHaveCommonPrefix(YYLTYPE location, int progress, char* identifie
 	}
 	
 }
+
+/**
+ * Check that there are enough local comments in the function relative to the
+ * number of control/selection statements.
+ */
+void functionHasEnoughLocalComments(YYLTYPE location, int progress, int isComment) {
+	/* count up the number of elements that really should have comments
+	   associated to them in some fashion: if, else, for, while, do while, switch */
+	static int numElements;
+	
+	/* count up the number of comments that appear in the function */
+	static int numComments;
+	
+	int maxDiscrepancy = 4;
+	
+	switch (progress) {
+		case BEGINNING:
+			numComments = 0;
+			numElements = 0;
+			break;
+		case MIDDLE:
+			isComment ? numComments++ : numElements++;
+			break;
+		case END:
+			if (numElements - numComments > maxDiscrepancy) {
+				lyyerror(ERROR_NORMAL, location, "This function probably needs more local comments");
+			}
+			break;
+		default:
+			break;
+	}
+	
+}

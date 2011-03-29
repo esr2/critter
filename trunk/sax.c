@@ -79,6 +79,7 @@ void endProgram(YYLTYPE location) {
 /*--- Comments (not called through hook) ---*/
 void beginComment(YYLTYPE location) {
 	comment_beginComment(location, lastCalled_getWasComment());
+	functionHasEnoughLocalComments(location, MIDDLE, 1);
 }
 
 void registerComment(char* text) {
@@ -98,6 +99,7 @@ void beginFunctionDefinition(YYLTYPE location) {
 	validateComment(location, BEGIN_FUNCTION, NULL);
 	validatePointerParameters(location, BEGIN_FUNCTION, NULL);
 	doFunctionsHaveCommonPrefix(location, MIDDLE, NULL);
+	functionHasEnoughLocalComments(location, BEGINNING, 0);
 }
 
 void endFunctionDefinition(YYLTYPE location) {
@@ -107,6 +109,7 @@ void endFunctionDefinition(YYLTYPE location) {
 	validateComment(location, END_FUNCTION, NULL);
 	validatePointerParameters(location, END_FUNCTION, NULL);
 	doFunctionsHaveCommonPrefix(location, END, "function");
+	functionHasEnoughLocalComments(location, END, 0);
 }
 
 void beginParameterList(YYLTYPE location) {
@@ -129,6 +132,7 @@ void endParameterList(YYLTYPE location) {
 /*-- Iteration (not called through hook) ---*/
 void beginWhile(YYLTYPE location) {
 	lastCalled_set(beginWhile);
+	functionHasEnoughLocalComments(location, MIDDLE, 0);
 }
 
 void endWhile(YYLTYPE location) {
@@ -139,6 +143,7 @@ void endWhile(YYLTYPE location) {
 
 void beginDoWhile(YYLTYPE location) {
 	lastCalled_set(beginDoWhile);
+	functionHasEnoughLocalComments(location, MIDDLE, 0);
 }
 
 void endDoWhile(YYLTYPE location) {
@@ -149,6 +154,7 @@ void endDoWhile(YYLTYPE location) {
 
 void beginFor(YYLTYPE location) {
 	lastCalled_set(beginFor);
+	functionHasEnoughLocalComments(location, MIDDLE, 0);
 }
 
 void endFor(YYLTYPE location) {
@@ -160,6 +166,7 @@ void endFor(YYLTYPE location) {
 /*-- Selection (not called through hook) ---*/
 void beginIf(YYLTYPE location) {
 	lastCalled_set(beginIf);
+	functionHasEnoughLocalComments(location, MIDDLE, 0);
 }
 
 void endIf(YYLTYPE location) {
@@ -171,6 +178,7 @@ void endIf(YYLTYPE location) {
 void beginElse(YYLTYPE location) {
 	lastCalled_set(beginElse);
 	checkIfElsePlacement(location, END);
+	functionHasEnoughLocalComments(location, MIDDLE, 0);
 }
 
 void endElse(YYLTYPE location) {
@@ -182,6 +190,7 @@ void beginSwitch(YYLTYPE location) {
 	lastCalled_set(beginSwitch);
 	switchHasDefault(location, BEGINNING);
 	switchCasesHaveBreaks(location, BEGINNING, -1);
+	functionHasEnoughLocalComments(location, MIDDLE, 0);
 }
 
 void registerDefault(YYLTYPE location) {
