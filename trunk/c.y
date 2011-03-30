@@ -501,6 +501,7 @@ function_definition
 	| declaration_specifiers declarator {YYLTYPE l = @2; l.first_line = @1.first_line; l.first_column = @1.first_column; h_beginFunctionDefinition(l);} compound_statement {endFunctionDefinition(@$);}
 	| declarator {h_beginFunctionDefinition(@1);} declaration_list compound_statement {endFunctionDefinition(@$);}
 	| declarator {h_beginFunctionDefinition(@1);} compound_statement {endFunctionDefinition(@$);}
+	| error declarator {h_beginFunctionDefinition(@1);} compound_statement {endFunctionDefinition(@$);}
 	;
 
 %%
