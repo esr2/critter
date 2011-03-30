@@ -267,9 +267,9 @@ type_specifier
 	;
 
 struct_or_union_specifier
-	: struct_or_union IDENTIFIER {h_removeIdentifierText();} '{' struct_declaration_list '}'
+	: struct_or_union IDENTIFIER {h_ignoreIdentifierText(@2);} '{' struct_declaration_list '}'
 	| struct_or_union '{' struct_declaration_list '}'
-	| struct_or_union IDENTIFIER {h_removeIdentifierText();}
+	| struct_or_union IDENTIFIER {h_ignoreIdentifierText(@2);}
 	;
 
 struct_or_union
@@ -306,8 +306,8 @@ struct_declarator
 
 enum_specifier
 	: ENUM '{' enumerator_list '}'
-	| ENUM IDENTIFIER {h_removeIdentifierText();} '{' enumerator_list '}'
-	| ENUM IDENTIFIER {h_removeIdentifierText();}
+	| ENUM IDENTIFIER {h_ignoreIdentifierText(@2);} '{' enumerator_list '}'
+	| ENUM IDENTIFIER {h_ignoreIdentifierText(@2);}
 	;
 
 enumerator_list
