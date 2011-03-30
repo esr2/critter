@@ -713,6 +713,10 @@ void validatePointerParameters(YYLTYPE location, enum commandType command, char*
 	
 }
 
+/**
+ * Check that function names contain a common prefix. Prefix matching stops
+ * upon seeing an underscore.
+ */
 void doFunctionsHaveCommonPrefix(YYLTYPE location, int progress, char* identifier) {
 	static DynArray_T functionNames;
 	static DynArray_T functionLocations;
@@ -747,29 +751,6 @@ void doFunctionsHaveCommonPrefix(YYLTYPE location, int progress, char* identifie
 				/* go through array and find all entries where the location
 				   matches the current file name. Check these entries for a
 				   common prefix and then remove them from the arrays */
-				
-				/*struct prefix {
-					char* prefix;
-					int count;
-					struct prefix * next;
-				};
-				
-				struct prefix * head = NULL;
-				
-				int numFunctions = DynArray_getLength(functionNames);
-				int underscores[numFunctions];
-				
-				for (int i = 0; i < numFunctions; i++) {
-					char * name = DynArray_get(functionNames, i);
-					char * underscore = strchr(name, '_');
-					
-					if (underscore == NULL) {
-						underscores[i] = 0;
-					} else {
-						underscores[i] = (int)(underscore - name);
-					}
-					
-				}*/
 				
 				/* grab all the relevant names */
 				DynArray_T functionsInFile = DynArray_new(0);
