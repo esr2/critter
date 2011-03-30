@@ -54,5 +54,6 @@ void validateComment(YYLTYPE location, enum commandType command, char* text);
 void validatePointerParameters(YYLTYPE location, enum commandType command, char* identifier);
 void doFunctionsHaveCommonPrefix(YYLTYPE location, int progress, char* identifier);
 void functionHasEnoughLocalComments(YYLTYPE location, int progress, int isComment);
+void structFieldsHaveComments(YYLTYPE location, int progress);
 
 #endif
