@@ -275,6 +275,10 @@ void h_beginStructDefinition(YYLTYPE location) {
 
 void h_registerStructField(YYLTYPE location) {
 	enqueueFunctionAndLocation(registerStructField, location);
+	/* this isn't strictly right but it accurately stops comments
+	   from thinking that they are contiguous while all the fields are
+	   accumulating in the declaration */
+	lastCalled_set(registerStructField); 
 }
 
 void h_endStructDefinition(YYLTYPE location) {
