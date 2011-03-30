@@ -876,3 +876,38 @@ void functionHasEnoughLocalComments(YYLTYPE location, int progress, int isCommen
 	}
 	
 }
+
+/**
+ * Check that all fields in a struct have a comment.
+ */
+void structFieldsHaveComments(YYLTYPE location, int progress) {
+	static int numFields;
+	int numComments = 0;
+	YYLTYPE commentLocation;
+	YYLTYPE * searchLocation = allocateLocation(location);
+	
+	switch (progress) {
+		case BEGINNING:
+			numFields = 0;
+			break;
+		case MIDDLE:
+			numFields++;
+			break;
+		case END:
+			while (comment_getCommentWithin(*searchLocation, &commentLocation) != NULL) {
+				numComments++;
+				searchLocation->first_line = commentLocation.last_line + 1;
+			}
+			
+			if (numFields > numComments) {
+				lyyerrorf(ERROR_NORMAL, location,
+						  "Please comment all the fields in a struct, you're missing %d",
+						  numFields-numComments);
+			}
+			break;
+		default:
+			break;
+	}
+	
+	freeLocations(searchLocation, NULL);
+}
