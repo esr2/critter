@@ -37,6 +37,10 @@ name=(
  "validateComment-eachParameter"
  "validateComment-return"
  "validateComment-commentAbove"
+ "validatePointerParameters"
+ "doFunctionsHaveCommonPrefix"
+ "functionHasEnoughLocalComments"
+ "structFieldsHaveComments"
 )
 
 
@@ -66,6 +70,10 @@ error=(
  "A function's comment should refer to each parameter by name"
  "A function's comment should explicitly state what the function returns"
  "Please put function comments above the function declaration"
+ "Do you want to validate"
+ "Please prefix all function names with a reasonable module name"
+ "This function probably needs more local comments"
+ "Please comment all the fields in a struct"
 )
 
 
