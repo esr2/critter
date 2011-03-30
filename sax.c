@@ -255,11 +255,15 @@ void endStatement(YYLTYPE location) {
 }
 
 void beginStructDefinition(YYLTYPE location) {
-	
+	structFieldsHaveComments(location, BEGINNING);
+}
+
+void registerStructField(YYLTYPE location) {
+	structFieldsHaveComments(location, MIDDLE);
 }
 
 void endStructDefinition(YYLTYPE location) {
-	
+	structFieldsHaveComments(location, END);
 }
 
 void registerPointer(YYLTYPE location) {

@@ -71,6 +71,7 @@ void beginStatement(YYLTYPE location);
 void endStatement(YYLTYPE location);
 
 void beginStructDefinition(YYLTYPE location);
+void registerStructField(YYLTYPE location);
 void endStructDefinition(YYLTYPE location);
 
 void registerPointer(YYLTYPE location);
