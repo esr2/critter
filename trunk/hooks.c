@@ -267,6 +267,16 @@ void h_endParameterList(YYLTYPE location) {
 	enqueueFunctionAndLocation(endParameterList, location);
 }
 
+/*------------ Struct ----------------------*/
+
+void h_beginStructDefinition(YYLTYPE location) {
+	enqueueFunctionAndLocation(beginStructDefinition, location);	
+}
+
+void h_endStructDefinition(YYLTYPE location) {
+	enqueueFunctionAndLocation(endStructDefinition, location);
+}
+
 /*------------ Pointer ----------------------*/
 
 void h_registerPointer(YYLTYPE location) {

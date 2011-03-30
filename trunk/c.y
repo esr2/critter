@@ -267,8 +267,8 @@ type_specifier
 	;
 
 struct_or_union_specifier
-	: struct_or_union IDENTIFIER {h_ignoreIdentifierText(@2);} '{' struct_declaration_list '}'
-	| struct_or_union '{' struct_declaration_list '}'
+	: struct_or_union IDENTIFIER {h_ignoreIdentifierText(@2); h_beginStructDefinition(@1);} '{' struct_declaration_list '}' {h_endStructDefinition(@$);}
+	| struct_or_union {h_beginStructDefinition(@1);} '{' struct_declaration_list '}' {h_endStructDefinition(@$);}
 	| struct_or_union IDENTIFIER {h_ignoreIdentifierText(@2);}
 	;
 

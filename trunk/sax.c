@@ -254,6 +254,14 @@ void endStatement(YYLTYPE location) {
 	validatePointerParameters(location, END_STATEMENT, NULL);
 }
 
+void beginStructDefinition(YYLTYPE location) {
+	
+}
+
+void endStructDefinition(YYLTYPE location) {
+	
+}
+
 void registerPointer(YYLTYPE location) {
 	validatePointerParameters(location, FOUND_POINTER, NULL);
 }
