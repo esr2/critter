@@ -134,6 +134,17 @@ char* comment_getCommentBelow(YYLTYPE location, int compareDistance, YYLTYPE *re
  * of the comment or NULL if not found.
  */
 char* comment_getCommentWithin(YYLTYPE location, YYLTYPE *returnLocation) {
+	if (location.first_line > location.last_line) {
+		returnLocation = NULL;
+		return NULL;
+	}
+	
+	if (location.first_line == location.last_line &&
+		location.first_column > location.last_column) {
+		returnLocation = NULL;
+		return NULL;
+	}
+	
 	return getComment(&location, isLocationWithin, returnLocation);
 }
 
