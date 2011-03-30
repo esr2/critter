@@ -178,7 +178,6 @@ void endIf(YYLTYPE location) {
 void beginElse(YYLTYPE location) {
 	lastCalled_set(beginElse);
 	checkIfElsePlacement(location, END);
-	functionHasEnoughLocalComments(location, MIDDLE, 0);
 }
 
 void endElse(YYLTYPE location) {

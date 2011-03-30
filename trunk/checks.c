@@ -778,7 +778,10 @@ void doFunctionsHaveCommonPrefix(YYLTYPE location, int progress, char* identifie
 					YYLTYPE * loc = DynArray_get(functionLocations, i);
 					if (strcmp(loc->filename, location.filename) == 0) {
 						/* function is in file, move it to the local array */
-						DynArray_add(functionsInFile, DynArray_removeAt(functionNames, i));
+						char* name = DynArray_removeAt(functionNames, i);
+						if (strcmp(name, "main") != 0) {
+							DynArray_add(functionsInFile, name);
+						}
 						loc = DynArray_removeAt(functionLocations, i);
 						freeLocations(loc, NULL);
 					} else {
@@ -796,11 +799,10 @@ void doFunctionsHaveCommonPrefix(YYLTYPE location, int progress, char* identifie
 				DynArray_toArray(functionsInFile, (void**)&names);
 				size_t length = strlen(names[0]);
 				
-				
 				int foundMismatch = 0;
 				for (i = 0; i < length; i++) {
 					char c = names[0][i];
-					if (c == '_' & i >=3) {
+					if (c == '_' && i >=3) {
 						/* assume we've found the end of the prefix and stop
 						   checking the function names */
 						break;
@@ -848,7 +850,7 @@ void doFunctionsHaveCommonPrefix(YYLTYPE location, int progress, char* identifie
  */
 void functionHasEnoughLocalComments(YYLTYPE location, int progress, int isComment) {
 	/* count up the number of elements that really should have comments
-	   associated to them in some fashion: if, else, for, while, do while, switch */
+	   associated to them in some fashion: if, for, while, do while, switch */
 	static int numElements;
 	
 	/* count up the number of comments that appear in the function */
