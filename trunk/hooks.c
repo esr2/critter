@@ -273,6 +273,10 @@ void h_beginStructDefinition(YYLTYPE location) {
 	enqueueFunctionAndLocation(beginStructDefinition, location);	
 }
 
+void h_registerStructField(YYLTYPE location) {
+	enqueueFunctionAndLocation(registerStructField, location);
+}
+
 void h_endStructDefinition(YYLTYPE location) {
 	enqueueFunctionAndLocation(endStructDefinition, location);
 }

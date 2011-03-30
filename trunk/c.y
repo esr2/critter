@@ -283,7 +283,7 @@ struct_declaration_list
 	;
 
 struct_declaration
-	: specifier_qualifier_list struct_declarator_list ';'
+	: specifier_qualifier_list struct_declarator_list ';' {h_registerStructField(@$);}
 	;
 
 specifier_qualifier_list
