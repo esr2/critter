@@ -414,6 +414,9 @@ well as my own experience.
 		checkIfElsePlacement & Throw an error based on the placement of the else statement relative to the if statement.  \\
 		validateComment & Check if function comments have the appropriate contents. Specifically check that the comment mentions each parameter (by name) and what the function returns. \\
 		validatePointerParameters & Check if each pointer type parameter into a function is mentioned within an \lstinline!assert()! before being used. \\
+		doFunctionsHaveCommonPrefix & Check that function names contain a common prefix. \\
+		functionHasEnoughLocalComments & Check that there are enough local comments in the function relative to the number of control/selection statements. \\
+		structFieldsHaveComments & Check that all fields in a struct have a comment. \\
 		\bottomrule
 	\end{tabular}
 	\end{center}
@@ -992,7 +995,14 @@ Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
 		\lstinline!validateComment(YYLTYPE location, enum commandType command, char* text)! & \multirow{2}{\saxColSize}{beginFunctionDefinition, endFunctionDefinition, beginParameterList, endParameterList, registerIdentifier, beginCompoundStatement, registerReturnSomething} \\ *
 			Check if function comments have the appropriate contents. Specifically check that the comment mentions each parameter (by name) and what the function returns. \vspace{\vertSize} \\ \\
 		\lstinline!validatePointerParameters(YYLTYPE location, enum commandType command, char* identifier)! & \multirow{2}{\saxColSize}{beginFunctionDefinition, endFunctionDefinition, beginParameterList, registerParameter, endParameterList, registerIdentifier, registerPointer, endStatement} \\ *
-			Check if each pointer type parameter into a function is mentioned within an \lstinline!assert()! before being used. \vspace{\vertSize} \\ \\ \\
+			Check if each pointer type parameter into a function is mentioned within an \lstinline!assert()! before being used. \vspace{\vertSize} \\ \\ \\ \\
+		\lstinline!void doFunctionsHaveCommonPrefix(YYLTYPE location, int progress, char* identifier)! & \multirow{2}{\saxColSize}{beginProgram, endProgram, endFile, beginFunctionDefinition, endFunctionDefinition, registerIdentifier} \\*
+			Check that function names contain a common prefix.  \vspace{\vertSize} \\ \\ \\
+		\lstinline!functionHasEnoughLocalComments(YYLTYPE location, int progress, int isComment)! & \multirow{2}{\saxColSize}{beginComment, beginFunctionDefinition, endFunctionDefinition, beginWhile, beginDoWhile, beginFor, beginIf, beginSwitch} \\*
+			Check that there are enough local comments in the function relative to the number of control/selection statements.  \vspace{\vertSize} \\
+		\lstinline!structFieldsHaveComments(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{beginStructDefinition, registerStructField, endStructDefinition} \\*
+			Check that all fields in a struct have a comment.  \\
+
 \vspace{1mm}
 \end{longtable}
 
