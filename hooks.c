@@ -24,7 +24,8 @@ static DynArray_T constantsQueue;
 /*---------------- Util -----------------------*/
 static void popIdentifier() { }
 static void popConstant() { }
-
+static void ignoreIdentifier() { }
+static void ignoreIdentifierCall(YYLTYPE location, char* identifier) { }
 
 static void freeText(void* element, void* extra) {
 	char *text = (char*)element;
@@ -69,7 +70,7 @@ static void dequeueUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYL
 		}
 		
 		func = DynArray_get(functionCallsQueue, i);
-		if (func == popIdentifier) {
+		if (func == popIdentifier || func == ignoreIdentifier) {
 			numIdentifiers++;
 		} else if (func == popConstant) {
 			numConstants++;
@@ -102,21 +103,29 @@ static void dequeueUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYL
 		
 		/* call special functions for identifiers and constants in order to pass the
 		   actual text */
-		if (func == popIdentifier || func == popConstant) { 
+		if (func == popIdentifier || func == popConstant ||
+									 func == ignoreIdentifier) { 
 			DynArray_T queue = NULL;
 			void (*function)(YYLTYPE, char*);
+			int position = 0;
 			
 			if (func == popIdentifier) {
 				queue = identifiersQueue;
 				function = registerIdentifier;
-			} else {
+				position = identifierQPos;
+			} else if (func == popConstant) {
 				queue = constantsQueue;
 				function = registerConstant;
+				position = constantQPos;
+			} else {
+				queue = identifiersQueue;
+				function = ignoreIdentifierCall;
+				position = identifierQPos;
 			}
+			
 			assert(queue);
 			
-			text = DynArray_removeAt(queue, (func == popIdentifier) ? 
-											identifierQPos : constantQPos);
+			text = DynArray_removeAt(queue, position);
 			
 			function(*loc, text);
 			free(text);
@@ -129,14 +138,6 @@ static void dequeueUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYL
 }
 
 static void doNothing(YYLTYPE location) {}
-
-void h_removeIdentifierText() {
-	/* remove the last enqueued identifier text because I'm not going to call
-	   register identifier for this occurence (enums, structs, etc) */
-	int length = DynArray_getLength(identifiersQueue);
-	char* extraIdentifier = DynArray_removeAt(identifiersQueue, length-1);
-	free(extraIdentifier);
-}
 
 /*------------ Overall ----------------------*/
 /**
@@ -205,6 +206,12 @@ void h_registerIdentifier(YYLTYPE location) {
 
 void h_registerIdentifierText(char* identifier) {
 	DynArray_add(identifiersQueue, strdup(identifier));
+}
+
+void h_ignoreIdentifierText(YYLTYPE location) {
+	/* remove the last enqueued identifier text because I'm not going to call
+	 register identifier for this occurence (enums, structs, etc) */
+	enqueueFunctionAndLocation(ignoreIdentifier, location);
 }
 
 void h_registerConstant(YYLTYPE location) {
