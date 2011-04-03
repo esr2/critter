@@ -314,7 +314,9 @@ void isMagicNumber(YYLTYPE location, int progress, char* constant) {
 			inDeclaration++;
 			break;
 		case MIDDLE:
-			if (inDeclaration == 0) {
+			if (lastCalled_get() == registerCase) {
+				lyyerror(ERROR_HIGH, location, "Do not use magic numbers");
+			} else if (inDeclaration == 0) {
 				int number = (int)strtol(constant, (char**)NULL, 0);
 				int i;
 

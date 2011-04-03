@@ -99,9 +99,6 @@ static void dequeueUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYL
 		func = DynArray_removeAt(functionCallsQueue, i);
 		assert(func != NULL);
 		
-		(*func)(*loc);
-		lastCalled_set(func);
-		
 		/* call special functions for identifiers and constants in order to pass the
 		   actual text */
 		if (func == popIdentifier || func == popConstant ||
@@ -131,6 +128,9 @@ static void dequeueUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYL
 			function(*loc, text);
 			free(text);
 		}
+		
+		(*func)(*loc);
+		lastCalled_set(func);
 		
 		freeLocations(loc, NULL);
 	}
