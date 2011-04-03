@@ -21,7 +21,7 @@
  * Check if the file exceeds a maximum length.
  */
 void isFileTooLong(YYLTYPE location) {
-	int MAX_FILE_LENGTH = 200;
+	int MAX_FILE_LENGTH = 500;
 	
 	if (location.first_line > MAX_FILE_LENGTH) {
 		lyyerrorf(ERROR_NORMAL,
@@ -43,10 +43,10 @@ void hasBraces(YYLTYPE location, char* construct) {
 			return;
 		}
 		
-		lyyerrorf(ERROR_NORMAL,
+		/*lyyerrorf(ERROR_NORMAL,
 				  location, 
 				  "Please use braces after all %s statements",
-				  construct);
+				  construct); */
 	}
 	
 }
@@ -55,7 +55,7 @@ void hasBraces(YYLTYPE location, char* construct) {
  * Check if a function exceeds a maximum line count.
  */
 void isFunctionTooLongByLines(YYLTYPE location) {
-	int MAX_FUNCTION_LENGTH = 55;
+	int MAX_FUNCTION_LENGTH = 140;
 	
 	if (location.last_line - location.first_line + 1 >= MAX_FUNCTION_LENGTH) {
 		lyyerrorf(ERROR_NORMAL,
@@ -81,10 +81,10 @@ void isFunctionTooLongByStatements(YYLTYPE location, int progress) {
 			break;
 		case END:
 			if (statementCount >= MAX_FUNCTION_LENGTH) {
-				lyyerrorf(ERROR_NORMAL,
+				/*lyyerrorf(ERROR_NORMAL,
 						  location, 
 						  "Function is too long by statement count, should be less than %d statements",
-						  MAX_FUNCTION_LENGTH);
+						  MAX_FUNCTION_LENGTH);*/
 			}
 			break;
 		default:
@@ -201,7 +201,7 @@ void switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase) {
 			}
 			break;
 		case END:
-			if (numCases != numBreaks) {
+			if (numCases > numBreaks) {
 				int missing = numCases - numBreaks;
 				lyyerrorf(ERROR_HIGH,
 						  location, 
@@ -264,8 +264,8 @@ void neverUseGotos(YYLTYPE location) {
 void isVariableNameTooShort(YYLTYPE location, int progress, char* identifier) {
 	int MINIMUM_VARIABLE_NAME_LENGTH = 3;
 	static int inDeclaration = 0;
-	char *acceptableVariables[3] = {"i", "j", "c"};
-	int numAcceptable = 3;
+	char *acceptableVariables[9] = {"i", "j", "k", "c", "n", "fp", "fd", "pc", "ul"};
+	int numAcceptable = 9;
 	
 	switch (progress) {
 		case BEGINNING:
@@ -410,7 +410,7 @@ void isCompoundStatementEmpty(YYLTYPE location, int progress) {
  * Check if there are too many functions in a file.
  */
 void tooManyFunctionsInFile(YYLTYPE location, int progress) {
-	int MAX_FUNCTIONS_PER_FILE = 5;
+	int MAX_FUNCTIONS_PER_FILE = 15;
 	static int numFunctions = 0;
 	
 	switch (progress) {
@@ -451,7 +451,7 @@ void checkIfElsePlacement(YYLTYPE location, int progress) {
 			ifLastLine = location.last_line;
 			/* check that, if bracketed, appears on multiple lines */
 			if (ifIsBracketed && ((location.last_line - location.first_line) <= 0)) {
-				lyyerror(ERROR_LOW, location, "When using braces with an if statement, use multiple lines");
+			/*	lyyerror(ERROR_LOW, location, "When using braces with an if statement, use multiple lines"); */
 				hadError = 1;
 			}
 			break;
@@ -466,14 +466,14 @@ void checkIfElsePlacement(YYLTYPE location, int progress) {
 			if (ifIsBracketed) {
 				/* else should be on same line as '}' */
 				if (location.first_line != ifLastLine) {
-					lyyerror(ERROR_LOW,
+				/*	lyyerror(ERROR_LOW,
 							 location, 
-							 "Please put the else on the same line as the closing if brace");
+							 "Please put the else on the same line as the closing if brace"); */
 				}
 			} else {
 				/* else should be on line after the if statement finishes */
 				if ((location.first_line - ifLastLine) <= 0) {
-					lyyerror(ERROR_LOW, location, "Please put the else on the line after the if");
+				/*	lyyerror(ERROR_LOW, location, "Please put the else on the line after the if"); */
 				}
 			}
 			

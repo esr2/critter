@@ -295,9 +295,11 @@ void registerBreak(YYLTYPE location) {
 
 void registerReturn(YYLTYPE location) {
 	lastCalled_set(registerReturn);
+	switchCasesHaveBreaks(location, MIDDLE, 0);
 }
 
 void registerReturnSomething(YYLTYPE location) {
 	lastCalled_set(registerReturnSomething);
 	validateComment(location, RETURNING, NULL);
+	switchCasesHaveBreaks(location, MIDDLE, 0);
 }
