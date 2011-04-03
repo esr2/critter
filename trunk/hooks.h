@@ -32,6 +32,8 @@ void h_endDirectDeclarator(YYLTYPE location);
 void h_endExpressionStatement(YYLTYPE location);
 void h_registerExpression(YYLTYPE location);
 
+void h_registerCase(YYLTYPE location);
+
 void h_beginFunctionDefinition(YYLTYPE location);
 
 void h_beginParameterList(YYLTYPE location);

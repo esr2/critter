@@ -247,6 +247,13 @@ void h_registerExpression(YYLTYPE location) {
 	dequeueUntil(location, 0, NULL);
 }
 
+void h_registerCase(YYLTYPE location) {
+	registerCase(location);
+	lastCalled_set(registerCase);
+	
+	dequeueUntil(location, 0, NULL);
+}
+
 /*------------ Function ----------------------*/
 void h_beginFunctionDefinition(YYLTYPE location) {
 	beginFunctionDefinition(location);
