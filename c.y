@@ -430,7 +430,7 @@ statement
 
 labeled_statement
 	: IDENTIFIER ':' {h_registerIdentifier(@1);} statement
-	| CASE {registerCase(@1);} constant_expression ':' statement
+	| CASE constant_expression {h_registerCase(@1);} ':' statement
 	| DEFAULT {registerDefault(@$);} ':' statement
 	;
 
