@@ -80,9 +80,10 @@
 %for title page
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
 
-%\doublespacing			% Ask per individual, also remove extra space in section headings
+\doublespacing			% Ask per individual, also remove extra space in section headings
 
 \begin{document}
+\singlespacing
 \input{titlePage}
 \pagenumbering{roman}
 
@@ -104,6 +105,7 @@ coding standards or help grade and teach ``good style'' to students.
 \cleardoublepage
 \pagenumbering{arabic}
 \pagestyle{fancy}
+\doublespacing
 
 \chapter{Introduction}
 
@@ -984,6 +986,8 @@ from the numbers in \autoref{evalAdjustedNumbers}).
 \appendixpage
 \addappheadtotoc
 
+\singlespacing
+
 \chapter{Predefined Check Functions and their Relevant Event Handlers}
  \label{predefinedChecksFunctions}
 \newcommand{\saxColSize}{6cm}
@@ -1056,7 +1060,7 @@ Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
 \vspace{1mm}
 \end{longtable}
 
-
+\doublespacing
 \chapter{Conventions and Necessities}
 \label{conventions}
 
