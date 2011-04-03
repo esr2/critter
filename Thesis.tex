@@ -923,12 +923,62 @@ checks to the testing mechanism, one simply needs to add the check's function na
 
 \chapter{Evaluation}
 
-Throughout development \programName was run against a series of final project submissions for 
-Princeton University's Introduction to Programming Systems\cite{cos217}. These submissions were 
-anonymized and represent 10 years of submissions. Of the 650 submissions, 10 were chosen at 
-random across many different semesters to be used for a final evaluation. Dr. Robert Dondero, who has 
-taught this course for many years, graded these 10 submissions. \todoin{Add how \programName 
-performed against Dondero's grading}
+In order to perform a realistic evaluation of \programName's performance, Dr. Robert Dondero, graded 
+10 randomly chosen final project submissions for Princeton University's Introduction to Programming 
+Systems (COS 217) \cite{cos217}. There were over 650 assignments available, each of which was 
+anonymized in order to protect student's privacy. Dr. Dondero has taught the course for many years, 
+making him the perfect person to judge each submission's style. We judged \programName's 
+performance compared to ``true'' errors, which were determined after both Dr. Dondero and 
+\programName looked at each submission. This post-analysis judgement of errors was necessary in 
+order to properly take into account errors that Dr. Dondero originally missed that \programName found. 
+We did allow \programName to perform an iterative analysis of the submissions as a whole, mirroring 
+what we hoped other administrators would do when creating their set of checks. The iterative process 
+mostly effected checks like \lstinline{fileIsTooLong} or \lstinline{tooDeeplyNested} where there was a 
+maximum/minimum threshold that needed to be tuned. 
+
+The raw numbers regarding \programName's performance as compared to Dr. Dondero's are shown in 
+\autoref{evalRawNumbers}. These numbers yield a precision rate of !!!! for \programName and !!!! for Dr. 
+Dondero. However, these raw numbers count stylistic flaws that \programName does not currently have 
+checks for (like excessively long lines and repeat definitions of \lstinline{struct}s). After adjusting for these 
+types of errors, \programName performed with a precision rate of !!!! and Dr. Dondero with !!!! (as seen 
+from the numbers in \autoref{evalAdjustedNumbers}).
+
+
+\begin{table}
+\begin{center}
+\begin{tabular}{cccc}
+	\toprule
+	& Dr. Dondero & \programName & Total \\
+	\midrule
+	Error & !!!!! &  !!!!! & !!!!! \\
+	Not an Error & 0 & !!!!! & N\slash A \\
+	\bottomrule
+\end{tabular}
+\end{center}
+\caption{The raw number of warnings produced by \programName in comparison to Dr. Dondero}
+\label{evalRawNumbers}
+\end{table}
+
+
+\begin{table}
+\begin{center}
+\begin{tabular}{cccc}
+	\toprule
+	& Dr. Dondero & \programName & Total \\
+	\midrule
+	Error & !!!!! &  !!!!! & !!!!! \\
+	Not an Error & 0 & !!!!! & N\slash A \\
+	\bottomrule
+\end{tabular}
+\end{center}
+\caption{The adjusted number of warnings produced by \programName in comparison to Dr. Dondero after removing !!!!!!}
+\label{evalRawNumbers}
+\end{table}
+
+
+
+\vspace{2cm}
+ \todoin{Add how \programName performed against Dondero's grading}
 
 \appendix
 \appendixpage
