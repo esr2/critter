@@ -89,6 +89,7 @@ static void dequeueUntil(YYLTYPE location, int matchWhole, void (*beginCall)(YYL
 		if (beginCall) {
 			loc = DynArray_get(locationsQueue, i);
 			beginCall(*loc);
+			lastCalled_set(beginCall);
 			beginCall = NULL;
 		}
 		
