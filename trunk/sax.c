@@ -199,7 +199,6 @@ void registerDefault(YYLTYPE location) {
 }
 
 void registerCase(YYLTYPE location) {
-	lastCalled_set(registerCase);
 	switchCasesHaveBreaks(location, MIDDLE, 1);
 }
 
