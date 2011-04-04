@@ -483,7 +483,7 @@ Control goes back and forth between the lexical analyzer, which recognizes code 
 and the parser, which determines how the elements fit together. \programName's specification files 
 describe valid ANSI C code but \programName does not compile or in anyway track the contents. This 
 means, for example, that \programName sees any variable or function name as just as an 
-\lstinline{IDENTIFIER} (any set of letters that does not already designate a variable type) without any 
+\lstinline{IDENTIFIER} (any set of letters that does not already designate a variable \todo{data type?} type) without any 
 context as to where it was defined or used before. Because \programName cannot evaluate code, it 
 cannot follow preprocessor directives. \programName therefore reads all of the code in the file, even if 
 it would not actually be included during compilation. In order to combat the issue of multiple inclusion 
@@ -549,7 +549,7 @@ iteration_statement
 Instead of writing them from scratch, I found the Flex and Bison specification files 
 online\cite{originalGrammar} and have modified them to add additional functionality. The only major 
 modification of the actual grammar was to add the ability to recognize and dynamically add 
-\lstinline{typdef} definitions as types. These type names are stored in an internal symbol table and the 
+\lstinline{typedef} definitions as types. These type names are stored in an internal symbol table and the 
 lexer checks to make sure that any potential \lstinline{IDENTIFIER}s are not already listed there. In 
 order to accommodate the inclusion of header files, I had to expand the given lexer functionality to 
 transfer control between files. The specific method of using a stack of buffers\slash files is heavily 
