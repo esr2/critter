@@ -98,6 +98,11 @@ the code is being read. Administrators can use the predefined checks or create t
 coding standards or help grade and teach ``good style'' to students.
 \end{abstract}
 
+\renewcommand{\abstractname}{Acknowledgements}
+\begin{abstract}
+\todoin{Add acknowledgements}
+\end{abstract}
+
 \tableofcontents
 \listoftables
 \listoffigures
@@ -1139,12 +1144,24 @@ check needed to be called from. This eventually lead to the \lstinline{lastCalle
 this point I moved all the code regarding \lstinline{YYLTYPE}s into the Locations module and added finer 
 grain methods to find relevant comments by location. 
 
-
+\singlespacing
 \nocite{*}
 \bibliographystyle{plain}
 \clearpage
 \phantomsection
 \addcontentsline{toc}{chapter}{Bibliography}
 \bibliography{Bibliography}
+
+
+\cleardoublepage
+\pagestyle{plain}
+\begin{flushright}
+\vspace*{1.5in}
+This paper represents my own work in accordance with University regulations.\\
+\vspace*{.75in}
+Erin Rosenbaum\\
+April 15, 2011
+
+\end{flushright}
 
 \end{document}  
