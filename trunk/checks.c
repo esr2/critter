@@ -806,6 +806,17 @@ void doFunctionsHaveCommonPrefix(YYLTYPE location, int progress, char* identifie
 					lyyerror(ERROR_NORMAL,
 							 location, 
 							 "Please prefix all function names with a reasonable module name");
+				} else {
+					char prefix[i+1];
+					strncpy(prefix, names[0], i);
+					prefix[i] = '\0';
+					
+					if (strstrInsensitive(location.filename, prefix) == NULL) {
+						lyyerrorf(ERROR_NORMAL,
+								  location,
+								  "Please match function prefixes to the module name, %s and %s do not match",
+								  prefix, location.filename);
+					}
 				}
 				
 				DynArray_map(functionsInFile, freeText, NULL);

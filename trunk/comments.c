@@ -170,7 +170,7 @@ int comment_isContentful(const char* text) {
 /**
  * Case insensitive form of strstr. Inspired by http://www.daniweb.com/code/snippet216564.html
  */
-static char* strstrInsensitive(const char* haystack, const char* needle) {
+char* strstrInsensitive(const char* haystack, const char* needle) {
 	char* hay = (char*)haystack;
 	
 	while (*hay != '\0') {
