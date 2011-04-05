@@ -68,7 +68,7 @@ int column = 1;
 <COMMENT>"*/"				{endComment(yylloc); BEGIN(INITIAL); }
 <COMMENT>([^*]|\n)+|.		{registerComment(yytext);}
 <COMMENT><<EOF>>			{yyerror("Unterminated comment"); return 0; }
-"//"			{CPlusPlusComments(yylloc); beginComment(yylloc); BEGIN(CPP);}
+"//"			{neverUseCPlusPlusComments(yylloc); beginComment(yylloc); BEGIN(CPP);}
 <CPP>.*			{registerComment(yytext);}
 <CPP>\n			{endComment(yylloc); BEGIN(INITIAL);}
 

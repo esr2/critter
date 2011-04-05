@@ -130,14 +130,14 @@ void tooManyParameters(YYLTYPE location, int progress) {
 /**
  * Throw an error on C++ style single line comments.
  */
-void CPlusPlusComments(YYLTYPE location) {
+void neverUseCPlusPlusComments(YYLTYPE location) {
 	lyyerror(ERROR_NORMAL, location, "Do not use C++ style comments");
 }
 
 /**
  * Check for comments before some construct.
  */
-void checkForComment(YYLTYPE location, char* construct) {
+void hasComment(YYLTYPE location, char* construct) {
 	char* text = comment_getCommentAbove(location, 1, NULL);
 
 	if (text == NULL) {
@@ -217,7 +217,7 @@ void switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase) {
 /**
  * Check whether a region of code (i.e. a compound statement) nests too deeply.
  */
-void tooDeeplyNested(YYLTYPE location, int progress) {
+void isTooDeeplyNested(YYLTYPE location, int progress) {
 	int MAX_NESTING_LEVEL = 3; /* Acceptable is function, loop, if.
 								  Anything after is too much */
 								
@@ -350,7 +350,7 @@ void globalHasComment(YYLTYPE location, int progress) {
 			break;
 		case MIDDLE:
 			if (!inFunction) {
-				checkForComment(location, "global variable");
+				hasComment(location, "global variable");
 			}
 			break;
 		case END:
@@ -442,7 +442,7 @@ void tooManyFunctionsInFile(YYLTYPE location, int progress) {
  *  - if an if statement is unbracketed, the else statement should appear on 
  *    the next line
  */
-void checkIfElsePlacement(YYLTYPE location, int progress) {
+void isIfElsePlacementValid(YYLTYPE location, int progress) {
 	static int ifIsBracketed = 0;
 	static int ifLastLine;
 	static int hadError = 0;
@@ -498,7 +498,7 @@ static void freeText(void* element, void* extra) {
  * that the comment mentions each parameter (by name) and what the function
  * returns.
  */
-void validateComment(YYLTYPE location, enum commandType command, char* text) {
+void isFunctionCommentValid(YYLTYPE location, enum commandType command, char* text) {
 	static YYLTYPE *beginFunctionLocation = NULL;
 	static DynArray_T parameters = NULL;
 	static int didReturnSomething;
@@ -635,7 +635,7 @@ void validateComment(YYLTYPE location, enum commandType command, char* text) {
  * of false warnings (ie throw an error on a proper use of the pointer) because
  * it is only checking for asserts.
  */
-void validatePointerParameters(YYLTYPE location, enum commandType command, char* identifier) {
+void arePointerParametersValidated(YYLTYPE location, enum commandType command, char* identifier) {
 	static DynArray_T parameterNames = NULL;
 	static int lastIdentifierWasAssert = 0;
 	static int inParameterList;

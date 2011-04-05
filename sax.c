@@ -51,7 +51,7 @@ void endFile(YYLTYPE location) {
 	   to compare against. Do this at the end of the file so that all the
 	   comments have been found already. */
 	YYLTYPE begin = {1, 1, 1, 1, location.filename};
-	checkForComment(begin, "file");
+	hasComment(begin, "file");
 	
 	isFileTooLong(location);
 	tooManyFunctionsInFile(location, END);
@@ -96,8 +96,8 @@ void beginFunctionDefinition(YYLTYPE location) {
 	isFunctionTooLongByStatements(location, BEGINNING);
 	globalHasComment(location, BEGINNING);
 	tooManyFunctionsInFile(location, MIDDLE);
-	validateComment(location, BEGIN_FUNCTION, NULL);
-	validatePointerParameters(location, BEGIN_FUNCTION, NULL);
+	isFunctionCommentValid(location, BEGIN_FUNCTION, NULL);
+	arePointerParametersValidated(location, BEGIN_FUNCTION, NULL);
 	doFunctionsHaveCommonPrefix(location, MIDDLE, NULL);
 	functionHasEnoughLocalComments(location, BEGINNING, 0);
 }
@@ -106,27 +106,27 @@ void endFunctionDefinition(YYLTYPE location) {
 	isFunctionTooLongByLines(location);
 	isFunctionTooLongByStatements(location, END);
 	globalHasComment(location, END);
-	validateComment(location, END_FUNCTION, NULL);
-	validatePointerParameters(location, END_FUNCTION, NULL);
+	isFunctionCommentValid(location, END_FUNCTION, NULL);
+	arePointerParametersValidated(location, END_FUNCTION, NULL);
 	doFunctionsHaveCommonPrefix(location, END, "function");
 	functionHasEnoughLocalComments(location, END, 0);
 }
 
 void beginParameterList(YYLTYPE location) {
 	tooManyParameters(location, BEGINNING);
-	validateComment(location, BEGIN_PARAM_LIST, NULL);
-	validatePointerParameters(location, BEGIN_PARAM_LIST, NULL);
+	isFunctionCommentValid(location, BEGIN_PARAM_LIST, NULL);
+	arePointerParametersValidated(location, BEGIN_PARAM_LIST, NULL);
 }
 
 void registerParameter(YYLTYPE location) {
 	tooManyParameters(location, MIDDLE);
-	validatePointerParameters(location, REGISTER_PARAM, NULL);
+	arePointerParametersValidated(location, REGISTER_PARAM, NULL);
 }
 
 void endParameterList(YYLTYPE location) {
 	tooManyParameters(location, END);
-	validateComment(location, END_PARAM_LIST, NULL);
-	validatePointerParameters(location, END_PARAM_LIST, NULL);
+	isFunctionCommentValid(location, END_PARAM_LIST, NULL);
+	arePointerParametersValidated(location, END_PARAM_LIST, NULL);
 }
 
 /*-- Iteration (not called through hook) ---*/
@@ -171,13 +171,13 @@ void beginIf(YYLTYPE location) {
 
 void endIf(YYLTYPE location) {
 	hasBraces(location, "if");
-	checkIfElsePlacement(location, BEGINNING);
+	isIfElsePlacementValid(location, BEGINNING);
 	lastCalled_set(endIf);
 }
 
 void beginElse(YYLTYPE location) {
 	lastCalled_set(beginElse);
-	checkIfElsePlacement(location, END);
+	isIfElsePlacementValid(location, END);
 }
 
 void endElse(YYLTYPE location) {
@@ -211,8 +211,8 @@ void endSwitch(YYLTYPE location) {
 /*----- Statements (some through hook) ----------*/
 void registerIdentifier(YYLTYPE location, char* identifier) {
 	isVariableNameTooShort(location, MIDDLE, identifier);
-	validateComment(location, FOUND_IDENTIFIER, identifier);
-	validatePointerParameters(location, FOUND_IDENTIFIER, identifier);
+	isFunctionCommentValid(location, FOUND_IDENTIFIER, identifier);
+	arePointerParametersValidated(location, FOUND_IDENTIFIER, identifier);
 	doFunctionsHaveCommonPrefix(location, MIDDLE, identifier);
 }
 
@@ -223,14 +223,14 @@ void registerConstant(YYLTYPE location, char* constant) {
 void beginCompoundStatement(YYLTYPE location) {
 	isCompoundStatementEmpty(location, BEGINNING);
 	lastCalled_set(beginCompoundStatement);
-	tooDeeplyNested(location, BEGINNING);
-	validateComment(location, BEGIN_FUNCTION_BODY, NULL);
+	isTooDeeplyNested(location, BEGINNING);
+	isFunctionCommentValid(location, BEGIN_FUNCTION_BODY, NULL);
 }
 
 void endCompoundStatement(YYLTYPE location) {
 	isCompoundStatementEmpty(location, END);
 	lastCalled_set(endCompoundStatement);
-	tooDeeplyNested(location, END);
+	isTooDeeplyNested(location, END);
 }
 
 void beginDeclaration(YYLTYPE location) {
@@ -250,7 +250,7 @@ void beginStatement(YYLTYPE location) {
 
 void endStatement(YYLTYPE location) {
 	isFunctionTooLongByStatements(location, MIDDLE);
-	validatePointerParameters(location, END_STATEMENT, NULL);
+	arePointerParametersValidated(location, END_STATEMENT, NULL);
 }
 
 void beginStructDefinition(YYLTYPE location) {
@@ -266,7 +266,7 @@ void endStructDefinition(YYLTYPE location) {
 }
 
 void registerPointer(YYLTYPE location) {
-	validatePointerParameters(location, FOUND_POINTER, NULL);
+	arePointerParametersValidated(location, FOUND_POINTER, NULL);
 }
 
 void registerDefineIntegralType(YYLTYPE location) {
@@ -299,6 +299,6 @@ void registerReturn(YYLTYPE location) {
 
 void registerReturnSomething(YYLTYPE location) {
 	lastCalled_set(registerReturnSomething);
-	validateComment(location, RETURNING, NULL);
+	isFunctionCommentValid(location, RETURNING, NULL);
 	switchCasesHaveBreaks(location, MIDDLE, 0);
 }
