@@ -22,6 +22,7 @@ char* comment_getCommentAbove(YYLTYPE location, int compareDistance, YYLTYPE *re
 char* comment_getCommentBelow(YYLTYPE location, int compareDistance, YYLTYPE *returnLocation);
 char* comment_getCommentWithin(YYLTYPE location, YYLTYPE *returnLocation);
 int comment_isContentful(const char* text);
+char* strstrInsensitive(const char* haystack, const char* needle);
 int comment_contains(const char* text, const char* needle, int ignoreCase);
 
 #endif
