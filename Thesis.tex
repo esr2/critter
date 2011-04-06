@@ -98,6 +98,8 @@
 \usepackage{longtable}
 \usepackage{multirow}
 
+\usepackage{arydshln}
+
 \usepackage{appendix}
 
 \renewcommand{\topfraction}{0.85}
@@ -734,7 +736,7 @@ h\_beginFunctionDefinition & beginFunctionDefinition & \\
  & registerParameter & \lstinline!int a! \\
  & registerIdentifier & \lstinline!b!\\
  & registerParameter & \lstinline!double b!\\
- & endParameterList & \lstinline!)!\\
+ & endParameterList & \lstinline!)!\\ \hdashline[1pt/4pt]
 N/A & beginCompoundStatement & \lstinline!{!\\
 \ldots & \ldots & \lstinline!...! \\
 N/A & endCompoundStatement & \lstinline!}!\\
