@@ -370,11 +370,11 @@ new checks as opposed to responding at runtime to a configuration file.
 \chapter{What \programName Does}
 
 \programName reads in a set of C source code files and determines if they contain any of the 
-specified stylistic errors. It is run through the command line inside one's 
-working directory. \programName is given a list of .c files to check and reads through each in the 
-given order, stopping to read through any locally included header files. Upon encountering an error,
-\programName prints out the full location of the error, a warning level and an error message to 
-\lstinline{stderr} (an example is shown in \autoref{errorExample}). 
+defined stylistic errors. It is run from the command line inside one's working directory. \programName is 
+given a list of .c files to check and reads through each in the given order, pausing to read through any 
+locally included header files. Upon encountering an error, \programName prints out the full location of 
+the error, an error level and a message to \lstinline{stderr} (an example is shown in 
+\autoref{errorExample}). 
 
 \begin{figure}
 \begin{subfigure}[b]{.49\linewidth}
@@ -400,21 +400,23 @@ test.c:92.22-92.23: big problem: Do not use magic numbers
 \todo{used word critTer here}
 
 The administrator is responsible for defining the set of checked stylistic errors. \programName 
-comes with a set of predefined checks that the administrator may use or discard at their discretion. 
-Checks are event driven and are called when the appropriate element in the code is reached. For 
-example, checking for a minimum length of each variable name happens when \programName 
-recognizes a variable inside a declaration. The administrator can write their own checks as functions 
-to be invoked at each of the relevant callback points.
+comes with a set of predefined checks that the administrator may use or discard at his\slash her 
+discretion. Checks are event driven and are called when the appropriate element in the code is reached. 
+For example, it is often desirable to make sure that variables have long enough names to be adequately 
+descriptive. In order to check this property, whenever \programName recognizes a variable inside a 
+declaration it checks that the variable's name exceeds a minimum length. The administrator can write 
+his\slash her own checks as functions to be invoked at each of the relevant callback points.
 
-The set of predefined checks are listed below in \autoref{predefinedChecks}. These checks reflect 
+The set of predefined checks are listed in \autoref{predefinedChecks}. These checks reflect 
 two main purposes: demonstration of the various abilities of \programName and my own arbitrary style 
 choices. In order to show off some of the power of \programName, I wrote a variety of checks that show 
 the various distinct elements that can be examined. Some checks, like isFunctionTooLongByLines and 
-isFunctionTooLongByStatements, are really two different implementations of the same check. The style 
-choices I made represent ideas from a variety of sources including Fowler's Bad Smells of 
-Code\cite{refactoring}, Google's style guide\cite{googleStyle}, Code Complete\cite{code-complete}, 
-C-Style: Standards and Guidelines\cite{standards} PMD\cite{pmd} and Checkstyle\cite{checkstyle}, as 
-well as my own experience.
+isFunctionTooLongByStatements, are the same check defined on a different unit of length (line vs.\ 
+statement). The style choices I made represent ideas from a variety of sources including Fowler's Bad 
+Smells of Code\cite{refactoring}, Google's style guide\cite{googleStyle}, Code Complete\cite{code-
+complete}, C-Style: Standards and Guidelines\cite{standards}, The Practice of 
+Programming\cite{practice-of-programming}, PMD\cite{pmd} and Checkstyle\cite{checkstyle}, as well as 
+my own experience.
 
 \begin{table}
 \small
