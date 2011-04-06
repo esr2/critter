@@ -136,15 +136,28 @@ my sisters who constantly provide me with support and laughter. I owe all my suc
 
 \chapter{Introduction}
 
+When one writes, one encounters three different types of errors: syntactic, stylistic and semantic.  
+In the case of writing prose, these errors take the form of spelling and grammar mistakes, poorly phrased 
+sentences\slash paragraphs and substantive\slash logic errors. When writing code, they form syntax 
+errors, poorly styled code and malfunctioning code. Both spelling mistakes and syntax errors represent 
+text that contains something outside the language (be it English, C, etc.). A poorly phrased passage in a 
+paper and poorly styled code both denote text that is technically valid but hard to understand. Finally, 
+illogical arguments in prose and malfunctioning code both imply errors in the ideas behind the text. 
+There are tools to help one find these errors in both prose and code (see \autoref{errorChecking}). 
+Spell and grammar check exist in nearly every word processor; the reader highlights substantive 
+errors in literature. With code, the compiler shows semantic errors and the user\slash 
+testing reveals substantive errors. Yet semantic error checking for code has been addressed by 
+relatively few tools.
+
 \begin{table}%[h]
 	\begin{center}
 	\begin{tabular}{ccc}
 		\toprule
-		Types of Errors & Tools for Literature & Tools for Code \\
+		Types of Errors & Tools for Prose & Tools for Code \\
 		\midrule
-		Syntactic & Spell Check & Compiler \\
-		Semantic & Grammar Check & \\ 
-		Substantive & Audience\slash Grader & User\slash Tests \\
+		Syntactic & Spell \& Grammar Check & Compiler \\
+		Stylistic & Editor & Code Reviewers\slash Graders \\ 
+		Semantic & Reader & User\slash Tests \\
 		\bottomrule
 	\end{tabular}
 	\end{center}
@@ -152,18 +165,6 @@ my sisters who constantly provide me with support and laughter. I owe all my suc
 	\label{errorChecking}
 \end{table}
 
-When one writes, one encounters three different types of errors: syntactic, semantic and substantive.  
-In the case of writing literature, these errors take the form of spelling, grammar and substantive
-mistakes. When writing code, they form syntax errors, poorly written code and malfunctioning code. 
-Both spelling mistakes and syntax errors represent text that contains something outside the language 
-(be it English, C, etc.). A passage with bad grammar and poorly written code both denote text that is 
-technically valid but hard to understand. Finally, illogical arguments and malfunctioning code both 
-imply errors in the ideas behind the text. 
-There are tools to help one find these errors in both literature and code (see \autoref{errorChecking}). 
-Spelling and grammar check exist in nearly every word processor; the reader highlights substantive 
-errors in literature. With code, the compiler shows semantic errors and the user\slash 
-testing reveals substantive errors. Yet semantic error checking for code has been addressed by 
-relatively few tools.
 
 From a different point of view, this problem can be formulated in terms of software quality. 
 Namely, there are two perspectives on software quality: that of the user and that of the programmer. 
@@ -191,7 +192,7 @@ improve their grades as well as their coding habits.
 In an industrial setting, where it is necessary to read or edit another's code, maintaining readability is 
 essential. Projects are often handed over to new employees or teams who are then expected to be 
 able to contribute immediately. Poorly organized or written code makes this daunting task 
-onerous. Most successful software companies make use of a codified internal style but the 
+onerous. Many successful software companies make use of a codified internal style but the 
 enforcement of this policy falls to the employees. Many transgressions are simply due to inattention 
 and could easily be solved by an automated reminder system. Such a tool would reduce the need to 
 bother one's peers with another round of code reviews, allowing the entire team to be more productive. 
