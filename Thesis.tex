@@ -93,7 +93,7 @@
 Stylistic errors are a symptom of poorly written and\slash or hard to read code. Sadly, relatively few tools 
 have addressed automated stylistic error checking and even fewer are customizable or written for C. 
 \programName (Critique from the Terminal) fills this gap by providing a tool to check for administrator 
-defined semantic errors in C code. It uses a SAX style of event based programming to perform checks 
+defined stylistic errors in C code. It uses a SAX style of event based programming to perform checks 
 and produce reports of errors as the code is being read. Administrators can use predefined checks or 
 create their own to enforce coding standards or help grade and teach ``good style'' to students.
 \end{abstract}
@@ -146,7 +146,7 @@ illogical arguments in prose and malfunctioning code both imply errors in the id
 There are tools to help one find these errors in both prose and code (see \autoref{errorChecking}). 
 Spell and grammar check exist in nearly every word processor; the reader highlights substantive 
 errors in literature. With code, the compiler shows semantic errors and the user\slash 
-testing reveals substantive errors. Yet semantic error checking for code has been addressed by 
+testing reveals substantive errors. Yet stylistic error checking for code has been addressed by 
 relatively few tools. \todo{fix page headers}
 
 \begin{table}%[h]
@@ -176,14 +176,14 @@ perspective, tools that do so only check for certain qualities. Unfortunately, c
 subjective, any tool that only performs pre-defined inspections will never be satisfactory to every 
 programmer.
 
-The biggest reason to perform semantic error checking is to improve readability (the 
+The biggest reason to perform stylistic error checking is to improve readability (the 
 ease with which another programmer can understand a piece of code). In the same way that 
 grammatical errors in a paper often confound its underlying arguments, poorly written code can easily 
 obscure its underlying function. Furthermore, readable code is easy to revise and update later. 
 
 In the academic world, professors and TA's often read students' code, especially in introductory level
 courses. In these courses, much of the focus is often on enforcing ``good style'' (though the definition 
-varies from professor to professor).  The successful implementation of automated semantic error 
+varies from professor to professor).  The successful implementation of automated stylistic error 
 checking can immediately save work for professors by replacing the process of writing the same set of 
 stylistic comments to many students with a set of automated warnings. Students can also directly 
 benefit by applying this tool to their code before submitting assignments --- giving them the chance to 
@@ -202,8 +202,8 @@ bother one's peers with another round of code reviews, allowing the entire team 
 Many tools exist to help improve code. Minimally, compilers often produce warnings about unused code 
 or poorly placed comparisons\slash assignments. Tools like Clang\cite{clang} and Uno\cite{Uno} go 
 even further and look for bugs such as uninitialized variables, out of bounds array indexing and memory 
-errors. Some tools try to fill the semantic error checking gap. Each approaches the problem differently, 
-but all succeed in finding some semantic errors. Three such tools are 
+errors. Some tools try to fill the stylistic error checking gap. Each approaches the problem differently, 
+but all succeed in finding some stylistic errors. Three such tools are 
 \hyperref[sec:splint]{Splint}\cite{splint-manual} , \hyperref[sec:pmdAndCheckstyle]{PMD}\cite{pmd}, and 
 \hyperref[sec:pmdAndCheckstyle]{Checkstyle}\cite{checkstyle}.
 
@@ -213,7 +213,7 @@ but all succeed in finding some semantic errors. Three such tools are
 Splint is a tool for ``statically checking C programs for security vulnerabilities and programming 
 mistakes"\cite[p.\ 9]{splint-manual}. It works exactly as \programName does from the user's
 perspective, i.e.\ as a command-line program which prints warnings and errors to \lstinline{stdout}. 
-Splint displays warnings about basic semantic errors like assignments with mismatched types and 
+Splint displays warnings about basic stylistic errors like assignments with mismatched types and 
 ignored return values. With more effort, programmers can add annotations (i.e.\ fancy comments) that 
 give Splint a specification to check against. These annotations allow for stronger checks like memory 
 management, null pointers and ``violations of information hiding''\cite[p. 9]{splint-manual}. An 
@@ -245,7 +245,7 @@ rather than start adding the annotations needed to enable better checking.\cite{
 
 While they may behave similarly, Splint and \programName are completely different. The biggest 
 difference is their realms of inspection. Splint checks the ``correctness'' of code, allowing for bug 
-prevention and refactoring. These checks for correctness sometimes provide semantic error checking as 
+prevention and refactoring. These checks for correctness sometimes provide stylistic error checking as 
 well when the errors themselves overlap (``correctness'' can often be about how something should be as 
 opposed to strictly incorrect code). \programName checks the style of code which makes it more
 readable, indirectly allowing for bug prevention and refactoring. They also differ in how they specify what 
@@ -310,7 +310,7 @@ public class CountRule extends AbstractJavaRule {
 \label{pmd-rule}
 \end{figure}
 
-Checkstyle provides similar functionality to PMD in that it checks Java code for semantic errors.  It was 
+Checkstyle provides similar functionality to PMD in that it checks Java code for stylistic errors.  It was 
 designed to help programmers adhere to coding standards and later developed checks for bug 
 prevention, class design problems, etc. Accordingly, Checkstyle provides different checks out of the box 
 (namely those regarding duplicate code, class design, whitespace, etc.). Like PMD, it uses an AST and 
@@ -357,7 +357,7 @@ public class MethodLimitCheck extends Check
 \end{figure}
 
 PMD and Checkstyle are great tools and have been integrated into many popular IDEs. However, 
-because they only work for Java, they do not satisfy my problem: semantic error checking in C. In 
+because they only work for Java, they do not satisfy my problem: stylistic error checking in C. In 
 essence PMD\slash Checkstyle and \programName perform very similarly; however, they are built upon 
 entirely different frameworks. The use of the Visitor Pattern and an AST requires PMD and Checkstyle to 
 read though the entirety of the code before they can produce any errors. In contrast, \programName 
@@ -370,7 +370,7 @@ file.
 \chapter{What \programName Does}
 
 \programName reads in a set of C source code files and determines if they contain any of the 
-specified semantic errors. It is run through the command line inside one's 
+specified stylistic errors. It is run through the command line inside one's 
 working directory. \programName is given a list of .c files to check and reads through each in the 
 given order, stopping to read through any locally included header files. Upon encountering an error,
 \programName prints out the full location of the error, a warning level and an error message to 
@@ -399,7 +399,7 @@ test.c:92.22-92.23: big problem: Do not use magic numbers
 \end{figure}
 \todo{used word critTer here}
 
-The administrator is responsible for defining the set of checked semantic errors. \programName 
+The administrator is responsible for defining the set of checked stylistic errors. \programName 
 comes with a set of predefined checks that the administrator may use or discard at their discretion. 
 Checks are event driven and are called when the appropriate element in the code is reached. For 
 example, checking for a minimum length of each variable name happens when \programName 
@@ -826,7 +826,7 @@ In industry, \programName should be used by programmers before submitting code t
 peer reviews. This creates and automated reminder system against any code that does not adhere to the 
 accepted coding standards. This makes the code base more consistent and readable without direct 
 peer enforcement. Furthermore, the team can be more productive when they spend less time correcting 
-semantic errors.
+stylistic errors.
 
 \subsection{Customization}
 Before customizing the code, please make sure you both understand how \programName works (see 
@@ -835,7 +835,7 @@ Conventions in \autoref{conventions}).
 
 \subsubsection{Add a Check}
 
-The first step of adding a new semantic check is to figure out what exactly you are checking and which 
+The first step of adding a new stylistic check is to figure out what exactly you are checking and which 
 handlers give you the necessary information. The first question to ask is how much context is needed to 
 implement this check. For example, to throw an error on C++ style comments requires no context -- it is 
 only dependent on the existence of that code. In contrast, checking for braces around \lstinline{for} loops 
