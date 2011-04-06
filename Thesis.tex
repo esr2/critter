@@ -525,7 +525,10 @@ stdio.h eventually includes, has the line \lstinline{#define __signed    signed}
 determining if character strings in the code are \lstinline{IDENTIFIER}s or data type names. Namely, the 
 lexer does a string comparison against common types defined in standard headers such as 
 \lstinline{size_t}, \lstinline{FILE}, \lstinline{pid_t}, etc. If any of these hardcoded checks pass, then the 
-lexer tells the parser it has found a type name instead of an \lstinline{IDENTIFIER}.
+lexer tells the parser it has found a type name instead of an \lstinline{IDENTIFIER}.\footnote{The lack of 
+preprocessing also means that strings which are separated with a `\lstinline{/}' wreak havoc with 
+\programName's lexical analysis and in turn cause parser level syntax errors. Since this style is rare (and 
+often discouraged), I decided to ignore this issue.}
 
 Bison and Flex track the location of any token or grammar construct. They store this information in a 
 \lstinline{YYLTYPE} structure. (Normally a \lstinline{YYLTYPE} contains 4 fields, \lstinline{first_line}, 
