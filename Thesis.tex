@@ -486,13 +486,13 @@ my own experience.
 \chapter{How \programName Works}
 \label{howItWorks}
 
-\autoref{moduleInteraction} shows how \programName is divided up into multiple semi-autonomous 
-modules. Each of these has a unique function and is designed to keep the code as clean as possible. 
+\autoref{moduleInteraction} shows how \programName is divided up into multiple loosely coupled 
+modules. Each of these has a unique purpose and is designed to keep the code as clean as possible. 
 The ``Knowledge Barrier'' distinguishes the easily customizable and understandable modules from 
 those which should not be modified without extreme caution. These modules in turn can be 
 conceptually grouped into three categories: \hyperref[parsingTheCode]{Parsing the Code}, 
-\hyperref[howChecksAreCalled]{How Checks are Called} and 
-\hyperref[howChecksAreWritten]{How Checks are Written}.
+\hyperref[callingTheChecks]{Calling the Checks}, and 
+\hyperref[writingTheChecks]{Writing the Checks}.
 
 \begin{figure}[h!]
 \begin{center}
@@ -506,39 +506,43 @@ conceptually grouped into three categories: \hyperref[parsingTheCode]{Parsing th
 \section{Parsing the Code}
 \label{parsingTheCode}
 
-\programName is built on top of Bison and Flex, a parser generator and a lexical analyzer 
-respectively. These two programs each take in a specification file (which define a set of tokens and a 
-corresponding context free grammar) and output a set of C files to dynamically parse code. 
-Control goes back and forth between the lexical analyzer, which recognizes code as distinct elements, 
-and the parser, which determines how the elements fit together. \programName's specification files 
-describe valid ANSI C code but \programName does not compile or in anyway track the contents. This 
-means, for example, that \programName sees any variable or function name as just as an 
-\lstinline{IDENTIFIER} (any set of letters that does not already designate a variable \todo{data type?} type) without any 
-context as to where it was defined or used before. Because \programName cannot evaluate code, it 
-cannot follow preprocessor directives. \programName therefore reads all of the code in the file, even if 
-it would not actually be included during compilation. In order to combat the issue of multiple inclusion 
-of header files, \programName stores the name of each file it opens and does not open that file again, 
-even if it is included from another file. Standard header files (such as \lstinline{stdlib.h} and 
-\lstinline{strings.h}) are not read because they define types within preprocessor directives (which 
-\programName cannot evaluate and therefore cannot recognize as a type). To adjust for this issue, the 
-lexer instead contains a hack for determining if character strings in the code are \lstinline{IDENTIFIER}s 
-or type names. Namely, the lexer does a string comparison against common types defined in standard 
-headers such as \lstinline{size_t}, \lstinline{FILE}, \lstinline{pid_t}, etc. If any of these hardcoded checks 
-pass, then the lexer tells the parser it has found a type name instead of an \lstinline{IDENTIFIER}.
+\programName is built on top of Flex and Bison, a lexical analyzer and a  parser generator respectively. 
+These two programs each take in a specification file (which defines a set of tokens and a corresponding 
+context free grammar) and output a set of C files to parse code. Control goes back and forth between the 
+lexical analyzer, which divides the code into distinct tokens, and the parser, which determines how the 
+tokens fit together. \programName is able to parse valid ANSI C code but it does not compile or in 
+anyway track the contents. This means, for example, that \programName sees any variable or function 
+name as just as an \lstinline{IDENTIFIER} (any set of letters that does not already designate a data type) 
+without any context as to where it was defined or used before. Because \programName does not compile 
+code, it cannot perform conditional compilation (specifically, it cannot follow \lstinline{#if} and 
+\lstinline{#define} preprocessor directives). In order to combat the issue of multiple inclusion of header 
+files, \programName stores the name of each file it opens and does not open that file again, even if it is 
+included from another file. \programName does not read standard header files (such as \lstinline{stdlib.h} 
+and \lstinline{strings.h}) because they define data types within \lstinline{#define}s (which \programName 
+cannot evaluate and therefore cannot recognize as a type). For example, the file sys/cdefs.h, which 
+stdio.h eventually includes, has the line \lstinline{#define __signed    signed} and then uses 
+\lstinline{__signed} throughout the file. To adjust for this issue, the lexer instead contains a hack for 
+determining if character strings in the code are \lstinline{IDENTIFIER}s or data type names. Namely, the 
+lexer does a string comparison against common types defined in standard headers such as 
+\lstinline{size_t}, \lstinline{FILE}, \lstinline{pid_t}, etc. If any of these hardcoded checks pass, then the 
+lexer tells the parser it has found a type name instead of an \lstinline{IDENTIFIER}.
 
-Bison and Flex track the location of any token or grammar construct. They store 
-this information in a \lstinline{YYLTYPE} structure. (Normally a \lstinline{YYLTYPE} contains 4 fields, 
-\lstinline{first_line}, \lstinline{first_column}, \lstinline{last_line} and \lstinline{last_column}; however, I 
-have also added a \lstinline{filename} field in order to produce more accurate checks and error 
-messages across a set of files.) Each grammar rule can contain multiple actions which consist of C code. 
-These actions can reference the location of the entire rule, or any of single component of it, through this 
-prebuilt location mechanism. \programName calls the event handlers from these actions, passing in 
-the location of the relevant construction (see \autoref{grammar}, where actions are underlined). 
-Some actions are `hidden' in subroutines in order to avoid ambiguities within the grammar. Locations 
-passed from the middle of a rule (all the ones passed to \lstinline{begin} handlers) only represent the 
-location of that segment as opposed to the entire construct. For example, in \autoref{grammar}, 
-\lstinline{beginIf} will only be passed the location of the word ``\lstinline{if}'' whereas 
-\lstinline{endIf} will be passed the location of the entire \lstinline{if} statement.
+Bison and Flex track the location of any token or grammar construct. They store this information in a 
+\lstinline{YYLTYPE} structure. (Normally a \lstinline{YYLTYPE} contains 4 fields, \lstinline{first_line}, 
+\lstinline{first_column}, \lstinline{last_line} and \lstinline{last_column}; however, I have also added a 
+\lstinline{filename} field in order to produce more accurate checks and error messages across a set of 
+files.) Each grammar rule can contain multiple actions that consist of C code. These actions can 
+reference the location of the entire construct, or any of single component of it, through the prebuilt 
+location mechanism. \programName calls the event handlers (functions in the other modules that 
+respond to finding different code constructs) from these actions, passing in the location of the relevant 
+text.  \autoref{grammar} shows an excerpt of the grammar where actions, and their event handlers within 
+the action, are underlined. Some actions are `hidden' in dummy rules (called `subroutines' by Bison) in 
+order to avoid ambiguities within the grammar. Examples of this practice are show in \autoref{grammar} 
+with the \lstinline{beginFOR} and \lstinline{beginIF} rules. Locations passed from the middle of a rule (all 
+the ones passed to \lstinline{begin} handlers) only represent the location of that segment as opposed to 
+the entire construct. For example, in \autoref{grammar}, \lstinline{beginWhile} will only be passed the 
+location of the word ``\lstinline{while}'' whereas \lstinline{endWhile} will be passed the location of the 
+entire \lstinline{while} statement.
 
 \begin{figure} 
 \begin{lstlisting}[language=Caml, escapechar=\%]
@@ -576,11 +580,12 @@ iteration_statement
 \label{grammar}
 \end{figure} 
 
-Instead of writing them from scratch, I found the Flex and Bison specification files 
-online\cite{originalGrammar} and have modified them to add additional functionality. The only major 
+Instead of writing them from scratch, I found Flex and Bison input files specifying the C language
+online\cite{originalGrammar} and modified them to add additional functionality. The only major 
 modification of the actual grammar was to add the ability to recognize and dynamically add 
-\lstinline{typedef} definitions as types. These type names are stored in an internal symbol table and the 
-lexer checks to make sure that any potential \lstinline{IDENTIFIER}s are not already listed there. In 
+\lstinline{typedef} definitions as types. \programName stores these type names in an internal symbol 
+table and the lexer checks to make sure that any potential \lstinline{IDENTIFIER}s are not already listed 
+there. Additionally, I modified some of the rules to include the dummy rules with actions. In 
 order to accommodate the inclusion of header files, I had to expand the given lexer functionality to 
 transfer control between files. The specific method of using a stack of buffers\slash files is heavily 
 inspired from the examples in the O'Reily Flex \& Bison book\cite{flex-and-bison}. When transferring to a 
@@ -588,16 +593,17 @@ different file, the lexer adds the current file to a stack with its file pointer
 number. When it reaches the end of the file, the lexer pops the current file off the stack and goes back 
 to its previous state. The end of program occurs when there are no more files on the 
 stack.\footnote{\programName starts by adding all of the given files to the stack and dynamically adding 
-additional header files. While this pre-loading is not strictly in concordance with the model of adding 
-header files, it simplified the interface between the main module and the lexer\slash parser.
+additional header files. I chose to pre-load .c files in this manner because the mechanism was already in 
+place and it simplified the interface between the main module and the lexer\slash parser. In order to hide 
+this implementation detail, the .c files are pushed onto the stack in reverse order.
 
 Additionally, the lexer reads in header filenames without any additional context about the path of the 
 current file. Because of this, \programName is unable to find and read header files that are included from 
 within subdirectories. It is relatively rare within an academic context to break a single program into 
 subdirectories and accordingly I decided not to focus on this issue.} 
 
-\section{How Checks are Called}
-\label{howChecksAreCalled}
+\section{Calling the Checks}
+\label{callingTheChecks}
 
 \programName is event based and is largely inspired by SAX\cite{saxHomepage}. SAX is a 
 framework which allows programmers to use event handlers to parse XML files. SAX typically uses
@@ -738,8 +744,8 @@ N/A & endFunctionDefinition \\
 \end{figure}
 \newpage
 
-\section{How Checks Are Written}
-\label{howChecksAreWritten}
+\section{Writing the Checks}
+\label{writingTheChecks}
 
 Minimally, each check needs access to the location of the code construct in order to be able to produce 
 an error. However, checks often need additional information regarding the surrounding context of 
