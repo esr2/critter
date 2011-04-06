@@ -202,9 +202,10 @@ bother one's peers with another round of code reviews, allowing the entire team 
 Many tools exist to help improve code. Minimally, compilers often produce warnings about unused code 
 or poorly placed comparisons\slash assignments. Tools like Clang\cite{clang} and Uno\cite{Uno} go 
 even further and look for bugs such as uninitialized variables, out of bounds array indexing and memory 
-errors. Some tools try to fill the stylistic error checking gap. Each approaches the problem differently, 
-but all succeed in finding some stylistic errors. Three such tools are 
-\hyperref[sec:splint]{Splint}\cite{splint-manual} , \hyperref[sec:pmdAndCheckstyle]{PMD}\cite{pmd}, and 
+errors. These tools do not focus on style\slash readability explicitly and still largely operate on the same 
+level as a compiler.  Some tools try to fill the stylistic error checking gap. Each approaches the problem 
+differently, but all succeed in finding some stylistic errors. Three such tools are 
+\hyperref[sec:splint]{Splint}\cite{splint-manual}, \hyperref[sec:pmdAndCheckstyle]{PMD}\cite{pmd}, and 
 \hyperref[sec:pmdAndCheckstyle]{Checkstyle}\cite{checkstyle}.
 
 \section{Splint}
@@ -213,18 +214,18 @@ but all succeed in finding some stylistic errors. Three such tools are
 Splint is a tool for ``statically checking C programs for security vulnerabilities and programming 
 mistakes"\cite[p.\ 9]{splint-manual}. It works exactly as \programName does from the user's
 perspective, i.e.\ as a command-line program which prints warnings and errors to \lstinline{stdout}. 
-Splint displays warnings about basic stylistic errors like assignments with mismatched types and 
+Splint displays warnings about basic stylistic errors such as assignments with mismatched types and 
 ignored return values. With more effort, programmers can add annotations (i.e.\ fancy comments) that 
 give Splint a specification to check against. These annotations allow for stronger checks like memory 
-management, null pointers and ``violations of information hiding''\cite[p. 9]{splint-manual}. An 
-example of annotations in action are the following abstract type declarations (\autoref{splint-annotations}).
+management, null pointers and ``violations of information hiding''\cite[p. 9]{splint-manual}. 
+Examples of annotations in action are shown in \autoref{splint-annotations}.
 
 \begin{figure}
 \begin{lstlisting}[frame=single, language=C]
 typedef /*@abstract@*/ /*@mutable@*/ char *mstring;
 typedef /*@abstract@*/ /*@immutable@*/ int weekDay;
 \end{lstlisting}
-\caption[Splint Annotations]{Splint Annotations which define \lstinline{mstring} and \lstinline{weekDay} as abstract types and further specify that they are mutable\slash immutable respectively.} 
+\caption[Splint Annotations]{Splint Annotations which define \lstinline{mstring} and \lstinline{weekDay} as abstract data types and further specify that they are mutable\slash immutable respectively.} 
 \label{splint-annotations}
 \end{figure}
 
@@ -243,31 +244,31 @@ to either make developers want to stop using Splint, or at least just turn off a
 rather than start adding the annotations needed to enable better checking.\cite{evans-email} 
 \end{quote}
 
-While they may behave similarly, Splint and \programName are completely different. The biggest 
-difference is their realms of inspection. Splint checks the ``correctness'' of code, allowing for bug 
-prevention and refactoring. These checks for correctness sometimes provide stylistic error checking as 
-well when the errors themselves overlap (``correctness'' can often be about how something should be as 
-opposed to strictly incorrect code). \programName checks the style of code which makes it more
-readable, indirectly allowing for bug prevention and refactoring. They also differ in how they specify what 
-to check. Splint uses a configuration file and command line arguments to determine which of the several 
-hundred pre-defined messages and warnings to display. In contrast, \programName allows an 
-administrator to write their own checks and always runs every check that is defined.
+Splint and \programName differ in three significant ways. Splint performs a lot of inter-file checks 
+regarding headers, interfaces, etc.\ whereas \programName primarily focuses on intra-file checks. 
+They also differ in how they specify what to check. Splint uses a configuration file and command line 
+arguments to determine which of the several hundred pre-defined messages and warnings to display. In 
+contrast, \programName allows an administrator to write their own checks and always runs every check 
+that is defined. Because of this, Splint is limited to checking for commonly accepted errors but 
+\programName has the freedom to operate idiosyncratically and check many different (possibly quite 
+arbitrary) coding standards. 
 
 \section{PMD and Checkstyle}
 \label{sec:pmdAndCheckstyle}
 
-PMD is a tool for checking Java code that is integrated into a dozen or so different popular IDEs.
+PMD is a tool for checking Java code. It is integrated into a dozen or so popular IDEs.
 PMD comes pre-made with over 250 checks broken up mostly by purpose such as Braces Rules, 
 Basic Rules, Coupling Rules, etc. Some checks also deal explicitly with a certain 
-library or platform like Android, Jakarta and JUnit. PMD functions by passing source code into a 
+library or platform like Android, Jakarta and JUnit. PMD works by passing source code into a 
 JavaCC-generated parser and receiving an Abstract Syntax Tree (a.k.a.\ AST, a tree-based model of 
-the source code). PMD then traverses the AST and calls each rule in the RuleSet to check for any
+the source code). PMD then traverses the AST and calls each rule to check for any
 violations. This pattern of examining a tree of nodes is called the Visitor Pattern\cite{design-patterns}. 
-The RuleSet is an XML file that can be edited to augment the functionality of PMD with customized 
-rules. Rules are written in their own classes and extend a base implementation. The rule itself can 
+Rules are written in their own classes and extend a base implementation. The rule itself can 
 override three functions (start, visit and end) to perform various checks against the source code based 
 on the nodes in the AST. The ``dummy'' example from the PMD website which counts how 
-many expressions are in the source code is shown in \autoref{pmd-rule}.
+many expressions are in the source code is shown in \autoref{pmd-rule}. PMD keeps track of these 
+custom rules by reading additional XML files, called rulesets, which specify the various attributes of the 
+rule (such as name, message, corresponding class, examples, etc.).
 
 \begin{figure}
 \begin{lstlisting}[language=Java]
@@ -311,8 +312,8 @@ public class CountRule extends AbstractJavaRule {
 \end{figure}
 
 Checkstyle provides similar functionality to PMD in that it checks Java code for stylistic errors.  It was 
-designed to help programmers adhere to coding standards and later developed checks for bug 
-prevention, class design problems, etc. Accordingly, Checkstyle provides different checks out of the box 
+designed to help programmers adhere to coding standards. Later, its designers added checks for bug 
+prevention, class design problems, etc. Accordingly, Checkstyle provides many checks out of the box 
 (namely those regarding duplicate code, class design, whitespace, etc.). Like PMD, it uses an AST and 
 the Visitor Pattern to check code. Custom rules are registered through an XML file and passed to 
 Checkstyle at runtime. An example check which determines how many methods are in a class is shown 
@@ -356,16 +357,15 @@ public class MethodLimitCheck extends Check
 \label{checkstyle-rule}
 \end{figure}
 
-PMD and Checkstyle are great tools and have been integrated into many popular IDEs. However, 
-because they only work for Java, they do not satisfy my problem: stylistic error checking in C. In 
-essence PMD\slash Checkstyle and \programName perform very similarly; however, they are built upon 
-entirely different frameworks. The use of the Visitor Pattern and an AST requires PMD and Checkstyle to 
-read though the entirety of the code before they can produce any errors. In contrast, \programName 
-performs error checking as the code is read. PMD and Checkstyle also contain graphical user interfaces 
-both to aid writing checks and to find errors (the latter due to their integration with IDEs). \programName, 
-on the other hand, produces textual errors from the command line. Furthermore, the \programName must 
-be recompiled to take advantage of new checks as opposed to responding at runtime to a configuration 
-file.
+PMD and Checkstyle are great tools; nevertheless, because they only work for Java, they do not satisfy 
+my problem:\ stylistic error checking in C. In essence PMD\slash Checkstyle and \programName perform 
+very similarly; however, they are built upon entirely different frameworks from \programName. The use of 
+the Visitor Pattern and an AST requires PMD and Checkstyle to read though the entirety of the code 
+before they can produce any errors. In contrast, \programName performs error checking as it reads the 
+code. PMD and Checkstyle also contain graphical user interfaces, both to aid writing checks and to find 
+errors (the latter due to their integration with IDEs). \programName, on the other hand, produces textual 
+errors from the command line. Furthermore, \programName must be recompiled to take advantage of 
+new checks as opposed to responding at runtime to a configuration file.
 
 \chapter{What \programName Does}
 
