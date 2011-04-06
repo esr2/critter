@@ -423,24 +423,24 @@ well as my own experience.
 		Check Name & Purpose \\
 		\midrule
 		isFileTooLong & Check if the file exceeds a maximum length. \\
-		hasBraces & Check if there are braces surrounding an \lstinline!if!, \lstinline!else!, \lstinline!for!, \lstinline!while! and \lstinline!do while! statement. \\
+		hasBraces & Check if the statement within an \lstinline!if!, \lstinline!else!, \lstinline!for!, \lstinline!while!, and \lstinline!do while! statement is a compound statement.\\
 		isFunctionTooLongByLines & Check if a function exceeds a maximum line count. \\
 		isFunctionTooLongByStatements & Checks if a function exceeds a maximum statement count. \\
 		tooManyParameters & Check if there are too many parameters in the function declaration. \\
-		neverUseCPlusPlusComments & Throw an error on C++ style single line comments. \\
+		neverUseCPlusPlusComments & Warn against using C++ style single line comments. \\
 		hasComment & Check for comments before some construct. \\
 		switchHasDefault & Check that each \lstinline!switch! statement has a \lstinline!default! case. \\
-		switchCasesHaveBreaks & Check that each \lstinline!switch! case has a \lstinline!break! statement. \\
+		switchCasesHaveBreaks & Check that each \lstinline!switch! case has a \lstinline!break!statement. \\
 		isTooDeeplyNested & Check whether a region of code (i.e. a compound statement) nests too deeply. \\
-		useEnumNotDefine & Advises using \lstinline!enum! instead of \lstinline!#define! for declarations. \\
-		neverUseGotos & Throw an error on any use of a \lstinline!GOTO! statement. \\
+		useEnumNotDefine & Warn against using \lstinline!#define! instead of \lstinline!enum! for declarations. \\
+		neverUseGotos & Warn against using \lstinline!GOTO! statements. \\
 		isVariableNameTooShort & Check if a variable's name exceeds a minimum length. \\
-		isMagicNumber & Throw an error on encountering a magic number outside of a declaration. \\
+		isMagicNumber & Warn against using magic numbers outside of a declaration. \\
 		globalHasComment & Check if each global variable has a comment. \\
 		isLoopTooLong & Check if the loop length exceeds a maximum length. \\
 		isCompoundStatementEmpty  & Check if the compound statement is empty. \\
 		tooManyFunctionsInFile & Check if there are too many functions in a file. \\
-		isIfElsePlacementValid & Throw an error based on the placement of the else statement relative to the if statement.  \\
+		isIfElsePlacementValid & Warn against poor \lstinline!if!\slash\lstinline!else! placement as defined by the Google style guide. \\
 		isFunctionCommentValid & Check if function comments have the appropriate contents. Specifically check that the comment mentions each parameter (by name) and what the function returns. \\
 		arePointerParametersValidated & Check if each pointer type parameter into a function is mentioned within an \lstinline!assert()! before being used. \\
 		doFunctionsHaveCommonPrefix & Check that function names contain a common prefix. \\
@@ -1038,7 +1038,7 @@ Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
 		\lstinline!isFileTooLong(YYLTYPE location)! & \multirow{2}{\saxColSize}{endFile} \\*
 			 Check if the file exceeds a maximum length.  \vspace{\vertSize} \\
 		\lstinline!hasBraces(YYLTYPE location, char* construct)! & \multirow{2}{\saxColSize}{endWhile, endDoWhile, endFor, endIf, endElse} \\*
-			 Check if there are braces surrounding an \lstinline!if!, \lstinline!else!, \lstinline!for!, \lstinline!while! and \lstinline!do while! statement. \vspace{\vertSize} \\
+			 Check if the statement within an \lstinline!if! statement, \lstinline!else! clause, \lstinline!for! statement, \lstinline!while! statement, and \lstinline!do while! statement is a compound statement. \vspace{\vertSize} \\
 		\lstinline!isFunctionTooLongByLines(YYLTYPE location)! & \multirow{2}{\saxColSize}{endFunctionDefinition} \\*
 			 Check if a function exceeds a maximum line count. \vspace{\vertSize} \\
 		\lstinline!isFunctionTooLongByStatements(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{beginFunctionDefinition, endFunctionDefinition, endStatement} \\*
@@ -1046,25 +1046,25 @@ Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
 		\lstinline!tooManyParameters(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{beginParameterList, registerParameter, endParameterList} \\*
 			 Check if there are too many parameters in the function declaration. \vspace{\vertSize} \\
 		\lstinline!neverUseCPlusPlusComments(YYLTYPE location)! & \multirow{2}{\saxColSize}{N/A (Called from the Lexer)} \\ *
-		Throw an error on C++ style single line comments. \vspace{\vertSize} \\
+		Warn against using C++ style single line comments. \vspace{\vertSize} \\
 		\lstinline!hasComment(YYLTYPE location, char* construct)!  & \multirow{2}{\saxColSize}{endFile (also from \lstinline!globalHasComment!)} \\*
 			 Check for comments before some construct. \vspace{\vertSize} \\
 		\lstinline!switchHasDefault(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{beginSwitch, registerDefault, endSwitch} \\*
 		 Check that each \lstinline!switch! statement has a \lstinline!default! case. \vspace{\vertSize} \\
-		\lstinline!switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase)! & \multirow{2}{\saxColSize}{beginSwitch, registerDefault, registerCase, registerBreak, endSwitch} \\*
-		 Check that each \lstinline!switch! case has a \lstinline!break! statement. \vspace{\vertSize} \\
+		\lstinline!switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase)! & \multirow{2}{\saxColSize}{beginSwitch, registerDefault, registerCase, registerBreak, registerReturn, registerReturnSomething, endSwitch} \\*
+		 Check that each \lstinline!switch! case has a \lstinline!break! or \lstinline!return! statement. \vspace{\vertSize} \\ \\
 		\lstinline!isTooDeeplyNested(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{beginCompoundStatement, endCompoundStatement} \\*
 		 Check whether a region of code (i.e. a compound statement) nests too deeply. \vspace{\vertSize} \\
 		\lstinline!useEnumNotDefine(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{registerDefineIntegralType} \\*
-			 Advises using \lstinline!enum! instead of \lstinline!#define! for declarations. \vspace{\vertSize} \\
+			 Warn against using \lstinline!#define! instead of \lstinline!enum! for declarations. \vspace{\vertSize} \\
 		\lstinline!neverUseGotos(YYLTYPE location)! & \multirow{2}{\saxColSize}{registerGoto} \\*
-			 Throw an error on any use of a \lstinline!GOTO! statement. \vspace{\vertSize} \\
+			 Warn against using \lstinline!GOTO! statements. \vspace{\vertSize} \\
 		\lstinline!isVariableNameTooShort(YYLTYPE location, int progress, char* identifier)! & \multirow{2}{\saxColSize}{registerIdentifier, beginDeclaration, endDeclaration} \\*
 		 Check if a variable's name exceeds a minimum length. \vspace{\vertSize} \\
 		\lstinline!isMagicNumber(YYLTYPE location, int progress, char* constant)! & \multirow{2}{\saxColSize}{registerConstant, beginDeclaration, endDeclaration} \\*
-			 Throw an error on encountering a magic number outside of a declaration. \vspace{\vertSize} \\
+			 Warn against using magic numbers outside of a declaration. \vspace{\vertSize} \\
 		\lstinline!globalHasComment(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{beginFunctionDefinition, endFunctionDefinition, endDeclaration} \\*
-			 Check if each global variable has a comment. \vspace{\vertSize} \\
+			 Check if each global variable has a comment. \vspace{\vertSize} \\ \\
 		\lstinline!isLoopTooLong(YYLTYPE location)! & \multirow{2}{\saxColSize}{endWhile, endDoWhile, endFor} \\ *
 			Check if the loop length exceeds a maximum length. \vspace{\vertSize} \\
 		\lstinline!isCompoundStatementEmpty(YYLTYPE location, int progress)!  & \multirow{2}{\saxColSize}{beginCompoundStatement, endCompoundStatement} \\ *
@@ -1072,7 +1072,7 @@ Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
 		\lstinline!tooManyFunctionsInFile(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{endFile, beginFunctionDefinition} \\*
 			 Check if there are too many functions in a file. \vspace{\vertSize} \\
 		\lstinline!isIfElsePlacementValid(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{endIf, beginElse} \\ *
-			Throw an error based on the placement of the else statement relative to the if statement.  \vspace{\vertSize} \\
+			Warn against poor \lstinline!if!\slash\lstinline!else! placement as defined by the Google style guide. \vspace{\vertSize} \\
 		\lstinline!isFunctionCommentValid(YYLTYPE location, enum commandType command, char* text)! & \multirow{2}{\saxColSize}{beginFunctionDefinition, endFunctionDefinition, beginParameterList, endParameterList, registerIdentifier, beginCompoundStatement, registerReturnSomething} \\ *
 			Check if function comments have the appropriate contents. Specifically check that the comment mentions each parameter (by name) and what the function returns. \vspace{\vertSize} \\ \\
 		\lstinline!arePointerParametersValidated(YYLTYPE location, enum commandType command, char* identifier)! & \multirow{2}{\saxColSize}{beginFunctionDefinition, endFunctionDefinition, beginParameterList, registerParameter, endParameterList, registerIdentifier, registerPointer, endStatement} \\ *

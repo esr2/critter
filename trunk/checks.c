@@ -32,8 +32,8 @@ void isFileTooLong(YYLTYPE location) {
 }
 
 /**
- * Check if there are braces surrounding an if, else, for, while and do while
- * statement.
+ * Check if the statement within an if statement, else clause, for statement,
+ * while statement, and do while statement is a compound statement.
  */
 void hasBraces(YYLTYPE location, char* construct) {
 	if (lastCalled_get() != endCompoundStatement) {
@@ -128,7 +128,7 @@ void tooManyParameters(YYLTYPE location, int progress) {
 }
 
 /**
- * Throw an error on C++ style single line comments.
+ * Warn against using C++ style single line comments.
  */
 void neverUseCPlusPlusComments(YYLTYPE location) {
 	lyyerror(ERROR_NORMAL, location, "Do not use C++ style comments");
@@ -177,7 +177,7 @@ void switchHasDefault(YYLTYPE location, int progress) {
 }
 
 /**
- * Check that each switch case has a break statement.
+ * Check that each switch case has a break or return statement.
  */
 void switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase) {
 	static int numCases = 0;
@@ -243,7 +243,7 @@ void isTooDeeplyNested(YYLTYPE location, int progress) {
 }
 
 /**
- * Advises using enum instead of #define for declarations.
+ * Warn against using #define instead of enum for declarations.
  */
 void useEnumNotDefine(YYLTYPE location) {
 	lyyerror(ERROR_NORMAL, 
@@ -252,7 +252,7 @@ void useEnumNotDefine(YYLTYPE location) {
 }
 
 /**
- * Throw an error on any use of a GOTO statement.
+ * Warn against using GOTO statements.
  */
 void neverUseGotos(YYLTYPE location) {
 	lyyerror(ERROR_HIGH, location, "Never use GOTO statements");
@@ -299,8 +299,8 @@ void isVariableNameTooShort(YYLTYPE location, int progress, char* identifier) {
 }
 
 /**
- * Throw an error on encountering a magic number outside of a declaration. 
- * (Presumably, inside a declaration, a variable will be initialized to a magic
+ * Warn against using magic numbers outside of a declaration. (Presumably,
+ * inside a declaration, a variable will be initialized to a magic
  * number and then used throughout the rest of the code).
  */
 void isMagicNumber(YYLTYPE location, int progress, char* constant) {
@@ -434,8 +434,7 @@ void tooManyFunctionsInFile(YYLTYPE location, int progress) {
 }
 
 /**
- * Throw an error based on the placement of the else statement relative to the
- * if statement. 
+ * Warn against poor if/else placement as defined by the Google style guide.
  *  - if an if statement is bracketed, it should appear on multiple lines
  *  - if an if statement is bracketed, the else statement should be on the same
  *    line as the closing brace
