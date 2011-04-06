@@ -24,6 +24,33 @@
 \pagestyle{plain}
 
 \usepackage[Lenny]{fncychap}
+\makeatletter
+\renewcommand*{\@makechapterhead}[1]{%
+\vspace*{-50\p@}%
+{\parindent \z@ \raggedright \normalfont
+  \ifnum \c@secnumdepth >\m@ne
+    \if@mainmatter%%%%% Fix for frontmatter, mainmatter, and backmatter 040920
+      \DOCH
+    \fi
+  \fi       \vskip -30\p@
+     \interlinepenalty\@M
+  \if@mainmatter%%%%% Fix for frontmatter, mainmatter, and backmatter 060424
+    \DOTI{\singlespacing#1}%
+  \else%
+
+    \DOTIS{\singlespacing#1}%
+  \fi
+  \vskip -20\p@
+}}
+\makeatletter
+\renewcommand*{\@makeschapterhead}[1]{%
+\vspace*{0\p@}%
+{\parindent \z@ \raggedright
+  \normalfont
+  \interlinepenalty\@M
+  \DOTIS{#1}
+  \vskip 0\p@
+}}
 
 %todonotes
 \usepackage{todonotes}
