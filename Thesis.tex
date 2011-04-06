@@ -545,7 +545,7 @@ location of the word ``\lstinline{while}'' whereas \lstinline{endWhile} will be 
 entire \lstinline{while} statement.
 
 \begin{figure} 
-\begin{lstlisting}[language=Caml, escapechar=\%]
+\begin{lstlisting}[language=Caml, escapechar=\%, morekeywords={beginIF, beginFOR}]
 parameter_list
 	: parameter_declaration											%\underline{\{h\_registerParameter(@\$);\}}%
 	| parameter_list ',' parameter_declaration	%\underline{\{h\_registerParameter(@3);\}}%
@@ -576,7 +576,7 @@ iteration_statement
 	| FOR beginFOR '(' declaration expression_statement expression ')' statement	%\underline{\{endFor(@\$);\}}%
 
 \end{lstlisting}
-\caption{Excerpt of the Grammar}
+\caption[Excerpt of the Grammar]{Excerpt of the Grammar. Here, the different `paragraphs' are the different grammar rules. Actions are underlined and my additions to the grammar are in bold. }
 \label{grammar}
 \end{figure} 
 
