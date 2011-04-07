@@ -102,9 +102,9 @@
 
 \usepackage{appendix}
 
-\renewcommand{\topfraction}{0.85}
-\renewcommand{\textfraction}{0.1}
-\renewcommand{\floatpagefraction}{0.75}
+%\renewcommand{\topfraction}{0.85}
+%\renewcommand{\textfraction}{0.1}
+%\renewcommand{\floatpagefraction}{0.75}
 
 %for title page
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
@@ -652,44 +652,27 @@ Much like SAX, \programName calls event handlers at the beginning and end of con
 declarations, statements, parameter lists, etc.) as well as when it finds singular elements (variable 
 names, \lstinline{break} statements, parameters, etc.). In the code, handlers are prefaced by the words 
 ``\lstinline{begin}'', ``\lstinline{end}'' and ``\lstinline{register}'' to signal at what point each is called (as 
-shown in \autoref{grammar}). Each handler is passed, at minimum, the location of the relevant code (in 
+shown in \autoref{grammar}). Each handler is passed, at minimum, the location of the relevant text (in 
 the case of \lstinline{IDENTIFIER}s and numeric constants, the handler is also passed the relevant 
-text). Each of these event handlers exist in the file sax.c/h which in turn call the administrator defined 
-checks. While these checks could be written into the event handlers themselves, it is conventional to 
-separate them into their own functions (and files) in order to preserve the readability of the sax.c file 
-and the code in general. A list of predefined checks, their function signatures and the handlers which 
-call them are listed in \autoref{predefinedChecksFunctions}.
+text itself). Each of these event handlers exist in the file sax.c/h which in turn call the administrator 
+defined checks. While these checks could be written into the event handlers themselves, it is 
+conventional to separate them into their own functions (and files) in order to preserve the readability of 
+the sax.c file and the code in general. The predefined checks, their function signatures and the handlers 
+which call them are listed in \autoref{predefinedChecksFunctions}.
 
 Unfortunately some handlers cannot actually be called at the time the construction is recognized. This 
-is due to the fact that Bison executes actions as they are encountered inside each grammar rule. At the 
+is because Bison executes actions as they are encountered inside each grammar rule. At the 
 beginning of a rule, Bison would not know which rule it was actually matching when it needed to 
 execute the action. In all the rules listed in \autoref{grammar}, the action is preceded by some 
 distinguishing token (like \lstinline{WHILE}) or by the entire rule. However, \autoref{hookGrammar} 
 shows some rules that both need actions at the beginning of the statement and lack distinguishing 
-tokens. Specifically we would like to know when we start the beginning of a function definition, but we 
-cannot be sure that we are in a function definition until Bison finishes parsing the signature. To fix this 
-issue I have added the Hooks module. This module intercepts what would be normal calls within the 
-SAX framework and then reorders them at the appropriate time. Each call into the Hooks module does 
-one of two things: enqueues a Sax level function call and its location or dequeues any item after a 
-specified location (\autoref{hooksQueues}). With the beginning of a function, all the elements of the 
-signature are placed on the queues and then dequeued when \lstinline{h_beginFunctionDefinition} is 
-called. Another reason for the hooks module is to make the appropriate calls into the Sax layer 
-regarding \lstinline{IDENTIFIER}s and numeric constants. Bison only deals with the tokens as opposed 
-to their text whereas Flex only deals with the actual text. The hooks module takes separate calls from 
-both programs regarding the location and the actual text of \lstinline{IDENTIFIER}s and constants and 
-routes them into a combined call in the SAX layer. This can best be seen in \autoref{handlerTimeline}.
-
-The Hooks and Sax modules are not complete. Handlers for major and common constructs, as well as 
-the beginning and end of each file and the program, have been implemented. Smaller items, like the 
-registration of the different operators and data types, have yet to be implemented. The addition of further 
-handlers is very possible although should only be done after fully comprehending how the system 
-works. Specifically, it is critical to route handlers through Hooks only when they occur inside statements 
-and declarations (as well as anything else which is reordered in Hooks) and through Sax otherwise.
-
-In addition to the basic SAX style system, I have implemented one shortcut to help identify code context 
-without an excess of global variables. Every time a handler is called, it sets the 
-\lstinline{lastCalledFunction} (through a setter). Checks can then use this variable to easily figure out 
-what the previous context was without additional calls or variables.
+tokens. Specifically we would like to know when we start a function definition, but we cannot be sure that 
+we are in a function definition until Bison finishes parsing the signature. To fix this issue I have added the 
+Hooks module. This module intercepts what would be normal calls within the SAX framework and then 
+reorders them at the appropriate time. Each call into the Hooks module does one of two things: 
+enqueues a Sax level function call and its location or dequeues any item after a specified location 
+(\autoref{hooksQueues}). With the beginning of a function, all the elements of the signature are placed 
+on the queue and then dequeued when \lstinline{h_beginFunctionDefinition} is called. 
 
 \begin{figure}
 \begin{lstlisting}[language=Caml, escapechar=\%]
@@ -748,6 +731,13 @@ function_definition
 \label{hooksQueues}
 \end{figure}
 
+Another reason for the Hooks module is to make the appropriate calls into the Sax layer regarding 
+\lstinline{IDENTIFIER}s and numeric constants. The lowest order structure Bison operates with is the 
+token, meaning it cannot know the textual representation. Flex, on the other hand, operates on the actual 
+text. The hooks module takes the separate calls from both modules regarding the location and the text of 
+\lstinline{IDENTIFIER}s and constants and routes them into a combined call in the SAX layer. This can 
+best be seen in \autoref{handlerTimeline}.
+
 \begin{figure}
 \begin{center}
 \begin{tabular}{llc}
@@ -781,6 +771,61 @@ N/A & endFunctionDefinition \\
 \end{center}
 \caption[Timeline of Event Handler Calls]{Timeline of event handler calls into the hooks and sax module for: \lstinline!void example(int a, double b) \{...\}!}
 \label{handlerTimeline}
+\end{figure}
+
+Event handlers for major and common constructs, as well as the beginning and end of each file and the 
+program, have been implemented. Smaller items, like the handlers for registration of operators and data 
+types, have yet to be implemented. The addition of further handlers is very possible, although should 
+only be done after fully comprehending how the system works. Specifically, it is critical to route handlers 
+through Hooks only when they occur inside statements and declarations (as well as anything else which 
+is reordered in Hooks) and through Sax otherwise. Otherwise events could be called in the wrong order 
+(if they miss going through Hooks) or not at all (if they go through Hooks without anything to release them 
+from the queue).
+
+In addition to the basic SAX style system, I have implemented one shortcut to help identify code context 
+without an excess of global variables. Every time a handler is called, it sets the 
+\lstinline{lastCalledFunction} (through a setter). Checks can then use this variable to easily figure out 
+what the previous context was without additional calls or variables (as shown in 
+\autoref{lastCalledExample}).
+\todo{Should I just have all the figures come after all the text for the section?}
+
+\begin{figure}
+\begin{lstlisting}[language=C]
+/**
+ * Check if the compound statement is empty.
+ */
+void isCompoundStatementEmpty(YYLTYPE location, int progress) {
+	static void (*context)(YYLTYPE);
+	
+	switch (progress) {
+		case BEGINNING:
+			context = lastCalled_get();
+			break;
+		case END:
+			if (lastCalled_get() == beginCompoundStatement) {
+				/* create a good error message */
+				char *parent = NULL;
+				
+				if (context == beginIf) { parent = "if statements"; }
+				else if (context == beginElse) { parent = "else statements"; }
+				else if (context == beginFor) { parent = "for loops"; }
+				else if (context == beginWhile) { parent = "while loops"; }
+				else if (context == beginDoWhile) { parent = "doWhile loops"; }
+				
+				if (parent) {
+					lyyerrorf(ERROR_HIGH, location, "Do not use empty %s", parent);
+				} else {
+					lyyerror(ERROR_HIGH, location, "Do not use empty block statements");
+				}
+			}
+			break;
+		default:
+			break;
+	}
+}
+\end{lstlisting}
+\caption{Example of a Check which Utilizes lastCalledFunction}
+\label{lastCalledExample}
 \end{figure}
 \newpage
 
@@ -832,7 +877,9 @@ void isMagicNumber(YYLTYPE location, int progress, char* constant) {
 			inDeclaration++;
 			break;
 		case MIDDLE:
-			if (inDeclaration == 0) {
+			if (lastCalled_get() == registerCase) {
+				lyyerror(ERROR_HIGH, location, "Do not use magic numbers");
+			} else if (inDeclaration == 0) {
 				int number = (int)strtol(constant, (char**)NULL, 0);
 				int i;
 
