@@ -561,7 +561,6 @@ the entire construct. For example, in \autoref{grammar}, \lstinline{beginWhile} 
 location of the word ``\lstinline{while}'' whereas \lstinline{endWhile} will be passed the location of the 
 entire \lstinline{while} statement.
 
-\todo{check over grammar caption}
 \begin{figure} 
 \begin{lstlisting}[language=Caml, escapechar=\%, morekeywords={beginIF, beginFOR}]
 parameter_list
@@ -620,7 +619,7 @@ current file. Because of this, \programName is unable to find and read header fi
 within subdirectories. It is relatively rare within an academic context to break a single program into 
 subdirectories and accordingly I decided not to focus on this issue.} 
 
-\section{Some Theory} \todo{does this need to be linked into the mini-intro?}
+\section{Some Theory}
 When compilers translate code into machine language, they first perform lexical analysis and parsing, 
 just like \programName. Where the two start to differ is in the actions for each grammar rule. Compilers 
 store information regarding the semantic value, or meaning of the source code, inside each node. This 
@@ -636,10 +635,9 @@ value of each construction. Instead of expanding along this line of development,
 an event based system, largely inspired by SAX\cite{saxHomepage}. This kind of framework, ``reports 
 parsing events (such as the start and end of elements) directly to the application through callbacks, and 
 does not usually build an internal tree. The application implements handlers to deal with the different 
-events, much like handling events in a graphical user interface''\cite{saxHomepage}\todo{do i need to 
-specify that this came on /event?}. Specifically, SAX uses event handlers to parse XML files. There are 
-three main handlers which are used at the beginning and end of each XML element as well as to capture 
-the text in between. 
+events, much like handling events in a graphical user interface''\cite{saxHomepage} Specifically, SAX 
+uses event handlers to parse XML files. There are three main handlers which are used at the beginning 
+and end of each XML element as well as to capture the text in between. 
 
 I chose to make this transition because it requires far less overhead to implement. Instead of spending 
 time building the tree framework and the corresponding methods to traverse it, I was able to focus on 
@@ -660,20 +658,7 @@ defined checks. While these checks could be written into the event handlers them
 conventional to separate them into their own functions (and files) in order to preserve the readability of 
 the sax.c file and the code in general. The predefined checks, their function signatures and the handlers 
 which call them are listed in \autoref{predefinedChecksFunctions}.
-
-Unfortunately some handlers cannot actually be called at the time the construction is recognized. This 
-is because Bison executes actions as they are encountered inside each grammar rule. At the 
-beginning of a rule, Bison would not know which rule it was actually matching when it needed to 
-execute the action. In all the rules listed in \autoref{grammar}, the action is preceded by some 
-distinguishing token (like \lstinline{WHILE}) or by the entire rule. However, \autoref{hookGrammar} 
-shows some rules that both need actions at the beginning of the statement and lack distinguishing 
-tokens. Specifically we would like to know when we start a function definition, but we cannot be sure that 
-we are in a function definition until Bison finishes parsing the signature. To fix this issue I have added the 
-Hooks module. This module intercepts what would be normal calls within the SAX framework and then 
-reorders them at the appropriate time. Each call into the Hooks module does one of two things: 
-enqueues a Sax level function call and its location or dequeues any item after a specified location 
-(\autoref{hooksQueues}). With the beginning of a function, all the elements of the signature are placed 
-on the queue and then dequeued when \lstinline{h_beginFunctionDefinition} is called. 
+\todo{make sure this figure is in the right spot}
 
 \begin{figure}
 \begin{lstlisting}[language=Caml, escapechar=\%]
@@ -692,7 +677,6 @@ direct_declarator
 	| direct_declarator '('  %\underline{\{h\_beginDirectDeclarator(@1);\}}% ')'						%\underline{\{h\_endDirectDeclarator(@\$);\}}%
 	;
 
-
 function_definition
 	: declaration_specifiers declarator %\underline{\{h\_beginFunctionDefinition(@2);\}}% declaration_list compound_statement %\underline{\{endFunctionDefinition(@\$);\}}%
 	| declaration_specifiers declarator %\underline{\{h\_beginFunctionDefinition(@2);\}}%} compound_statement %\underline{\{endFunctionDefinition(@\$);\}}%
@@ -703,6 +687,21 @@ function_definition
 \caption{Additional Excerpt of the Grammar}
 \label{hookGrammar}
 \end{figure}
+
+Unfortunately some handlers cannot actually be called at the time the construction is recognized. This 
+is because Bison executes actions as they are encountered inside each grammar rule. At the 
+beginning of a rule, Bison would not know which rule it was actually matching when it needed to 
+execute the action. In all the rules listed in \autoref{grammar}, the action is preceded by some 
+distinguishing token (like \lstinline{WHILE}) or by the entire rule. However, \autoref{hookGrammar} 
+shows some rules that both need actions at the beginning of the statement and lack distinguishing 
+tokens. Specifically we would like to know when we start a function definition, but we cannot be sure that 
+we are in a function definition until Bison finishes parsing the signature. To fix this issue I have added the 
+Hooks module. This module intercepts what would be normal calls within the SAX framework and then 
+reorders them at the appropriate time. Each call into the Hooks module does one of two things: 
+enqueues a Sax level function call and its location or dequeues any item after a specified location 
+(\autoref{hooksQueues}). With the beginning of a function, all the elements of the signature are placed 
+on the queue and then dequeued when \lstinline{h_beginFunctionDefinition} is called. 
+
 
 \begin{figure}
 \begin{center}
@@ -788,7 +787,6 @@ without an excess of global variables. Every time a handler is called, it sets t
 \lstinline{lastCalledFunction} (through a setter). Checks can then use this variable to easily figure out 
 what the previous context was without additional calls or variables (as shown in 
 \autoref{lastCalledExample}).
-\todo{Should I just have all the figures come after all the text for the section?}
 
 \begin{figure}
 \begin{lstlisting}[language=C]
@@ -935,7 +933,7 @@ comments after each location at the end of the file. The second and preferred so
 coding standard to have comments precede declarations.\footnote{Princeton University's Introduction to 
 Programming Systems course\cite{cos217} will be changing its coding standards this summer to 
 facilitate using \programName this fall. One of the largest changes will be to put comments before 
-function declarations in header files.}\todo{how's this foonote?}
+function declarations in header files.}
 
 \chapter{How to Use \programName}
 
@@ -1067,8 +1065,6 @@ construct), the Hooks handler should call \lstinline{enqueueFunctionAndLocation}
 handler. If the handler needs to dequeue elements, it should call \lstinline{dequeueUntil}, followed by the 
 sax handler and \lstinline{lastCalled_set()}. Both routes are shown in \autoref{saxAndHooksHandlers}.
 
-
-\todo{is this is a decent example for the different types of calls?}
 \begin{figure}
 
 \begin{subfigure}[t]{\linewidth}
