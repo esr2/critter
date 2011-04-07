@@ -561,6 +561,7 @@ the entire construct. For example, in \autoref{grammar}, \lstinline{beginWhile} 
 location of the word ``\lstinline{while}'' whereas \lstinline{endWhile} will be passed the location of the 
 entire \lstinline{while} statement.
 
+\todo{check over grammar caption}
 \begin{figure} 
 \begin{lstlisting}[language=Caml, escapechar=\%, morekeywords={beginIF, beginFOR}]
 parameter_list
@@ -934,7 +935,7 @@ comments after each location at the end of the file. The second and preferred so
 coding standard to have comments precede declarations.\footnote{Princeton University's Introduction to 
 Programming Systems course\cite{cos217} will be changing its coding standards this summer to 
 facilitate using \programName this fall. One of the largest changes will be to put comments before 
-function declarations in header files.}
+function declarations in header files.}\todo{how's this foonote?}
 
 \chapter{How to Use \programName}
 
@@ -1066,6 +1067,8 @@ construct), the Hooks handler should call \lstinline{enqueueFunctionAndLocation}
 handler. If the handler needs to dequeue elements, it should call \lstinline{dequeueUntil}, followed by the 
 sax handler and \lstinline{lastCalled_set()}. Both routes are shown in \autoref{saxAndHooksHandlers}.
 
+
+\todo{is this is a decent example for the different types of calls?}
 \begin{figure}
 
 \begin{subfigure}[t]{\linewidth}
@@ -1215,6 +1218,8 @@ from the numbers in \autoref{evalAdjustedNumbers}).
  \label{predefinedChecksFunctions}
 \newcommand{\saxColSize}{6cm}
 \newcommand{\vertSize}{3mm}
+
+\todo{fix table eating into margin in Appendix A}
 
 \addcontentsline{lot}{table}{~\ref{predefinedChecksFunctions} \hspace{4mm}Predefined Check Functions and their Relevant Event Handlers}
 \begin{longtable}{p{10cm} p{\saxColSize}}
