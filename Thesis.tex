@@ -106,10 +106,9 @@
 %\renewcommand{\textfraction}{0.1}
 %\renewcommand{\floatpagefraction}{0.75}
 
-%for title page
-\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
-
 \doublespacing			% Ask per individual, also remove extra space in section headings
+
+\usepackage{setspace}
 
 \begin{document}
 \singlespacing
@@ -166,9 +165,11 @@ my sisters who constantly provide me with support and laughter. I owe all my suc
 
 \end{abstract}
 
+\begin{spacing}{0.9}
 \tableofcontents
 \listoftables
 \listoffigures
+\end{spacing}
 
 \cleardoublepage
 \pagenumbering{arabic}
