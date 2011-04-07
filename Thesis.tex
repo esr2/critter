@@ -15,11 +15,11 @@
 \setlength{\headheight}{15pt}
 \pagestyle{fancy}
 \fancyhead{}
-\renewcommand{\chaptermark}[1]{\markboth{\thechapter.\ #1}{}}
+\renewcommand{\chaptermark}[1]{\markboth{\chaptername~\thechapter.\ #1}{}}
 \renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}
 \renewcommand{\headrulewidth}{0pt}
-\fancyhead[RE]{\rightmark}
-\fancyhead[LO]{\leftmark}
+\fancyhead[RO]{\small\leftmark}
+%\fancyhead[LO]{\leftmark}
 
 \pagestyle{plain}
 
@@ -188,7 +188,7 @@ There are tools to help one find these errors in both prose and code (see \autor
 Spell and grammar check exist in nearly every word processor; the reader highlights substantive 
 errors in literature. With code, the compiler shows semantic errors and the user\slash 
 testing reveals substantive errors. Yet stylistic error checking for code has been addressed by 
-relatively few tools. \todo{fix page headers}
+relatively few tools.
 
 \begin{table}%[h]
 	\begin{center}
