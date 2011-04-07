@@ -834,35 +834,33 @@ void isCompoundStatementEmpty(YYLTYPE location, int progress) {
 
 Minimally, each check needs access to the location of the code construct in order to be able to produce 
 an error. However, checks often need additional information regarding the surrounding context of 
-the possible error. A simple example is the check against using magic numbers 
-(\autoref{checkWithContext}). Many programmers consider using numeric constants directly inside the 
-code very poor style and recommend defining a variable to hold that value. Therefore \programName 
-should only throw an error when it finds an magic number inside a normal statement (as opposed to 
-inside a declaration where it is necessarily defined). This check then needs to know every time a 
-declaration begins and ends as well as each time a number is found. Alternatively, one can set global 
-variables regarding the context and minimize the number of parameters to each check.
+the possible error. A simple example is the check against using ``magic 
+numbers''\cite[p.~19]{practice-of-programming} (\autoref{checkWithContext}). Many programmers 
+consider using numeric constants directly inside the code very poor style and recommend defining a 
+symbolic constant to hold that value. Therefore \programName should only throw an error when it finds 
+an magic number inside a normal statement (as opposed to inside a declaration where it is necessarily 
+defined). This check then needs to know every time a declaration begins and ends as well as each time 
+a number is found. Alternatively, one can set global variables regarding the context and minimize the 
+number of parameters to each check.
 
 \newcommand{\yyerror}{\lstinline{yyerror}\xspace}
 \newcommand{\lyyerror}{\lstinline{lyyerror}\xspace}
 \newcommand{\lyyerrorf}{\lstinline{lyyerrorf}\xspace}
 
-In order to throw an error, the administrator can use one of three error functions: \yyerror, \lyyerror, and 
+In order to throw an error, the administrator can call one of three functions: \yyerror, \lyyerror, and 
 \lyyerrorf. Each of these functions outputs an error message to \lstinline{stderr} preceded by the error's 
 location in the code and a warning level (as seen in \autoref{errorExample}). \yyerror and \lyyerrorf 
 are each wrappers to \lyyerror, which takes in an error level (\lstinline{enum errorLevel}), a location 
 (\lstinline{YYLTYPE}) and an error message (\lstinline{char *}). In essence, \lyyerror is really a wrapper 
-to \lstinline{fprintf} and defines the formatting of all the error messages\slash locations. It is also the 
-location to change the string value of the different error levels.\footnote{Currently, 
-\lstinline{ERROR_HIGH}=``big problem'', \lstinline{ERROR_NORMAL}=``error'', and 
-\lstinline{ERROR_LOW}=``low priority''.}  
-\lyyerrorf, instead of taking in an error message, takes a format string and a variable argument list, 
-which it uses with \lstinline{vsprintf} to create an error message. It then passes the newly created 
-message to \lyyerror with the rest of its arguments. \yyerror only takes an error message and calls 
-\lyyerror with Bison's internal location in the code and a default high error level. This is because 
-\yyerror is called internally through Bison to represent syntax errors. \yyerror is the only predefined 
-error reporting function; \lyyerror is an extension suggested by O'Reily\cite{flex-and-bison} when using 
-location tracking with Bison\slash Flex (the `l' represents the variable location). \lyyerrorf was created in 
-the likes of \lstinline{printf} to deal with formatted error messages in one consolidated function.
+to \lstinline{fprintf} and defines the formatting of all the error messages\slash locations. \lyyerrorf, instead 
+of taking in an error message, takes a format string and a variable argument list, which it uses with 
+\lstinline{vsprintf} to create an error message. It then passes the newly created message to \lyyerror with 
+the rest of its arguments. \yyerror only takes an error message and calls \lyyerror with Bison's internal 
+location in the code and a default high error level. This is because \yyerror is called internally through 
+Bison to represent syntax errors. \yyerror is the only predefined error reporting function; \lyyerror is an 
+extension suggested by O'Reily\cite{flex-and-bison} when using location tracking with Bison\slash Flex 
+(the `l' represents the variable location). \lyyerrorf was created in the likes of \lstinline{printf} to deal with 
+formatted error messages in one consolidated function.
 
 \begin{figure}
 \begin{lstlisting}[language=C]
@@ -905,16 +903,26 @@ void isMagicNumber(YYLTYPE location, int progress, char* constant) {
 \end{figure}
 
 Additionally, there are two helper modules designed to facilitate writing checks: Locations and 
-Comments. The Locations module contains a several functions to manipulate \lstinline{YYLTYPE}s.  
+Comments. The Locations module contains several functions to manipulate \lstinline{YYLTYPE}s.  
 Specifically it contains methods to compare locations in various directions\slash distances as well as 
 allocate, copy and free \lstinline{YYLTYPE}s. The Comments module tracks all the comments found 
 while running \programName. Comment contents and locations are registered through calls from the 
-Sax layer and are stored in a dynamic array. Adjacent comments are recognized and combined into one 
-larger comment. Additionally the module provides the ability to search through this array to find 
-comments in or near a certain location (using the methods from Locations). Finally Comments provides a 
-couple of useful functions when analyzing the comment itself: determining if a comment has words (as 
-opposed to a delimiting comment in the form of \lstinline{/*----*/} etc.) and if a comment contains a string 
-(with or without case sensitivity).
+Sax layer and are stored in a dynamic array. Adjacent comments (like those in 
+\autoref{adjacentComments}) are recognized and combined into one larger comment. Additionally the 
+module provides the ability to search through this array to find comments in or near a certain location 
+(using the methods from Locations). Finally Comments provides a couple of useful functions when 
+analyzing the comment itself: determining if a comment has words (as opposed to a delimiting comment 
+in the form of \lstinline{/*----*/} etc.) and if a comment contains a string (with or without case sensitivity).
+
+\begin{figure}
+\begin{lstlisting}[language=C]
+/* Warn against using magic numbers outside of a declaration.        */
+/* (Presumably, inside a declaration, a variable will be initialized */
+/* to a magic number and then used throughout the rest of the code). */
+\end{lstlisting}
+\caption{Example of Adjacent Comments}
+\label{adjacentComments}
+\end{figure}
 
 There are some coding styles which are very hard for \programName to check. For example, when 
 checking that each global variable has a comment, it is trivial to check if there is a comment before that 
@@ -923,7 +931,10 @@ files), \programName is unable to find the comment. This is because \programName
 declaration, has not read or stored the following comment. There are two solutions to this issue. The 
 first is a creative hack in which one stores every location of a global variable and then searches for 
 comments after each location at the end of the file. The second and preferred solution is to change the 
-coding standard to have comments precede declarations.
+coding standard to have comments precede declarations.\footnote{Princeton University's Introduction to 
+Programming Systems course\cite{cos217} will be changing its coding standards this summer to 
+facilitate using \programName this fall. One of the largest changes will be to put comments before 
+function declarations in header files.}
 
 \chapter{How to Use \programName}
 
@@ -1219,6 +1230,9 @@ Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
 \begin{itemize}
 \item Use the DynArray class to handle persistent arrays, stacks and queues. It is a dynamically growing array which holds void pointers. This is the base implementation of how comments are stored as well as the Hook module queues.
 \item To change the tab size, edit the \lstinline{count} function inside c.l.
+\item To change the string representation for each error level, edit the \lyyerror function. Currently, 
+\lstinline{ERROR_HIGH}=``big problem'', \lstinline{ERROR_NORMAL}=``error'', and 
+\lstinline{ERROR_LOW}=``low priority''.  
 \end{itemize}
 
 \section{Sax and Hooks Modules}
