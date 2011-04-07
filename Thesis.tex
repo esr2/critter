@@ -18,7 +18,7 @@
 \renewcommand{\chaptermark}[1]{\markboth{\chaptername~\thechapter.\ #1}{}}
 \renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}
 \renewcommand{\headrulewidth}{0pt}
-\fancyhead[RO]{\small\leftmark}
+\fancyhead[RO]{\small\nouppercase{\leftmark}}
 %\fancyhead[LO]{\leftmark}
 
 \pagestyle{plain}
@@ -1212,9 +1212,11 @@ from the numbers in \autoref{evalAdjustedNumbers}).
 \appendixpage
 \addappheadtotoc
 
+\renewcommand{\chaptermark}[1]{\markboth{Appendix~\thechapter.\ #1}{}}
+
 \singlespacing
 
-\chapter{Predefined Check Functions and their Relevant Event Handlers}
+\chapter[Predefined Check Functions]{Predefined Check Functions and their Relevant Event Handlers}
  \label{predefinedChecksFunctions}
 \newcommand{\saxColSize}{6cm}
 \newcommand{\vertSize}{3mm}
