@@ -955,11 +955,10 @@ level message and a half a point per low error level message. Not only does it r
 to grade a submission, but by allowing students to pre-check their work, the submissions become easier 
 to read through good, consistent style.
 
-In industry, \programName should be used by programmers before submitting code to a repository or to 
-peer reviews. This creates and automated reminder system against any code that does not adhere to the 
-accepted coding standards. This makes the code base more consistent and readable without direct 
-peer enforcement. Furthermore, the team can be more productive when they spend less time correcting 
-stylistic errors.
+In industry, \programName should be used by programmers before submitting code to peer reviews. This 
+creates an automated reminder system against any code that does not adhere to the accepted coding 
+standards. This makes the code base more consistent and readable without direct peer enforcement. 
+Furthermore, the team can be more productive when they spend less time correcting stylistic errors.
 
 \subsection{Customization}
 Before customizing the code, please make sure you both understand how \programName works (see 
@@ -970,18 +969,19 @@ Conventions in \autoref{conventions}).
 
 The first step of adding a new stylistic check is to figure out what exactly you are checking and which 
 handlers give you the necessary information. The first question to ask is how much context is needed to 
-implement this check. For example, to throw an error on C++ style comments requires no context -- it is 
-only dependent on the existence of that code. In contrast, checking for braces around \lstinline{for} loops 
-requires very minimal context: whether or not \lstinline{endCompoundStatement} was the last function 
-called (i.e. right before \lstinline{endFor} was called, did \programName encounter a `\lstinline!}!' or 
-something else). This minimal context can be established through the use of the 
-\lstinline{lastCalled_get()} function which returns a pointer to the last Sax handler called. More complex 
-checks may need additional context. For example, to check for magic numbers, the check needs to keep 
-track of whether the numeric constant appears inside a declaration. The easiest way to do this is to have 
-the check called from \lstinline{registerConstant}, \lstinline{beginDeclaration} and 
-\lstinline{endDeclaration} and pass in a different `progress' value at each different call. Throughout the 
-code, the enumerated values \lstinline{BEGINNING}, \lstinline{MIDDLE} and \lstinline{END} provide 
-such values.
+implement this check. For example, to throw an error on C++ style comments (comments in form of 
+``\lstinline{// Comment text which ends on a newline}'') requires no context -- it is only dependent on the 
+existence of that code. In contrast, checking for braces around \lstinline{for} loops requires very minimal 
+context: whether or not \lstinline{endCompoundStatement} was the last function called (i.e. right before 
+\lstinline{endFor} was called, did \programName encounter a `\lstinline!}!' or something else). This 
+minimal context can be established through the use of the \lstinline{lastCalled_get()} function which 
+returns a pointer to the last Sax handler called. More complex checks may need additional context. For 
+example, to check for magic numbers, the check needs to keep track of whether the numeric constant 
+appears inside a declaration. The easiest way to do this is to have the check called from 
+\lstinline{registerConstant}, \lstinline{beginDeclaration} and \lstinline{endDeclaration} and pass in a 
+different `progress' value at each different call. Throughout the code, the enumerated values 
+\lstinline{BEGINNING}, \lstinline{MIDDLE} and \lstinline{END} provide such values (as shown in 
+\autoref{addCheckExample}).
 
 After determining the relevant handlers and additional necessary parameters,\footnote{Each check 
 should have at least one parameter: \lstinline{YYLTYPE location}. This value is necessary in order to 
@@ -991,7 +991,7 @@ write the check. The easiest way to deal with contextual processing is to use a 
 statement and conditionally set static local variables (\autoref{addCheckExample}). In order to 
 throw an error, one must pass \lstinline{location} to either \lstinline{lyyerror} or \lstinline{lyyerrorf} with an 
 error level and either an error message or format string and arguments respectively (for additional 
-information see \autoref{howChecksAreWritten}).
+information see \autoref{writingTheChecks}).
 
 \begin{figure}
 \begin{lstlisting}[language=C]
@@ -1029,11 +1029,11 @@ void switchHasDefault(YYLTYPE location, int progress) {
 \subsubsection{Add an Event Handler}
 
 If you want to add an event handler, be advised, you will have to edit the grammar file. If you screw up 
-this file, it will break \programName. Having said that, creating a handler is actually quite trivial assuming 
-you are careful. The first step is to figure out which grammar rule(s) are relevant to the event you would 
-like to capture. In some cases this is incredibly trivial, in others it takes some effort to understand what the 
-grammar is describing. The best method to figure out the various rules is, in my experience, to perform 
-DFS through the different components of the rule until it becomes clear. 
+this file, it will break \programName. Having said that, creating a handler is actually quite trivial. The first 
+step is to figure out which grammar rule(s) are relevant to the event you would like to capture. In some 
+cases this is incredibly trivial, in others it takes some effort to understand what the grammar is describing. 
+The best method to figure out the various rules is, in my experience, to perform depth-first-search through 
+the different components of the rule until it becomes clear. 
 
 After finding the grammar rule, adding a \lstinline{register} or \lstinline{end} handler is very simple: 
 define the handler in sax.c/h and add the action ``\lstinline!{newHandler(@X);}!'' after the component you 
@@ -1064,7 +1064,69 @@ handler needs to go through Hooks, you need to create two handlers: \lstinline{n
 grammar file). If the event just needs to be released at the correct time (i.e. it appears within a hooked 
 construct), the Hooks handler should call \lstinline{enqueueFunctionAndLocation} to enqueue the Sax 
 handler. If the handler needs to dequeue elements, it should call \lstinline{dequeueUntil}, followed by the 
-sax handler and \lstinline{lastCalled_set()}.
+sax handler and \lstinline{lastCalled_set()}. Both routes are shown in \autoref{saxAndHooksHandlers}.
+
+\begin{figure}
+
+\begin{subfigure}[t]{\linewidth}
+\caption{Direct Grammar}
+\label{directGrammar}
+\begin{lstlisting}[language=Caml]
+iteration_statement
+	: WHILE {beginWhile(@1);} '(' expression ')' statement   {endWhile(@$);}
+\end{lstlisting}
+\end{subfigure}
+
+\begin{subfigure}[b]{\linewidth}
+\caption{Direct Sax Level Event Handlers}
+\label{directSax}
+\begin{lstlisting}[language=C]
+void beginWhile(YYLTYPE location) {
+	lastCalled_set(beginWhile);
+	functionHasEnoughLocalComments(location, MIDDLE, 0);
+}
+
+void endWhile(YYLTYPE location) {
+	hasBraces(location, "while");
+	lastCalled_set(endWhile);
+	isLoopTooLong(location);
+}
+\end{lstlisting}
+\end{subfigure}
+
+\begin{subfigure}[t]{\linewidth}
+\caption{Indirect Grammar}
+\label{indirectGrammar}
+\begin{lstlisting}[language=Caml]
+parameter_list
+	: parameter_declaration	{h_registerParameter(@$);}
+\end{lstlisting}
+\end{subfigure}
+
+\begin{subfigure}[b]{\linewidth}
+\caption{Indirect Hooks Level Event Handlers}
+\label{indirectHooks}
+\begin{lstlisting}[language=C]
+void h_registerParameter(YYLTYPE location) {
+	enqueueFunctionAndLocation(registerParameter, location);
+}
+\end{lstlisting}
+\end{subfigure}
+
+\begin{subfigure}[b]{\linewidth}
+\caption{Indirect Sax Level Event Handlers}
+\label{indirectSax}
+\begin{lstlisting}[language=C]
+void registerParameter(YYLTYPE location) {
+	tooManyParameters(location, MIDDLE);
+	arePointerParametersValidated(location, REGISTER_PARAM, NULL);
+}
+\end{lstlisting}
+\end{subfigure}
+
+\caption[Direct vs.\ Indirect Event Handlers]{Direct vs.\ Indirect Event Handlers. (\subref{directGrammar}, \subref{directSax}) A while statement has a direct call into the Sax module. (\subref{indirectGrammar}, \subref{indirectHooks}, \subref{indirectSax})The registration of function parameters needs to indirectly route through Hooks in order to have the Sax level event handlers called after beginFunctionDefinition.}
+\label{saxAndHooksHandlers}
+\end{figure}
 
 \subsection{Compilation, Testing and Installation}
 
