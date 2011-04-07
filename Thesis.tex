@@ -517,9 +517,6 @@ conceptually grouped into three categories: \hyperref[parsingTheCode]{Parsing th
 \label{moduleInteraction}
 \end{figure}
 
-\section{Some Theory}
-\todoin{Add information about grammar?, semantic values for terminals and AST/Visitor Pattern. Then go into why I didn't choose that route given SAX (ie lightweight, could read synchronously (maybe) instead of after reading the file).}
-
 \section{Parsing the Code}
 \label{parsingTheCode}
 
@@ -622,13 +619,36 @@ current file. Because of this, \programName is unable to find and read header fi
 within subdirectories. It is relatively rare within an academic context to break a single program into 
 subdirectories and accordingly I decided not to focus on this issue.} 
 
+\section{Some Theory} \todo{does this need to be linked into the mini-intro?}
+When compilers translate code into machine language, they first perform lexical analysis and parsing, 
+just like \programName. Where the two start to differ is in the actions for each grammar rule. Compilers 
+store information regarding the semantic value, or meaning of the source code, inside each node. This 
+practice allows them to build an Abstract Syntax Tree, which ``conveys the phrase structure of the source 
+program, with all parsing issues resolved but without any semantic 
+interpretation''\cite{compiler-implementation}. Other modules can then look over the entire tree and 
+determine the meaning of the code as well as stylistic attributes. Both PMD and Checkstyle use this 
+method to drive their tools. 
+
+Originally, \programName operated in a similar manner; it stored an enumerated value corresponding to 
+the type of construction as the semantic value of each node. The different checks then examined the 
+value of each construction. Instead of expanding along this line of development, I decided to transition to 
+an event based system, largely inspired by SAX\cite{saxHomepage}. This kind of framework, ``reports 
+parsing events (such as the start and end of elements) directly to the application through callbacks, and 
+does not usually build an internal tree. The application implements handlers to deal with the different 
+events, much like handling events in a graphical user interface''\cite{saxHomepage}\todo{do i need to 
+specify that this came on /event?}. Specifically, SAX uses event handlers to parse XML files. There are 
+three main handlers which are used at the beginning and end of each XML element as well as to capture 
+the text in between. 
+
+I chose to make this transition because it requires far less overhead to implement. Instead of spending 
+time building the tree framework and the corresponding methods to traverse it, I was able to focus on 
+implementing stylistic checks. Additionally, the SAX-style framework has the added benefit of being able 
+to examine code on the fly as opposed to after the file has been parsed completely.
+
 \section{Calling the Checks}
 \label{callingTheChecks}
 
-\programName is event based and is largely inspired by SAX\cite{saxHomepage}. SAX is a 
-framework which allows programmers to use event handlers to parse XML files. SAX typically uses
-event handlers for the beginning and end of each XML element as well as to capture the text in 
-between. \programName calls event handlers at the beginning and end of constructs (functions, 
+Much like SAX, \programName calls event handlers at the beginning and end of constructs (functions, 
 declarations, statements, parameter lists, etc.) as well as when it finds singular elements (variable 
 names, \lstinline{break} statements, parameters, etc.). In the code, handlers are prefaced by the words 
 ``\lstinline{begin}'', ``\lstinline{end}'' and ``\lstinline{register}'' to signal at what point each is called (as 
