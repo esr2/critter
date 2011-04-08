@@ -564,16 +564,14 @@ location of the word ``\lstinline{while}'' whereas \lstinline{endWhile} will be 
 entire \lstinline{while} statement.
 
 \begin{figure} 
-\begin{lstlisting}[language=Caml, escapechar=\%, morekeywords={beginIF, beginFOR}]
-parameter_list
-	: parameter_declaration											%\underline{\{h\_registerParameter(@\$);\}}%
-	| parameter_list ',' parameter_declaration	%\underline{\{h\_registerParameter(@3);\}}%
-	;
+\begin{lstlisting}[language=Caml, escapechar=\%, morekeywords={beginIF, beginFOR, beginCompound}]
+beginCompound : /* empty */ {beginCompoundStatement(@$);}
 
-parameter_declaration
-	: declaration_specifiers declarator
-	| declaration_specifiers abstract_declarator
-	| declaration_specifiers
+compound_statement
+	: '{' beginCompound '}'										{endCompoundStatement(@$);}
+	| '{' beginCompound statement_list '}'		{endCompoundStatement(@$);}
+	| '{' beginCompound declaration_list '} '	{endCompoundStatement(@$);}
+	| '{' beginCompound declaration_list statement_list '}'	{endCompoundStatement(@$);}
 	;
 
 beginIF : /*empty*/ %\underline{\{beginIf(@\$);\}}%
@@ -661,11 +659,60 @@ names, \lstinline{break} statements, parameters, etc.). In the code, handlers ar
 shown in \autoref{grammar}). Each handler is passed, at minimum, the location of the relevant text (in 
 the case of \lstinline{IDENTIFIER}s and numeric constants, the handler is also passed the relevant 
 text itself). Each of these event handlers exist in the file sax.c/h which in turn call the administrator 
-defined checks. While these checks could be written into the event handlers themselves, it is 
-conventional to separate them into their own functions (and files) in order to preserve the readability of 
-the sax.c file and the code in general. The predefined checks, their function signatures and the handlers 
-which call them are listed in \autoref{predefinedChecksFunctions}.
+defined checks (as shown in \autoref{saxHandlers}). While these checks could be written into the event 
+handlers themselves, it is conventional to separate them into their own functions (and files) in order to 
+preserve the readability of the sax.c file and the code in general. The predefined checks, their function 
+signatures and the handlers which call them are listed in \autoref{predefinedChecksFunctions}.
 \todo{make sure this figure is in the right spot}
+
+\begin{figure}
+\begin{lstlisting}[language=C]
+void registerConstant(YYLTYPE location, char* constant) {
+	isMagicNumber(location, MIDDLE, constant);
+}
+
+void beginCompoundStatement(YYLTYPE location) {
+	isCompoundStatementEmpty(location, BEGINNING);
+	lastCalled_set(beginCompoundStatement);
+	isTooDeeplyNested(location, BEGINNING);
+	isFunctionCommentValid(location, BEGIN_FUNCTION_BODY, NULL);
+}
+
+void endCompoundStatement(YYLTYPE location) {
+	isCompoundStatementEmpty(location, END);
+	lastCalled_set(endCompoundStatement);
+	isTooDeeplyNested(location, END);
+}
+
+void beginDeclaration(YYLTYPE location) {
+	isMagicNumber(location, BEGINNING, NULL);
+	isVariableNameTooShort(location, BEGINNING, NULL);
+}
+
+void endDeclaration(YYLTYPE location) {
+	isMagicNumber(location, END, NULL);
+	globalHasComment(location, MIDDLE);
+	isVariableNameTooShort(location, END, NULL);
+}
+\end{lstlisting}
+\caption{Event Handlers in the Sax Module}
+\label{saxHandlers}
+\end{figure}
+
+Unfortunately some handlers cannot actually be called at the time the construction is recognized. This 
+is because Bison executes actions as they are encountered inside each grammar rule. At the 
+beginning of a rule, Bison would not know which rule it was actually matching when it needed to 
+execute the action. In all the rules listed in \autoref{grammar}, the action is preceded by some 
+distinguishing token (like \lstinline{WHILE}) or by the entire rule. However, \autoref{hookGrammar} 
+shows some rules that both need actions at the beginning of the statement and lack distinguishing 
+tokens. Specifically we would like to know when we start a function definition, but we cannot be sure that 
+we are in a function definition until Bison finishes parsing the signature. To fix this issue I have added the 
+Hooks module. This module intercepts what would be normal calls within the SAX framework and then 
+reorders them at the appropriate time. Each call into the Hooks module does one of two things: 
+enqueues a Sax level function call and its location or dequeues any item after a specified location 
+(\autoref{hooksQueues}). With the beginning of a function, all the elements of the signature are placed 
+on the queue and then dequeued when \lstinline{h_beginFunctionDefinition} is called. 
+
 
 \begin{figure}
 \begin{lstlisting}[language=Caml, escapechar=\%]
@@ -694,21 +741,6 @@ function_definition
 \caption{Additional Excerpt of the Grammar}
 \label{hookGrammar}
 \end{figure}
-
-Unfortunately some handlers cannot actually be called at the time the construction is recognized. This 
-is because Bison executes actions as they are encountered inside each grammar rule. At the 
-beginning of a rule, Bison would not know which rule it was actually matching when it needed to 
-execute the action. In all the rules listed in \autoref{grammar}, the action is preceded by some 
-distinguishing token (like \lstinline{WHILE}) or by the entire rule. However, \autoref{hookGrammar} 
-shows some rules that both need actions at the beginning of the statement and lack distinguishing 
-tokens. Specifically we would like to know when we start a function definition, but we cannot be sure that 
-we are in a function definition until Bison finishes parsing the signature. To fix this issue I have added the 
-Hooks module. This module intercepts what would be normal calls within the SAX framework and then 
-reorders them at the appropriate time. Each call into the Hooks module does one of two things: 
-enqueues a Sax level function call and its location or dequeues any item after a specified location 
-(\autoref{hooksQueues}). With the beginning of a function, all the elements of the signature are placed 
-on the queue and then dequeued when \lstinline{h_beginFunctionDefinition} is called. 
-
 
 \begin{figure}
 \begin{center}
