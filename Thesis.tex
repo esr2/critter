@@ -1348,13 +1348,13 @@ had a precision of 90.0\%. \human had a recall of 83.9\%.}
 
 \chapter[Predefined Check Functions]{Predefined Check Functions and their Relevant Event Handlers}
  \label{predefinedChecksFunctions}
-\newcommand{\saxColSize}{6cm}
+\newlength\saxColSize
+\setlength\saxColSize{\linewidth}
+\addtolength\saxColSize{-10.3cm}
 \newcommand{\vertSize}{3mm}
 
-\todo{fix table eating into margin in Appendix A}
-
 \addcontentsline{lot}{table}{~\ref{predefinedChecksFunctions} \hspace{4mm}Predefined Check Functions and their Relevant Event Handlers}
-\begin{longtable}{p{10cm} p{\saxColSize}}
+\begin{longtable}{p{9.5cm} p{\saxColSize}}
 \toprule
 Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
 \endfirsthead
@@ -1383,9 +1383,9 @@ Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
 		\lstinline!hasComment(YYLTYPE location, char* construct)!  & \multirow{2}{\saxColSize}{endFile (also from \lstinline!globalHasComment!)} \\*
 			 Check for comments before some construct. \vspace{\vertSize} \\
 		\lstinline!switchHasDefault(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{beginSwitch, registerDefault, endSwitch} \\*
-		 Check that each \lstinline!switch! statement has a \lstinline!default! case. \vspace{\vertSize} \\
+		 Check that each \lstinline!switch! statement has a \lstinline!default! case. \vspace{\vertSize} \\ 
 		\lstinline!switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase)! & \multirow{2}{\saxColSize}{beginSwitch, registerDefault, registerCase, registerBreak, registerReturn, registerReturnSomething, endSwitch} \\*
-		 Check that each \lstinline!switch! case has a \lstinline!break! or \lstinline!return! statement. \vspace{\vertSize} \\ \\
+		 Check that each \lstinline!switch! case has a \lstinline!break! or \lstinline!return! statement. \vspace{\vertSize} \\ \\ \\ \\
 		\lstinline!isTooDeeplyNested(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{beginCompoundStatement, endCompoundStatement} \\*
 		 Check whether a region of code (i.e. a compound statement) nests too deeply. \vspace{\vertSize} \\
 		\lstinline!useEnumNotDefine(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{registerDefineIntegralType} \\*
@@ -1397,7 +1397,7 @@ Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
 		\lstinline!isMagicNumber(YYLTYPE location, int progress, char* constant)! & \multirow{2}{\saxColSize}{registerConstant, beginDeclaration, endDeclaration} \\*
 			 Warn against using magic numbers outside of a declaration. \vspace{\vertSize} \\
 		\lstinline!globalHasComment(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{beginFunctionDefinition, endFunctionDefinition, endDeclaration} \\*
-			 Check if each global variable has a comment. \vspace{\vertSize} \\ \\
+			 Check if each global variable has a comment. \vspace{\vertSize} \\ 
 		\lstinline!isLoopTooLong(YYLTYPE location)! & \multirow{2}{\saxColSize}{endWhile, endDoWhile, endFor} \\ *
 			Check if the loop length exceeds a maximum length. \vspace{\vertSize} \\
 		\lstinline!isCompoundStatementEmpty(YYLTYPE location, int progress)!  & \multirow{2}{\saxColSize}{beginCompoundStatement, endCompoundStatement} \\ *
@@ -1407,13 +1407,13 @@ Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
 		\lstinline!isIfElsePlacementValid(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{endIf, beginElse} \\ *
 			Warn against poor \lstinline!if!\slash\lstinline!else! placement as defined by the Google style guide. \vspace{\vertSize} \\
 		\lstinline!isFunctionCommentValid(YYLTYPE location, enum commandType command, char* text)! & \multirow{2}{\saxColSize}{beginFunctionDefinition, endFunctionDefinition, beginParameterList, endParameterList, registerIdentifier, beginCompoundStatement, registerReturnSomething} \\ *
-			Check if function comments have the appropriate contents. Specifically check that the comment mentions each parameter (by name) and what the function returns. \vspace{\vertSize} \\ \\
+			Check if function comments have the appropriate contents. Specifically check that the comment mentions each parameter (by name) and what the function returns. \vspace{\vertSize}  \\ \\
 		\lstinline!arePointerParametersValidated(YYLTYPE location, enum commandType command, char* identifier)! & \multirow{2}{\saxColSize}{beginFunctionDefinition, endFunctionDefinition, beginParameterList, registerParameter, endParameterList, registerIdentifier, registerPointer, endStatement} \\ *
 			Check if each pointer type parameter into a function is mentioned within an \lstinline!assert()! before being used. \vspace{\vertSize} \\ \\ \\ \\
 		\lstinline!void doFunctionsHaveCommonPrefix(YYLTYPE location, int progress, char* identifier)! & \multirow{2}{\saxColSize}{beginProgram, endProgram, endFile, beginFunctionDefinition, endFunctionDefinition, registerIdentifier} \\*
-			Check that function names contain a common prefix.  \vspace{\vertSize} \\ \\ \\
+			Check that function names contain a common prefix.  \vspace{\vertSize} \\ \\
 		\lstinline!functionHasEnoughLocalComments(YYLTYPE location, int progress, int isComment)! & \multirow{2}{\saxColSize}{beginComment, beginFunctionDefinition, endFunctionDefinition, beginWhile, beginDoWhile, beginFor, beginIf, beginSwitch} \\*
-			Check that there are enough local comments in the function relative to the number of control/selection statements.  \vspace{\vertSize} \\
+			Check that there are enough local comments in the function relative to the number of control/selection statements.  \vspace{\vertSize} \\ \\ 
 		\lstinline!structFieldsHaveComments(YYLTYPE location, int progress)! & \multirow{2}{\saxColSize}{beginStructDefinition, registerStructField, endStructDefinition} \\*
 			Check that all fields in a struct have a comment.  \\
 
