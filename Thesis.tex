@@ -1148,62 +1148,134 @@ checks to the testing mechanism, one simply needs to add the check's function na
 
 \chapter{Evaluation}
 
-In order to perform a realistic evaluation of \programName's performance, Dr. Robert Dondero, graded 
+\newcommand{\human}{Dr.\ Dondero\xspace}
+
+In order to perform an evaluation of \programName's performance, Dr. Robert Dondero graded 
 10 randomly chosen final project submissions for Princeton University's Introduction to Programming 
 Systems (COS 217) \cite{cos217}. There were over 650 assignments available, each of which was 
 anonymized in order to protect student's privacy. Dr. Dondero has taught the course for many years, 
 making him the perfect person to judge each submission's style. We judged \programName's 
 performance compared to ``true'' errors, which were determined after both Dr. Dondero and 
 \programName looked at each submission. This post-analysis judgement of errors was necessary in 
-order to properly take into account errors that Dr. Dondero originally missed that \programName found. 
+order to properly take into account errors that Dr. Dondero originally missed and  \programName found. 
 We did allow \programName to perform an iterative analysis of the submissions as a whole, mirroring 
-what we hoped other administrators would do when creating their set of checks. The iterative process 
-mostly effected checks like \lstinline{fileIsTooLong} or \lstinline{isTooDeeplyNested} where there was a 
-maximum/minimum threshold that needed to be tuned. 
+the development process we hope other administrators will go through as they develop their own 
+checks. The iterative process mostly affected checks like \lstinline{fileIsTooLong} where there was a 
+threshold value that needed to be tuned. 
 
-The raw numbers regarding \programName's performance as compared to Dr. Dondero's are shown in 
-\autoref{evalRawNumbers}. These numbers yield a precision rate of !!!! for \programName and !!!! for Dr. 
-Dondero. However, these raw numbers count stylistic flaws that \programName does not currently have 
-checks for (like excessively long lines and repeat definitions of \lstinline{struct}s). After adjusting for these 
-types of errors, \programName performed with a precision rate of !!!! and Dr. Dondero with !!!! (as seen 
-from the numbers in \autoref{evalAdjustedNumbers}).
-
-
-\begin{table}
-\begin{center}
-\begin{tabular}{cccc}
-	\toprule
-	& Dr. Dondero & \programName & Total \\
-	\midrule
-	Error & !!!!! &  !!!!! & !!!!! \\
-	Not an Error & 0 & !!!!! & N\slash A \\
-	\bottomrule
-\end{tabular}
-\end{center}
-\caption{The raw number of warnings produced by \programName in comparison to Dr. Dondero}
-\label{evalRawNumbers}
-\end{table}
-
+Three checks were very useful and represented about a third of all of \programName's output: magic 
+numbers, validating pointer parameters, and comments above global variables. The check for magic 
+numbers was one of the qualitatively hardest for Dr.\ Dondero to perform because numerals do not stand 
+out from code. This is shown in the data in \autoref{resultsMagicNumbers} where Dr.\ Dondero missed 
+almost as many magic numbers as he caught. This check is also interesting in that by its very nature it 
+will miss some errors, namely when 0, 1 or 2 is used in a way that is `magic'. 
 
 \begin{table}
 \begin{center}
-\begin{tabular}{cccc}
+\begin{tabular}{lccc}
 	\toprule
-	& Dr. Dondero & \programName & Total \\
-	\midrule
-	Error & !!!!! &  !!!!! & !!!!! \\
-	Not an Error & 0 & !!!!! & N\slash A \\
+	&& \multicolumn{2}{c}{Was an error present?} \\
+	&& Yes & No \\ \midrule
+\multirow{2}{*}{Did \programName report an error?} & Yes & 46 & 11  \\
+										& No  &  6 & \\ \hdashline[2pt/4pt]
+\multirow{2}{*}{Did \human report an error?} & Yes & 30 & 0 \\
+								     & No  & 22 & \\
 	\bottomrule
 \end{tabular}
 \end{center}
-\caption{The adjusted number of warnings produced by \programName in comparison to Dr. Dondero after removing !!!!!!}
-\label{evalRawNumbers}
+\caption[Test Results for Magic Numbers]{Test Results for Magic Numbers. For this check, \programName had a recall of 88.5\% and a precision of 80.7\%. \human had a recall of 57.7\%.}
+\label{resultsMagicNumbers}
 \end{table}
 
+\programName checks whether functions validate pointer parameters inside an \lstinline{assert()} before 
+the parameter is actually used. There are two systematic errors involved with this check. The first is that 
+\programName will output an error when the the parameter is being properly validated through code like 
+`\lstinline{if (param != NULL)}'. This is unavoidable as \programName does not detect the meaning 
+behind the code. The second systematic error involves opaque pointer types; \programName has no way 
+of knowing whether a newly defined type is a wrapper around a pointer. Therefore, it does not make sure 
+parameters of those types are validated. Data is shown in \autoref{resultsValidatePointerParameters}.
 
+\begin{table}
+\begin{center}
+\begin{tabular}{lccc}
+	\toprule
+	&& \multicolumn{2}{c}{Was an error present?} \\
+	&& Yes & No \\ \midrule
+\multirow{2}{*}{Did \programName report an error?} & Yes & 102 & 21  \\
+										& No  &  9 & \\ \hdashline[2pt/4pt]
+\multirow{2}{*}{Did \human report an error?} & Yes & 74 & 0 \\
+								     & No  & 37 & \\
+	\bottomrule
+\end{tabular}
+\end{center}
+\caption[Test Results for Validating Pointer Parameters]{Test Results for Validating Pointer Parameters. 
+For this check, \programName had a recall of 98.2\% and a precision of 82.9\%. \human had a recall of 
+66.7\%.}
+\label{resultsValidatePointerParameters}
+\end{table}
 
-\vspace{2cm}
- \todoin{Add how \programName performed against Dondero's grading}
+One of the more interesting checks looked for comments above each global variable. Yet again, 
+\programName came up against systematic error. While \programName found each missing comment, it 
+had a large tendency to output extraneous errors. There were two main causes: self commenting code 
+and an uncheckable coding standard. Many times, \programName encountered global variables similar 
+to ``\lstinline!enum BOOLEAN {FALSE, TRUE}!''. Declarations of this kind are self-commenting and 
+further comments would decrease readability. Warnings to add comments are therefore extraneous. The 
+other systematic error was due to a previously acceptable standard of putting comments beneath 
+declarations. As mentioned in \autoref{writingTheChecks}, \programName is unable to associate 
+comments beneath a declaration to that code. Because of this, and the upcoming change to the COS 
+217 to coding standard, Dr.\ Dondero and I felt that it was inappropriate to include these results against 
+\programName. To accomplish this, we have filtered the data to remove the 224 extraneous warnings 
+due to comments placed after global declarations. \autoref{resultsCommentsAboveGlobals} shows the 
+data both before and after filtering.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{lccc}
+	\toprule
+	&& \multicolumn{2}{c}{Was an error present?} \\
+	&& Yes & No \\ \midrule
+\multirow{2}{*}{Did \programName report an error?} & Yes & 76 & 53 (224)  \\
+										& No  &  0 & \\ \hdashline[2pt/4pt]
+\multirow{2}{*}{Did \human report an error?} & Yes & 62 & 0 \\
+								     & No  & 14 & \\
+	\bottomrule
+\end{tabular}
+\end{center}
+\caption[Test Results for Comments Above Global Variables]{Test Results for Comments Above Global 
+Variables. The number in the parenthesis in upper right corner represents the raw errors reported; the 
+first number is the number of errors reported which were not solved after super imposing the upcoming 
+change in coding standards. For this check, with the raw data, \programName had a recall of 100\% and 
+a precision of 25.3\%. After filtering the data, \programName had a precision of 58.9\%. \human had a 
+recall of 81.6\%.}
+\label{resultsCommentsAboveGlobals}
+\end{table}
+
+Overall, \programName did very well. A total of 24 checks were run over the dataset with 1236 errors 
+found. 961 of these represented true stylistic errors in the code; 16.1\% of which \human did not catch. 
+\programName's recall was 13.2\% higher than \human's and maintained a relatively high precision of 
+77.2\%. After filtering, \programName's precision jumped to 90.0\%. Data, before and after filtering, can 
+be seen in \autoref{resultsAllChecks}. These tests conclusively prove the benefit that \programName can 
+provide in terms of automatic style checking. Even without filtering the data, over three quarters of 
+\programName's output was pertinent. Furthermore, it increased error detection by 16.1\%.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{lccc}
+	\toprule
+	&& \multicolumn{2}{c}{Was an error present?} \\
+	&& Yes & No \\ \midrule
+\multirow{2}{*}{Did \programName report an error?} & Yes & 933 & 104 (275)  \\
+										& No  &  28 & \\ \hdashline[2pt/4pt]
+\multirow{2}{*}{Did \human report an error?} & Yes & 806 & 0 \\
+								     & No  & 155 & \\
+	\bottomrule
+\end{tabular}
+\end{center}
+\caption[Test Results Across All Checks]{Test Results Across All Checks. Across all checks, 
+\programName had a recall of 97.1\% and a precision of 77.2\%. After filtering the data, \programName 
+had a precision of 90.0\%. \human had a recall of 83.9\%.}
+\label{resultsAllChecks}
+\end{table}
 
 \appendix
 \appendixpage
