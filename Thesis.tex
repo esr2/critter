@@ -621,6 +621,11 @@ within subdirectories. It is relatively rare within an academic context to break
 subdirectories and accordingly I decided not to focus on this issue.} 
 
 \section{Some Theory}
+Bison uses an LALR(1) parsing algorithm, meaning it creates a Left to Right, Rightmost Derivation parse 
+tree using one token of lookahead. This algorithm maintains a parser table which allows it to avoid 
+backtracking as it parses the source file. Because of this property, call are never mistakenly made from 
+the lexer/parser into other modules of \programName.
+
 When compilers translate code into machine language, they first perform lexical analysis and parsing, 
 just like \programName. Where the two start to differ is in the actions for each grammar rule. Compilers 
 store information regarding the semantic value, or meaning of the source code, inside each node. This 
