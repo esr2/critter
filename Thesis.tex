@@ -1459,7 +1459,7 @@ will be added so that each error message appears on one line.
 \chapter{Progression of Development}
 
 \programName's development has been reasonably linear and has consisted of slowly adding modules 
-as situations arose. Getting the Bison and Flex to parse the sample C code took a significant portion of 
+as situations arose. Getting Bison and Flex to parse the sample C code took a significant portion of 
 time at the beginning; especially the added elements such as tracking \lstinline{typedef}s and 
 dynamically reading header files. Once the code could be read without issue, the next step was to start 
 adding some minimal checks.
@@ -1494,7 +1494,7 @@ enumerated value contexts were removed. However, in adding more checks, I realiz
 into the Sax module were simply not going to be in the right order. 
 
 This problem prompted final version (3) which added the Hooks module. The inspiration behind the 
-hooks module was the queue of function pointers. The insight of storing the pointers to the event 
+Hooks module was the queue of function pointers. The insight of storing the pointers to the event 
 handlers made this entire implementation (and version) possible. After adding the Hooks module, I was 
 able to add even more checks and focus on cleaning up the code. In the process of adding more checks, 
 I decided to store the last called event handler in order to minimize the number of handlers any given 
