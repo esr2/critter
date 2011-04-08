@@ -1163,12 +1163,25 @@ the development process we hope other administrators will go through as they dev
 checks. The iterative process mostly affected checks like \lstinline{fileIsTooLong} where there was a 
 threshold value that needed to be tuned. 
 
+We measured two properties: precision and recall. Precision represents what fraction of the output was 
+in response to a true error. In our experiment, \human will always have a precision of 100\%.\footnote{It is 
+possible for \human to lower this value by changing his mind regarding an error but this never happened 
+in practice.} Recall is an idea from information retrieval to represent the fraction of relevant documents 
+that were retrieved. Here we use it to mean the number of errors that were found. Throughout 
+\programName's development, we considered recall to be more important than precision. In almost all 
+checks, we prefer \programName to find all the true errors and produce extraneous output over missing 
+some of the true errors and minimizing extraneous output. The notable exception is the check for magic 
+numbers in which producing output regarding 0, 1 and 2 would far outweigh the few times those 
+numbers would be used in a `magic' way. The checks I wrote reflect this preference, however, other 
+administrators can write more `conservative' checks which alter this relationship between recall and 
+precision.
+
 Three checks were very useful and represented about a third of all of \programName's output: magic 
 numbers, validating pointer parameters, and comments above global variables. The check for magic 
 numbers was one of the qualitatively hardest for Dr.\ Dondero to perform because numerals do not stand 
 out from code. This is shown in the data in \autoref{resultsMagicNumbers} where Dr.\ Dondero missed 
 almost as many magic numbers as he caught. This check is also interesting in that by its very nature it 
-will miss some errors, namely when 0, 1 or 2 is used in a way that is `magic'. 
+will miss some errors, namely when 0, 1 or 2 is used `magically'. 
 
 \begin{table}
 \begin{center}
@@ -1249,6 +1262,16 @@ a precision of 25.3\%. After filtering the data, \programName had a precision of
 recall of 81.6\%.}
 \label{resultsCommentsAboveGlobals}
 \end{table}
+
+In going over the graded assignments, it became clear that \programName had not yet been tuned to find 
+all the desired types of style errors. One of the most prevalent ignored issues were lines that exceeded a 
+maximum length. \programName can be configured to check for this error by editing the code in the lexer 
+which tracks the column position of the source file. Another useful check would be to recognized 
+duplicate definitions of the same \lstinline{struct} in different files. While this would be possible to 
+implement in \programName by storing all references to \lstinline{struct}s, it would not be a simple 
+process. Splint, however, does check for this type of error and can be used in conjunction with 
+\programName to provide a more complete set of checks. Other issues that appeared were: missing 
+include guards, needing to create an opaque pointer type from a \lstinline{struct} and poor indentation.
 
 Overall, \programName did very well. A total of 24 checks were run over the dataset with 1236 errors 
 found. 961 of these represented true stylistic errors in the code; 16.1\% of which \human did not catch. 
