@@ -131,7 +131,7 @@
 Stylistic errors are a symptom of poorly written and\slash or hard to read code. Sadly, relatively few tools 
 have addressed automated stylistic error checking and even fewer are customizable or written for C. 
 \programName (Critique from the Terminal) fills this gap by providing a tool to check for administrator 
-defined stylistic errors in C code. It uses a SAX style of event based programming to perform checks 
+defined stylistic errors in C code. It uses a SAX style of event-based programming to perform checks 
 and produce reports of errors as the code is being read. Administrators can use predefined checks or 
 create their own to enforce coding standards or help grade and teach ``good style'' to students.
 \todo{Should I put evaluation results in here?}
@@ -634,7 +634,7 @@ method to drive their tools.
 Originally, \programName operated in a similar manner; it stored an enumerated value corresponding to 
 the type of construction as the semantic value of each node (see \autoref{progressionOfDevelopment}). 
 The different checks then examined the value of each construction. Instead of expanding along this line 
-of development, I decided to transition to an event based system, largely inspired by 
+of development, I decided to transition to an event-based system, largely inspired by 
 SAX\cite{saxHomepage}. This kind of framework, ``reports parsing events (such as the start and end of 
 elements) directly to the application through callbacks, and does not usually build an internal tree. The 
 application implements handlers to deal with the different events, much like handling events in a 
@@ -642,7 +642,7 @@ graphical user interface''\cite{saxHomepage}. Specifically, SAX uses event handl
 There are three main handlers which are used at the beginning and end of each XML element as well as 
 to capture the text in between. 
 
-I chose to make this transition because the event based system required far less overhead to 
+I chose to make this transition because the event-based system required far less overhead to 
 implement. Instead of spending time building the tree framework and the corresponding methods to 
 traverse it, I was able to focus on implementing stylistic checks. Additionally, the SAX-style framework 
 has the added benefit of being able to examine code on the fly as opposed to after the file has been 
