@@ -187,10 +187,10 @@ text that contains something outside the language (be it English, C, etc.). A po
 paper and poorly styled code both denote text that is technically valid but hard to understand. Finally, 
 illogical arguments in prose and malfunctioning code both imply errors in the ideas behind the text. 
 There are tools to help one find these errors in both prose and code (see \autoref{errorChecking}). 
-Spell and grammar check exist in nearly every word processor; the reader highlights substantive 
-errors in literature. With code, the compiler shows semantic errors and the user\slash 
-testing reveals substantive errors. Yet stylistic error checking for code has been addressed by 
-relatively few tools.
+Spell and grammar check exist in nearly every word processor, editors read manuscripts in order to find 
+stylistic errors, and the reader highlights semantic errors. With code, the compiler shows syntax errors 
+and the user\slash testing reveal semantic errors. Yet stylistic error checking for code has been 
+addressed by relatively few tools.
 
 \begin{table}%[h]
 	\begin{center}
@@ -221,7 +221,7 @@ programmer.
 
 The biggest reason to perform stylistic error checking is to improve readability (the 
 ease with which another programmer can understand a piece of code). In the same way that 
-grammatical errors in a paper often confound its underlying arguments, poorly written code can easily 
+poor phrasing in a paper often confounds its underlying arguments, poorly written code can easily 
 obscure its underlying function. Furthermore, readable code is easy to revise and update later. 
 
 In the academic world, professors and TA's often read students' code, especially in introductory level
@@ -246,8 +246,8 @@ Many tools exist to help improve code. Minimally, compilers often produce warnin
 or poorly placed comparisons\slash assignments. Tools like Clang\cite{clang} and Uno\cite{Uno} go 
 even further and look for bugs such as uninitialized variables, out of bounds array indexing and memory 
 errors. These tools do not focus on style\slash readability explicitly and still largely operate on the same 
-level as a compiler.  Some tools try to fill the stylistic error checking gap. Each approaches the problem 
-differently, but all succeed in finding some stylistic errors. Three such tools are 
+level as a compiler.  Other tools try very hard to fill the stylistic error checking gap. Each approaches the 
+problem differently, but all succeed in finding some stylistic errors. Three such tools are 
 \hyperref[sec:splint]{Splint}\cite{splint-manual}, \hyperref[sec:pmdAndCheckstyle]{PMD}\cite{pmd}, and 
 \hyperref[sec:pmdAndCheckstyle]{Checkstyle}\cite{checkstyle}.
 
@@ -278,13 +278,13 @@ also of the tool. For new programmers (often the ones who need the most error ch
 annotations are almost impossible to implement on top of learning to program, as suggested by  
 David Evans (one of the authors) in a private email. He states:
 \begin{quote} \singlespacing
-One of the goals of the original design of 
-Splint was for programmers who add no annotations to start getting some useful warnings right away, 
-including warnings that encourage them to start adding annotations.  For some aspects, such as 
-\lstinline{/*@null@*/} annotations I think this has worked okay, but for others like abstract types, 
-memory management, etc. I don't think it has worked very well, and the warnings on these issues tend 
-to either make developers want to stop using Splint, or at least just turn off all the warnings of that type, 
-rather than start adding the annotations needed to enable better checking.\cite{evans-email} 
+One of the goals of the original design of Splint was for programmers who add no annotations to start 
+getting some useful warnings right away, including warnings that encourage them to start adding 
+annotations.  For some aspects, such as \lstinline{/*@null@*/} annotations I think this has worked okay, 
+but for others like abstract types, memory management, etc.\ I don't think it has worked very well, and the 
+warnings on these issues tend to either make developers want to stop using Splint, or at least just turn off 
+all the warnings of that type, rather than start adding the annotations needed to enable better 
+checking.\cite{evans-email} 
 \end{quote}
 
 Splint and \programName differ in three significant ways. Splint performs a lot of inter-file checks 
@@ -440,7 +440,6 @@ test.c:92.22-92.23: big problem: Do not use magic numbers
 \caption[Example Error and Corresponding Message]{Example Error and Corresponding Message. Here, \programName is complaining that the for loop's exit condition contains a `magic number', in this case `5'. The error message contains the location of the error, the warning level and then the error message.}
 \label{errorExample}
 \end{figure}
-\todo{used word critTer here}
 
 The administrator is responsible for defining the set of checked stylistic errors. \programName 
 comes with a set of predefined checks that the administrator may use or discard at his\slash her 
@@ -635,19 +634,21 @@ determine the meaning of the code as well as stylistic attributes. Both PMD and 
 method to drive their tools. 
 
 Originally, \programName operated in a similar manner; it stored an enumerated value corresponding to 
-the type of construction as the semantic value of each node. The different checks then examined the 
-value of each construction. Instead of expanding along this line of development, I decided to transition to 
-an event based system, largely inspired by SAX\cite{saxHomepage}. This kind of framework, ``reports 
-parsing events (such as the start and end of elements) directly to the application through callbacks, and 
-does not usually build an internal tree. The application implements handlers to deal with the different 
-events, much like handling events in a graphical user interface''\cite{saxHomepage} Specifically, SAX 
-uses event handlers to parse XML files. There are three main handlers which are used at the beginning 
-and end of each XML element as well as to capture the text in between. 
+the type of construction as the semantic value of each node (see \autoref{progressionOfDevelopment}). 
+The different checks then examined the value of each construction. Instead of expanding along this line 
+of development, I decided to transition to an event based system, largely inspired by 
+SAX\cite{saxHomepage}. This kind of framework, ``reports parsing events (such as the start and end of 
+elements) directly to the application through callbacks, and does not usually build an internal tree. The 
+application implements handlers to deal with the different events, much like handling events in a 
+graphical user interface''\cite{saxHomepage}. Specifically, SAX uses event handlers to parse XML files. 
+There are three main handlers which are used at the beginning and end of each XML element as well as 
+to capture the text in between. 
 
-I chose to make this transition because it requires far less overhead to implement. Instead of spending 
-time building the tree framework and the corresponding methods to traverse it, I was able to focus on 
-implementing stylistic checks. Additionally, the SAX-style framework has the added benefit of being able 
-to examine code on the fly as opposed to after the file has been parsed completely.
+I chose to make this transition because the event based system required far less overhead to 
+implement. Instead of spending time building the tree framework and the corresponding methods to 
+traverse it, I was able to focus on implementing stylistic checks. Additionally, the SAX-style framework 
+has the added benefit of being able to examine code on the fly as opposed to after the file has been 
+parsed completely.
 
 \section{Calling the Checks}
 \label{callingTheChecks}
@@ -873,32 +874,13 @@ void isCompoundStatementEmpty(YYLTYPE location, int progress) {
 Minimally, each check needs access to the location of the code construct in order to be able to produce 
 an error. However, checks often need additional information regarding the surrounding context of 
 the possible error. A simple example is the check against using ``magic 
-numbers''\cite[p.~19]{practice-of-programming} (\autoref{checkWithContext}). Many programmers 
+numbers''\cite[p.~19]{practice-of-programming} (see \autoref{checkWithContext}). Many programmers 
 consider using numeric constants directly inside the code very poor style and recommend defining a 
 symbolic constant to hold that value. Therefore \programName should only throw an error when it finds 
 an magic number inside a normal statement (as opposed to inside a declaration where it is necessarily 
 defined). This check then needs to know every time a declaration begins and ends as well as each time 
 a number is found. Alternatively, one can set global variables regarding the context and minimize the 
 number of parameters to each check.
-
-\newcommand{\yyerror}{\lstinline{yyerror}\xspace}
-\newcommand{\lyyerror}{\lstinline{lyyerror}\xspace}
-\newcommand{\lyyerrorf}{\lstinline{lyyerrorf}\xspace}
-
-In order to throw an error, the administrator can call one of three functions: \yyerror, \lyyerror, and 
-\lyyerrorf. Each of these functions outputs an error message to \lstinline{stderr} preceded by the error's 
-location in the code and a warning level (as seen in \autoref{errorExample}). \yyerror and \lyyerrorf 
-are each wrappers to \lyyerror, which takes in an error level (\lstinline{enum errorLevel}), a location 
-(\lstinline{YYLTYPE}) and an error message (\lstinline{char *}). In essence, \lyyerror is really a wrapper 
-to \lstinline{fprintf} and defines the formatting of all the error messages\slash locations. \lyyerrorf, instead 
-of taking in an error message, takes a format string and a variable argument list, which it uses with 
-\lstinline{vsprintf} to create an error message. It then passes the newly created message to \lyyerror with 
-the rest of its arguments. \yyerror only takes an error message and calls \lyyerror with Bison's internal 
-location in the code and a default high error level. This is because \yyerror is called internally through 
-Bison to represent syntax errors. \yyerror is the only predefined error reporting function; \lyyerror is an 
-extension suggested by O'Reily\cite{flex-and-bison} when using location tracking with Bison\slash Flex 
-(the `l' represents the variable location). \lyyerrorf was created in the likes of \lstinline{printf} to deal with 
-formatted error messages in one consolidated function.
 
 \begin{figure}
 \begin{lstlisting}[language=C]
@@ -940,6 +922,25 @@ void isMagicNumber(YYLTYPE location, int progress, char* constant) {
 \label{checkWithContext}
 \end{figure}
 
+\newcommand{\yyerror}{\lstinline{yyerror}\xspace}
+\newcommand{\lyyerror}{\lstinline{lyyerror}\xspace}
+\newcommand{\lyyerrorf}{\lstinline{lyyerrorf}\xspace}
+
+In order to throw an error, the administrator can call one of three functions: \yyerror, \lyyerror, and 
+\lyyerrorf. Each of these functions outputs an error message to \lstinline{stderr} preceded by the error's 
+location in the code and a warning level (as seen in \autoref{errorExample}). \yyerror and \lyyerrorf 
+are each wrappers to \lyyerror, which takes in an error level (\lstinline{enum errorLevel}), a location 
+(\lstinline{YYLTYPE}) and an error message (\lstinline{char *}). In essence, \lyyerror is really a wrapper 
+to \lstinline{fprintf} and defines the formatting of all the error messages\slash locations. \lyyerrorf, instead 
+of taking in an error message, takes a format string and a variable argument list, which it uses with 
+\lstinline{vsprintf} to create an error message. It then passes the newly created message to \lyyerror with 
+the rest of its arguments. \yyerror only takes an error message and calls \lyyerror with Bison's internal 
+location in the code and a default high error level. This is because \yyerror is called internally through 
+Bison to represent syntax errors. \yyerror is the only predefined error reporting function; \lyyerror is an 
+extension suggested by O'Reily\cite{flex-and-bison} when using location tracking with Bison\slash Flex 
+(the `l' represents the variable location). \lyyerrorf was created in the likes of \lstinline{printf} to deal with 
+formatted error messages in one consolidated function.
+
 Additionally, there are two helper modules designed to facilitate writing checks: Locations and 
 Comments. The Locations module contains several functions to manipulate \lstinline{YYLTYPE}s.  
 Specifically it contains methods to compare locations in various directions\slash distances as well as 
@@ -980,8 +981,7 @@ function declarations in header files.}
 Find out from your administrator where you should find their version of \programName. After following 
 their installation instructions, go to your working directory from the command line. Type 
 ``\lstinline{critTer *.c}'' (or if you only want to check one or two files, type their names instead of the 
-\lstinline{*.c}). \todo{used the word critTer here!!} \programName will output 
-any warnings about your code to \lstinline{stderr}.
+\lstinline{*.c}). \programName will output any warnings about your code to \lstinline{stderr}.
 
 \section{Administrators}
 
@@ -1000,8 +1000,7 @@ Furthermore, the team can be more productive when they spend less time correctin
 
 \subsection{Customization}
 Before customizing the code, please make sure you both understand how \programName works (see 
-\autoref{howItWorks}) and have looked through the Code 
-Conventions in \autoref{conventions}).
+\autoref{howItWorks}) and have looked through the code conventions in \autoref{conventions}.
 
 \subsubsection{Add a Check}
 
@@ -1014,22 +1013,12 @@ context: whether or not \lstinline{endCompoundStatement} was the last function c
 \lstinline{endFor} was called, did \programName encounter a `\lstinline!}!' or something else). This 
 minimal context can be established through the use of the \lstinline{lastCalled_get()} function which 
 returns a pointer to the last Sax handler called. More complex checks may need additional context. For 
-example, to check for magic numbers, the check needs to keep track of whether the numeric constant 
-appears inside a declaration. The easiest way to do this is to have the check called from 
-\lstinline{registerConstant}, \lstinline{beginDeclaration} and \lstinline{endDeclaration} and pass in a 
-different `progress' value at each different call. Throughout the code, the enumerated values 
-\lstinline{BEGINNING}, \lstinline{MIDDLE} and \lstinline{END} provide such values (as shown in 
-\autoref{addCheckExample}).
-
-After determining the relevant handlers and additional necessary parameters,\footnote{Each check 
-should have at least one parameter: \lstinline{YYLTYPE location}. This value is necessary in order to 
-produce a proper error message. All other parameters are optional and should follow \lstinline{location}. 
-Many checks can be completed using only a progress value or informative string.} one must actually 
-write the check. The easiest way to deal with contextual processing is to use a \lstinline{switch} 
-statement and conditionally set static local variables (\autoref{addCheckExample}). In order to 
-throw an error, one must pass \lstinline{location} to either \lstinline{lyyerror} or \lstinline{lyyerrorf} with an 
-error level and either an error message or format string and arguments respectively (for additional 
-information see \autoref{writingTheChecks}).
+example, to check that each \lstinline{switch} statement has a \lstinline{default} case, the check needs to 
+keep track of whether it has seen a \lstinline{default} within the current \lstinline{switch} block. The 
+easiest way to do this is to have the check called from \lstinline{beginSwitch}, \lstinline{registerDefault} 
+and \lstinline{endSwitch} and pass in a different `progress' value at each different call. Throughout the 
+code, the enumerated values \lstinline{BEGINNING}, \lstinline{MIDDLE} and \lstinline{END} provide such 
+values (as shown in \autoref{addCheckExample}).
 
 \begin{figure}
 \begin{lstlisting}[language=C]
@@ -1064,6 +1053,16 @@ void switchHasDefault(YYLTYPE location, int progress) {
 \label{addCheckExample}
 \end{figure}
 
+After determining the relevant handlers and additional necessary parameters,\footnote{Each check 
+should have at least one parameter:\ \lstinline{YYLTYPE location}. This value is necessary in order to 
+produce a proper error message. All other parameters are optional and should follow \lstinline{location}. 
+Many checks can be completed using only a progress value or informative string.} one must actually 
+write the check. The easiest way to deal with contextual processing is to use a \lstinline{switch} 
+statement and conditionally set static local variables (\autoref{addCheckExample}). In order to 
+throw an error, one must pass \lstinline{location} to either \lstinline{lyyerror} or \lstinline{lyyerrorf} with an 
+error level and either an error message or format string and arguments respectively (for additional 
+information see \autoref{writingTheChecks}).
+
 \subsubsection{Add an Event Handler}
 
 If you want to add an event handler, be advised, you will have to edit the grammar file. If you screw up 
@@ -1089,7 +1088,7 @@ There are only two reasons to route your new handler through the Hooks module in
 directly to Sax; the most likely reason is the event occurs inside a construct that already goes through 
 Hooks. Declarations, function signatures, and statements currently go through Hooks. This means that 
 events like \lstinline{registerConst} must also go through Hooks in order to be released to Sax at the right 
-time (see \autoref{howChecksAreCalled}). The second motive is the reason why those constructs 
+time (see \autoref{callingTheChecks}). The second motive is the reason why those constructs 
 already go through Hooks:  it is the the only way of getting an accurate \lstinline{begin} handler. By this I 
 mean it is either impossible or very hard\slash complicated to create a \lstinline{begin} handler in the 
 right spot in the grammar such that it comes before all its components. These constructs dequeue all the 
@@ -1102,7 +1101,8 @@ handler needs to go through Hooks, you need to create two handlers: \lstinline{n
 grammar file). If the event just needs to be released at the correct time (i.e. it appears within a hooked 
 construct), the Hooks handler should call \lstinline{enqueueFunctionAndLocation} to enqueue the Sax 
 handler. If the handler needs to dequeue elements, it should call \lstinline{dequeueUntil}, followed by the 
-sax handler and \lstinline{lastCalled_set()}. Both routes are shown in \autoref{saxAndHooksHandlers}.
+sax handler and \lstinline{lastCalled_set()}. Examples of both direct and indirect routes from the 
+Lexer\slash Parser to Sax are shown in \autoref{saxAndHooksHandlers}.
 
 \begin{figure}
 
@@ -1198,14 +1198,14 @@ performance compared to ``true'' errors, which were determined after both Dr. Do
 order to properly take into account errors that Dr. Dondero originally missed and  \programName found. 
 We did allow \programName to perform an iterative analysis of the submissions as a whole, mirroring 
 the development process we hope other administrators will go through as they develop their own 
-checks. The iterative process mostly affected checks like \lstinline{fileIsTooLong} where there was a 
+checks. The iterative process mostly affected checks like \lstinline{functionIsTooLong} where there was a 
 threshold value that needed to be tuned. 
 
-We measured two properties: precision and recall. Precision represents what fraction of the output was 
+We measured two properties:\ precision and recall. Precision represents what fraction of the output was 
 in response to a true error. In our experiment, \human will always have a precision of 100\%.\footnote{It is 
 possible for \human to lower this value by changing his mind regarding an error but this never happened 
 in practice.} Recall is an idea from information retrieval to represent the fraction of relevant documents 
-that were retrieved. Here we use it to mean the number of errors that were found. Throughout 
+that were retrieved. Here we use it to mean the number of true errors that were found. Throughout 
 \programName's development, we considered recall to be more important than precision. In almost all 
 checks, we prefer \programName to find all the true errors and produce extraneous output over missing 
 some of the true errors and minimizing extraneous output. The notable exception is the check for magic 
@@ -1347,11 +1347,12 @@ In addition to those mentioned above, \programName ran 16 checks over the data s
 like useEnumNotDefine and functionIsTooLong, \programName and \human found the same set of 
 errors. In other cases, as with neverUseCPlusPlusStyleComments and switchHasDefault, \human did not 
 find any errors yet \programName found a set with 100\% precision. Several checks did not have enough 
-data points to perform any meaningful analysis. tooManyFunctionsInFile, tooManyParameters, 
-fileIsTooLong, isCompoundStatementEmpty and switchCasesHaveBreaks each had less than 4 errors 
-reported. In some cases, specifically for isTooDeeplyNested, \human agreed that \programName's output 
-was correct even if there wasn't a specific remedy for the code. During the term, Dr.\ Dondero normally 
-solves this issue by telling the student the code is poorly styled without exacting a penalty.
+data points to perform any meaningful analysis. For example, tooManyFunctionsInFile, 
+tooManyParameters, fileIsTooLong, isCompoundStatementEmpty and switchCasesHaveBreaks each 
+had less than 4 errors reported. In some cases, specifically for isTooDeeplyNested, \human agreed that 
+\programName's output was correct even if there wasn't a specific remedy for the code. During the term, 
+Dr.\ Dondero normally solves this issue by telling the student the code is poorly styled without exacting a 
+penalty.
 
 In going over the graded assignments, it became clear that \programName had not yet been tuned to find 
 all the desired types of style errors. One of the most prevalent ignored issues were lines that exceeded a 
@@ -1482,7 +1483,7 @@ Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
 \begin{itemize}
 \item Use the DynArray class to handle persistent arrays, stacks and queues. It is a dynamically growing array which holds void pointers. This is the base implementation of how comments are stored as well as the Hook module queues.
 \item To change the tab size, edit the \lstinline{count} function inside c.l.
-\item To change the string representation for each error level, edit the \lyyerror function. Currently, 
+\item To change the string representation for each error level, edit the \lyyerror function in c.y. Currently, 
 \lstinline{ERROR_HIGH}=``big problem'', \lstinline{ERROR_NORMAL}=``error'', and 
 \lstinline{ERROR_LOW}=``low priority''.  
 \end{itemize}
@@ -1510,9 +1511,10 @@ will be added so that each error message appears on one line.
 \end{itemize}
 
 \chapter{Progression of Development}
+\label{progressionOfDevelopment}
 
 \programName's development has been reasonably linear and has consisted of slowly adding modules 
-as situations arose. Getting Bison and Flex to parse the sample C code took a significant portion of 
+as new situations arose. Getting Bison and Flex to parse the sample C code took a significant portion of 
 time at the beginning; especially the added elements such as tracking \lstinline{typedef}s and 
 dynamically reading header files. Once the code could be read without issue, the next step was to start 
 adding some minimal checks.
