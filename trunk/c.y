@@ -531,7 +531,7 @@ void lyyerror(enum errorLevel priority, YYLTYPE t, char *s) {
 
 void yyerror(char *s)
 {
-	lyyerror(ERROR_HIGH, yylloc, s);
+	lyyerrorf(ERROR_HIGH, yylloc, "%s. Please make sure that there aren't any '\\'s in your code.", s);
 }
 
 void lyyerrorf(enum errorLevel priority, YYLTYPE location, char* format, ...) {
