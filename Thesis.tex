@@ -133,7 +133,7 @@ have addressed automated stylistic error checking and even fewer are customizabl
 \programName (Critique from the Terminal) fills this gap by providing a tool to check for administrator 
 defined stylistic errors in C code. It uses a SAX style of event-based programming to perform checks 
 and produce reports of errors as the code is being read. Administrators can use predefined checks or 
-create their own to enforce coding standards or help grade and teach ``good style'' to students.
+create their own to enforce coding standards or help grade and teach ``good style'' to students. 
 \todo{Should I put evaluation results in here?}
 \end{abstract}
 
@@ -1239,7 +1239,7 @@ or 2 is used `magically'.
 
 \programName checks whether functions validate pointer parameters inside an \lstinline{assert()} before 
 the parameter is actually used. There are two systematic errors involved with this check. The first is that 
-\programName will output an error when the the parameter is being properly validated through code like 
+\programName will output an error when the parameter is being properly validated through code like 
 `\lstinline{if (param != NULL)}'. This is unavoidable as \programName does not detect the meaning 
 behind the code. The second systematic error involves opaque pointer types; \programName has no way 
 of knowing whether a newly defined type is a wrapper around a pointer. Therefore, it does not make sure 
@@ -1259,7 +1259,7 @@ parameters of those types are validated. Data is shown in \autoref{resultsValida
 \end{tabular}
 \end{center}
 \caption[Test Results for Validating Pointer Parameters]{Test Results for Validating Pointer Parameters. 
-For this check, \programName had a recall of 98.2\% and a precision of 82.9\%. \human had a recall of 
+For this check, \programName had a recall of 92.8\% and a precision of 82.9\%. \human had a recall of 
 66.7\%.}
 \label{resultsValidatePointerParameters}
 \end{table}
