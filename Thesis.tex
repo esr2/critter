@@ -108,8 +108,6 @@
 
 \doublespacing			% Ask per individual, also remove extra space in section headings
 
-\usepackage{setspace}
-
 \begin{document}
 \singlespacing
 \input{titlePage}
@@ -1483,9 +1481,8 @@ Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
 \begin{itemize}
 \item Use the DynArray class to handle persistent arrays, stacks and queues. It is a dynamically growing array which holds void pointers. This is the base implementation of how comments are stored as well as the Hook module queues.
 \item To change the tab size, edit the \lstinline{count} function inside c.l.
-\item To change the string representation for each error level, edit the \lyyerror function in c.y. Currently, 
-\lstinline{ERROR_HIGH}=``big problem'', \lstinline{ERROR_NORMAL}=``error'', and 
-\lstinline{ERROR_LOW}=``low priority''.  
+\item To change the string representation for each error level, edit the \lyyerror function in c.y. Currently, \lstinline{ERROR_HIGH}=``big problem'', \lstinline{ERROR_NORMAL}=``error'', and \lstinline{ERROR_LOW}=``low priority''.  
+\item Make sure that each \lstinline{IDENTIFIER} in the grammar is either registered through \lstinline{h_registerIdentifer} or is explicitly ignored through \lstinline{h_ignoreIdentifierText}. Otherwise the wrong identifier text will be dequeued and passed into the Sax module. This is because the lexer will always enqueue the \lstinline{IDENTIFIER}'s text before the grammar recognizes it.
 \end{itemize}
 
 \section{Sax and Hooks Modules}
