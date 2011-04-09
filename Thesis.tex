@@ -1214,12 +1214,13 @@ numbers would be used in a `magic' way. The checks I wrote reflect this preferen
 administrators can write more `conservative' checks which alter this relationship between recall and 
 precision.
 
-Three checks were very useful and represented about a third of all of \programName's output: magic 
-numbers, validating pointer parameters, and comments above global variables. The check for magic 
-numbers was one of the qualitatively hardest for Dr.\ Dondero to perform because numerals do not stand 
-out from code. This is shown in the data in \autoref{resultsMagicNumbers} where Dr.\ Dondero missed 
-almost as many magic numbers as he caught. This check is also interesting in that by its very nature it 
-will miss some errors, namely when 0, 1 or 2 is used `magically'. 
+Four checks were very useful and represented about half of all of \programName's output: magic 
+numbers, validating pointer parameters, comments above global variables, and validating function 
+comments. The check for magic numbers was one of the qualitatively hardest for Dr.\ Dondero to perform 
+because numerals do not stand out from code. This is shown in the data in 
+\autoref{resultsMagicNumbers} where Dr.\ Dondero missed almost as many magic numbers as he 
+caught. This check is also interesting in that by its very nature it will miss some errors, namely when 0, 1 
+or 2 is used `magically'. 
 
 \begin{table}
 \begin{center}
@@ -1301,6 +1302,57 @@ recall of 81.6\%.}
 \label{resultsCommentsAboveGlobals}
 \end{table}
 
+The check to validate function comments is an ideal check. One of Dr.\ Dondero's biggest time 
+drains in grading assignments is checking that each function has an appropriate comment. 
+\programName is able to easily check whether the function has a comment and whether that comment 
+refers to each of its parameters and its return value. More importantly, \programName had a perfect 
+record in finding these errors within our dataset as seen in \autoref{resultsValidateFunctionComments}.  
+
+\begin{table}
+\begin{center}
+\begin{tabular}{llccc}
+	\toprule
+	&&& \multicolumn{2}{c}{Was an error present?} \\
+	&&& Yes & No   \\ \midrule
+     \multirow{4}{2cm}{Comment Present?}
+	& \multirow{2}{*}{Did \programName report an error?} & Yes & 138  & 0   \\
+	&								  		   & No  & 0  & \\ \cdashline{2-5}[2pt/4pt]
+	& \multirow{2}{*}{Did \human report an error?} & Yes & 131 & 0 \\
+	&								        & No  & 7 & \\  \hdashline
+      \multirow{4}{2cm}{Refers to Parameters?}
+	& \multirow{2}{*}{Did \programName report an error?} & Yes & 36 & 0   \\
+	&								  		   & No  &  0 & \\ \cdashline{2-5}[2pt/4pt]
+	& \multirow{2}{*}{Did \human report an error?} & Yes & 18 & 0 \\
+	&								        & No  & 18 & \\  \hdashline
+     \multirow{4}{2cm}{Refers to Return Value?}
+	& \multirow{2}{*}{Did \programName report an error?} & Yes & 9 &  0 \\
+	&								  		   & No  &  0 & \\ \cdashline{2-5}[2pt/4pt]
+	& \multirow{2}{*}{Did \human report an error?} & Yes & 4 & 0 \\
+	&								        & No  & 5 & \\ \midrule
+     \multirow{4}{2cm}{Totals:}
+	& \multirow{2}{*}{Did \programName report an error?} & Yes & 183 &  0 \\
+	&								  		   & No  &  0 & \\ \cdashline{2-5}[2pt/4pt]
+	& \multirow{2}{*}{Did \human report an error?} & Yes & 153 & 0 \\
+	&								        & No  & 30 & \\
+	\bottomrule
+\end{tabular}
+\end{center}
+\caption[Test Results for Validating Function Comments]{Test Results for Validating Function Comments. 
+For this check, \programName had a recall of 100\% and a precision of 100\%. \human had a recall of 
+83.6\%.}
+\label{resultsValidateFunctionComments}
+\end{table}
+
+In addition to those mentioned above, \programName ran 16 checks over the data set. In some cases, 
+like useEnumNotDefine and functionIsTooLong, \programName and \human found the same set of 
+errors. In other cases, as with neverUseCPlusPlusStyleComments and switchHasDefault, \human did not 
+find any errors yet \programName found a set with 100\% precision. Several checks did not have enough 
+data points to perform any meaningful analysis. tooManyFunctionsInFile, tooManyParameters, 
+fileIsTooLong, isCompoundStatementEmpty and switchCasesHaveBreaks each had less than 4 errors 
+reported. In some cases, specifically for isTooDeeplyNested, \human agreed that \programName's output 
+was correct even if there wasn't a specific remedy for the code. During the term, Dr.\ Dondero normally 
+solves this issue by telling the student the code is poorly styled without exacting a penalty.
+
 In going over the graded assignments, it became clear that \programName had not yet been tuned to find 
 all the desired types of style errors. One of the most prevalent ignored issues were lines that exceeded a 
 maximum length. \programName can be configured to check for this error by editing the code in the lexer 
@@ -1312,8 +1364,8 @@ process. Splint, however, does check for this type of error and can be used in c
 \lstinline{#include} guards, needing to create an opaque pointer type from a \lstinline{struct} and poor 
 indentation.
 
-Overall, \programName did very well. A total of 24 checks were run over the dataset with 1230 errors 
-found. 954 of these represented true stylistic errors in the code. \programName's recall was 14.4\% 
+Overall, \programName did very well. A total of 1230 errors were found over the entire dataset. 
+954 of these represented true stylistic errors in the code. \programName's recall was 14.4\% 
 higher than \human's and maintained a relatively high precision of 77.2\%. After filtering, 
 \programName's precision jumped to 90.0\%. Data, before and after filtering, can be seen in 
 \autoref{resultsAllChecks}. These tests conclusively prove the benefit that \programName can provide in 
