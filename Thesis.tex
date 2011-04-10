@@ -1200,7 +1200,7 @@ checks to the testing mechanism, one simply needs to add the check's function na
 In order to perform an evaluation of \programName's performance, Dr. Robert Dondero graded 
 10 randomly chosen final project submissions for Princeton University's Introduction to Programming 
 Systems (COS 217) \cite{cos217}. There were over 650 assignments available, each of which was 
-anonymized in order to protect student's privacy. Dr. Dondero has taught the course for many years, 
+anonymized in order to protect the student's privacy. Dr. Dondero has taught the course for many years, 
 making him the perfect person to judge each submission's style. We judged \programName's 
 performance compared to ``true'' errors, which were determined after both Dr. Dondero and 
 \programName looked at each submission. This post-analysis judgement of errors was necessary in 
@@ -1210,6 +1210,7 @@ the development process we hope other administrators will go through as they dev
 checks. The iterative process mostly affected checks like \lstinline{functionIsTooLong} where there was a 
 threshold value that needed to be tuned. 
 
+\todo{define how I got the numbers for precision and recall?}
 We measured two properties:\ precision and recall. Precision represents what fraction of the output was 
 in response to a true error. In our experiment, \human will always have a precision of 100\%.\footnote{It is 
 possible for \human to lower this value by changing his mind regarding an error but this never happened 
@@ -1284,7 +1285,7 @@ further comments would decrease readability. Warnings to add comments are theref
 other systematic error was due to a previously acceptable standard of putting comments beneath 
 declarations. As mentioned in \autoref{writingTheChecks}, \programName is unable to associate 
 comments beneath a declaration to that code. Because of this, and the upcoming change to the COS 
-217 to coding standard, Dr.\ Dondero and I felt that it was inappropriate to include these results against 
+217 coding standard, Dr.\ Dondero and I felt that it was inappropriate to include these results against 
 \programName. To accomplish this, we have filtered the data to remove the 224 extraneous warnings 
 due to comments placed after global declarations. \autoref{resultsCommentsAboveGlobals} shows the 
 data both before and after filtering.
