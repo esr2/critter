@@ -11,6 +11,8 @@
 \usepackage{epstopdf}
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
 
+\usepackage[table]{xcolor}
+
 \usepackage{fancyhdr}
 \setlength{\headheight}{15pt}
 \pagestyle{fancy}
@@ -467,6 +469,7 @@ my own experience.
 \begin{table}
 \small
 	\begin{center}
+	\rowcolors{3}{gray!15}{}
 	\begin{tabular}{l p{9cm}}
 		\toprule
 		Check Name & Purpose \\
