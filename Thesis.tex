@@ -418,10 +418,9 @@ to responding at runtime to a configuration file.
 
 \programName reads in a set of C source code files and determines if they contain any of the 
 defined stylistic errors. It is run from the command line inside one's working directory. \programName is 
-given a list of .c files to check and reads through each in the given order, pausing to read through any 
-locally included header files. Upon encountering an error, \programName prints out the full location of 
-the error, an error level and a message to \lstinline{stderr} (an example is shown in 
-\autoref{errorExample}). 
+given a list of .c files to check and reads through each in the given order, pausing to read through 
+included header files. Upon encountering an error, \programName prints out the full location of the error, 
+an error level and a message to \lstinline{stderr} (an example is shown in \autoref{errorExample}). 
 
 \begin{figure}
 \begin{subfigure}[b]{.49\linewidth}
@@ -438,13 +437,14 @@ the error, an error level and a message to \lstinline{stderr} (an example is sho
 \label{errorExampleStderr}
 \begin{lstlisting}[xleftmargin=.7cm]
 $ critTer test.c
-test.c:92.22-92.23: big problem: Do not use magic numbers
+test.c:92.22-92.23: big problem: Do not use magic numbers (5)
 \end{lstlisting}
 \end{subfigure}
-\caption[Example Error and Corresponding Message]{Example Error and Corresponding Message. Here, \programName is complaining that the for loop's exit condition contains a `magic number', in this case `5'. The error message contains the location of the error, the warning level and then the error message.}
+\caption[Example Error and Corresponding Message]{Example Error and Corresponding Message. Here, \programName is complaining that the for loop's exit condition contains a `magic number'. The error message contains the location of the error, the warning level and then the error message.}
 \label{errorExample}
 \end{figure}
 
+\todo{AB CritTer has been designed such that}
 The administrator is responsible for defining the set of checked stylistic errors. \programName 
 comes with a set of predefined checks that the administrator may use or discard at his\slash her 
 discretion. Checks are event driven and are called when the appropriate element in the code is reached. 
