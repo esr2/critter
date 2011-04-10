@@ -180,16 +180,15 @@ my sisters who constantly provide me with support and laughter. I owe all my suc
 
 When one writes, one encounters three different types of errors: syntactic, stylistic and semantic.  
 In the case of writing prose, these errors take the form of spelling and grammar mistakes, poorly phrased 
-sentences\slash paragraphs and substantive\slash logic errors. When writing code, they form syntax 
-errors, poorly styled code and malfunctioning code. Both spelling mistakes and syntax errors represent 
-text that contains something outside the language (be it English, C, etc.). A poorly phrased passage in a 
-paper and poorly styled code both denote text that is technically valid but hard to understand. Finally, 
-illogical arguments in prose and malfunctioning code both imply errors in the ideas behind the text. 
-There are tools to help one find these errors in both prose and code (see \autoref{errorChecking}). 
-Spell and grammar check exist in nearly every word processor, editors read manuscripts in order to find 
-stylistic errors, and the reader highlights semantic errors. With code, the compiler shows syntax errors 
-and the user\slash testing reveal semantic errors. Yet stylistic error checking for code has been 
-addressed by relatively few tools.
+passages and logic errors. When writing code, they form syntax errors, poorly styled code and 
+malfunctioning code. Both spelling mistakes and syntax errors represent text that contains something 
+outside the language (be it English, C, etc.). A poorly phrased passage in a paper and poorly styled code 
+both denote text that is technically valid but hard to understand. Finally, illogical arguments in prose and 
+malfunctioning code both imply errors in the ideas behind the text. There are tools to help one find these 
+errors in both prose and code (see \autoref{errorChecking}). Spell and grammar check exist in nearly 
+every word processor, editors read manuscripts in order to find stylistic errors, and the reader highlights 
+semantic errors. With code, the compiler shows syntax errors and the user\slash testing reveals semantic 
+errors. Yet stylistic error checking for code has been addressed by relatively few tools.
 
 \begin{table}%[h]
 	\begin{center}
@@ -208,20 +207,20 @@ addressed by relatively few tools.
 \end{table}
 
 
-From a different point of view, this problem can be formulated in terms of software quality. 
-Namely, there are two perspectives on software quality: that of the user and that of the programmer. 
-Users evaluate software on whether or not it behaves as it ought to. In contrast, programmers evaluate 
+From a different point of view, this problem\todo{AB unclear?}\ can be formulated in terms of software quality. 
+There are two perspectives on software quality: that of the user and that of the programmer. 
+Users evaluate software on whether or not it behaves as it ought to. In addition, programmers evaluate 
 software on whether or not it is easily maintainable. Minimally, maintainability implies that 
 code is easy to read and update. Evaluating the user's perspective of a program is common practice and 
 most easily accomplished through automated testing. Though it is possible to evaluate the programmer's 
 perspective, tools that do so only check for certain qualities. Unfortunately, code quality is 
-subjective, any tool that only performs pre-defined inspections will never be satisfactory to every 
+subjective, so any tool that only performs pre-defined inspections will never be satisfactory to every 
 programmer.
 
 The biggest reason to perform stylistic error checking is to improve readability (the 
 ease with which another programmer can understand a piece of code). In the same way that 
 poor phrasing in a paper often confounds its underlying arguments, poorly written code can easily 
-obscure its underlying function. Furthermore, readable code is easy to revise and update later. 
+obscure its underlying function. Furthermore, readable code is easier to revise and update later. 
 
 In the academic world, professors and TA's often read students' code, especially in introductory level
 courses. In these courses, much of the focus is often on enforcing ``good style'' (though the definition 
@@ -233,11 +232,15 @@ improve their grades as well as their coding habits.
 
 In an industrial setting, where it is necessary to read or edit another's code, maintaining readability is 
 essential. Projects are often handed over to new employees or teams who are then expected to be 
-able to contribute immediately. Poorly organized or written code makes this daunting task 
+able to contribute immediately. Poorly organized or written code makes this daunting\todo{AB rm?}\ task 
 onerous. Many successful software companies make use of a codified internal style but the 
 enforcement of this policy falls to the employees. Many transgressions are simply due to inattention 
 and could easily be solved by an automated reminder system. Such a tool would reduce the need to 
 bother one's peers with another round of code reviews, allowing the entire team to be more productive. 
+
+To address these needs I've created \programName (Critique from the Terminal), a customizable style 
+checker for C code. \programName is run from the command line and executes a set of stylistic checks 
+on the source files. Administrators can write their own checks to satisfy their needs. 
 
 \chapter{Related Products}
 
