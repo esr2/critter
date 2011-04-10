@@ -974,13 +974,14 @@ There are some coding styles which are very hard for \programName to check. For 
 checking that each global variable has a comment, it is trivial to check if there is a comment before that 
 declaration. However, if the comment appears after the declaration (as is common in some header 
 files), \programName is unable to find the comment. This is because \programName, at the end of a 
-declaration, has not read or stored the following comment. There are two solutions to this issue. The 
+declaration, has not read or stored the following comment. There are three solutions to this issue. The 
 first is a creative hack in which one stores every location of a global variable and then searches for 
-comments after each location at the end of the file. The second and preferred solution is to change the 
-coding standard to have comments precede declarations.\footnote{Princeton University's Introduction to 
-Programming Systems course\cite{cos217} will be changing its coding standards this summer to 
-facilitate using \programName this fall. One of the largest changes will be to put comments before 
-function declarations in header files.}
+comments after each location at the end of the file. The second method would be to perform lookahead 
+within the lexer to determine if a comment was about to follow. The third and preferred solution is to 
+change the coding standard to have comments precede declarations.\footnote{Princeton University's 
+Introduction to Programming Systems course\cite{cos217} will be changing its coding standards this 
+summer to facilitate using \programName this fall. One of the largest changes will be to put comments 
+before function declarations in header files.}
 
 \chapter{How to Use \programName}
 
