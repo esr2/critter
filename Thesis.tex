@@ -625,16 +625,16 @@ within subdirectories. It is relatively rare within an academic context to break
 subdirectories and accordingly I decided not to focus on this issue.} 
 
 \section{Some Theory}
-Bison uses an LALR(1) parsing algorithm, meaning it creates a Left to Right, Rightmost Derivation parse 
-tree using one token of lookahead. This algorithm maintains a parser table which allows it to avoid 
+Bison uses an LALR(1) parsing algorithm, meaning it uses Left to Right, Rightmost Derivation to create a 
+parse tree using one token of lookahead. This algorithm maintains a parser table which allows it to avoid 
 backtracking as it parses the source file. Because of this property, call are never mistakenly made from 
-the lexer/parser into other modules of \programName.
+the lexer or parser into other modules of \programName.
 
 When compilers translate code into machine language, they first perform lexical analysis and parsing, 
 just like \programName. Where the two start to differ is in the actions for each grammar rule. Compilers 
 store information regarding the semantic value, or meaning of the source code, inside each node. This 
-practice allows them to build an Abstract Syntax Tree, which ``conveys the phrase structure of the source 
-program, with all parsing issues resolved but without any semantic 
+practice allows compilers to build an Abstract Syntax Tree, which ``conveys the phrase structure of the 
+source program, with all parsing issues resolved but without any semantic 
 interpretation''\cite{compiler-implementation}. Other modules can then look over the entire tree and 
 determine the meaning of the code as well as stylistic attributes. Both PMD and Checkstyle use this 
 method to drive their tools. 
@@ -643,7 +643,7 @@ Originally, \programName operated in a similar manner; it stored an enumerated v
 the type of construction as the semantic value of each node (see \autoref{progressionOfDevelopment}). 
 The different checks then examined the value of each construction. Instead of expanding along this line 
 of development, I decided to transition to an event-based system, largely inspired by 
-SAX\cite{saxHomepage}. This kind of framework, ``reports parsing events (such as the start and end of 
+SAX\cite{saxHomepage}. This kind of framework ``reports parsing events (such as the start and end of 
 elements) directly to the application through callbacks, and does not usually build an internal tree. The 
 application implements handlers to deal with the different events, much like handling events in a 
 graphical user interface''\cite{saxHomepage}. Specifically, SAX uses event handlers to parse XML files. 
@@ -665,7 +665,7 @@ names, \lstinline{break} statements, parameters, etc.). In the code, handlers ar
 ``\lstinline{begin}'', ``\lstinline{end}'' and ``\lstinline{register}'' to signal at what point each is called (as 
 shown in \autoref{grammar}). Each handler is passed, at minimum, the location of the relevant text (in 
 the case of \lstinline{IDENTIFIER}s and numeric constants, the handler is also passed the relevant 
-text itself). Each of these event handlers exist in the file sax.c/h which in turn call the administrator 
+text itself). Each of these event handlers exist in the file sax.c which in turn calls the administrator 
 defined checks (as shown in \autoref{saxHandlers}). While these checks could be written into the event 
 handlers themselves, it is conventional to separate them into their own functions (and files) in order to 
 preserve the readability of the sax.c file and the code in general. The predefined checks, their function 
@@ -702,7 +702,7 @@ void endDeclaration(YYLTYPE location) {
 	isVariableNameTooShort(location, END, NULL);
 }
 \end{lstlisting}
-\caption{Event Handlers in the Sax Module}
+\caption{A Subset of the Event Handlers in the Sax Module}
 \label{saxHandlers}
 \end{figure}
 
@@ -780,7 +780,7 @@ function_definition
 Another reason for the Hooks module is to make the appropriate calls into the Sax layer regarding 
 \lstinline{IDENTIFIER}s and numeric constants. The lowest order structure Bison operates with is the 
 token, meaning it cannot know the textual representation. Flex, on the other hand, operates on the actual 
-text. The hooks module takes the separate calls from both modules regarding the location and the text of 
+text. The Hooks module takes the separate calls from both modules regarding the location and the text of 
 \lstinline{IDENTIFIER}s and constants and routes them into a combined call in the SAX layer. This can 
 best be seen in \autoref{handlerTimeline}.
 
@@ -860,7 +860,8 @@ void isCompoundStatementEmpty(YYLTYPE location, int progress) {
 				if (parent) {
 					lyyerrorf(ERROR_HIGH, location, "Do not use empty %s", parent);
 				} else {
-					lyyerror(ERROR_HIGH, location, "Do not use empty block statements");
+					lyyerror(ERROR_HIGH, location, 
+						       "Do not use empty block statements");
 				}
 			}
 			break;
@@ -878,15 +879,14 @@ void isCompoundStatementEmpty(YYLTYPE location, int progress) {
 \label{writingTheChecks}
 
 Minimally, each check needs access to the location of the code construct in order to be able to produce 
-an error. However, checks often need additional information regarding the surrounding context of 
-the possible error. A simple example is the check against using ``magic 
+an error message. However, checks often need additional information regarding the surrounding context 
+of the possible error. A simple example is the check against using ``magic 
 numbers''\cite[p.~19]{practice-of-programming} (see \autoref{checkWithContext}). Many programmers 
 consider using numeric constants directly inside the code very poor style and recommend defining a 
 symbolic constant to hold that value. Therefore \programName should only throw an error when it finds 
-an magic number inside a normal statement (as opposed to inside a declaration where it is necessarily 
+a magic number inside a normal statement (as opposed to inside a declaration where it is necessarily 
 defined). This check then needs to know every time a declaration begins and ends as well as each time 
-a number is found. Alternatively, one can set global variables regarding the context and minimize the 
-number of parameters to each check.
+a number is found. This contextual information can be stored in global variables in the Checks module or passed into the individual check through its parameters (as in \autoref{checkWithContext}).
 
 \begin{figure}
 \begin{lstlisting}[language=C]
@@ -944,7 +944,7 @@ the rest of its arguments. \yyerror only takes an error message and calls \lyyer
 location in the code and a default high error level. This is because \yyerror is called internally through 
 Bison to represent syntax errors. \yyerror is the only predefined error reporting function; \lyyerror is an 
 extension suggested by O'Reilly\cite{flex-and-bison} when using location tracking with Bison\slash Flex 
-(the `l' represents the variable location). \lyyerrorf was created in the likes of \lstinline{printf} to deal with 
+(the `l' represents the variable location). \lyyerrorf is modeled after \lstinline{printf} and deals with 
 formatted error messages in one consolidated function.
 
 Additionally, there are two helper modules designed to facilitate writing checks: Locations and 
@@ -957,7 +957,8 @@ Sax layer and are stored in a dynamic array. Adjacent comments (like those in
 module provides the ability to search through this array to find comments in or near a certain location 
 (using the methods from Locations). Finally Comments provides a couple of useful functions when 
 analyzing the comment itself: determining if a comment has words (as opposed to a delimiting comment 
-in the form of \lstinline{/*----*/} etc.) and if a comment contains a string (with or without case sensitivity).
+in the form of \lstinline{/*----*/} etc.) and if a comment contains a specificied string (with or without case 
+sensitivity).
 
 \begin{figure}
 \begin{lstlisting}[language=C]
@@ -1071,8 +1072,8 @@ information see \autoref{writingTheChecks}).
 
 \subsubsection{Add an Event Handler}
 
-If you want to add an event handler, be advised, you will have to edit the grammar file. If you screw up 
-this file, it will break \programName. Having said that, creating a handler is actually quite trivial. The first 
+If you want to add an event handler, you will have to edit the grammar file. If you damage this file, \todo{fix} 
+\programName will break. Having said that, creating a handler is actually quite simple. The first 
 step is to figure out which grammar rule(s) are relevant to the event you would like to capture. In some 
 cases this is incredibly trivial, in others it takes some effort to understand what the grammar is describing. 
 The best method to figure out the various rules is, in my experience, to perform depth-first-search through 
@@ -1082,23 +1083,25 @@ After finding the grammar rule, adding a \lstinline{register} or \lstinline{end}
 define the handler in sax.c/h and add the action ``\lstinline!{newHandler(@X);}!'' after the component you 
 want to recognize. The \lstinline{@X} references the location of either the component (where \lstinline{X} 
 = the number of the component) or the entire rule (where \lstinline{X} = `\lstinline{$}'). \autoref{grammar}
- and \autoref{hookGrammar} show examples of these calls. Unfortunately adding 
-\lstinline{begin} handlers can be much more difficult than the previous cases although, in principle, the 
-process is identical. This is due to the possibility of adding ambiguities to the grammar. When this 
-happens, Bison will throw several errors during compilation and the parser will most likely break. The 
-first tactic to avoid this issue is to never have actions as the first element in a rule; they should always 
-appear after (at least) one component. If this approach is insufficient, you should try burying the 
-action inside a subroutine (like \lstinline{beginFOR} and \lstinline{beginIF} in \autoref{grammar}).
+ and \autoref{hookGrammar} show examples of these calls. Unfortunately adding \lstinline{begin} 
+handlers can be much more difficult than the previous cases although, in principle, the process is 
+identical. This is due to the possibility of adding ambiguities to the grammar.\footnote{The shift\slash 
+reduce conflict for if-else statements was removed by giving explicit precedence for if-else statements 
+over if statements as suggested by O'Reilly\cite[p.~188]{flex-and-bison}.} When this happens, Bison will 
+throw several errors during compilation and the parser will most likely break. The first tactic to avoid this 
+issue is to never have actions as the first element in a rule; they should always appear after (at least) one 
+component. If this approach is insufficient, you should try burying the action inside a subroutine (like 
+\lstinline{beginFOR} and \lstinline{beginIF} in \autoref{grammar}).
 
 There are only two reasons to route your new handler through the Hooks module instead of going 
 directly to Sax; the most likely reason is the event occurs inside a construct that already goes through 
 Hooks. Declarations, function signatures, and statements currently go through Hooks. This means that 
 events like \lstinline{registerConst} must also go through Hooks in order to be released to Sax at the right 
 time (see \autoref{callingTheChecks}). The second motive is the reason why those constructs 
-already go through Hooks:  it is the the only way of getting an accurate \lstinline{begin} handler. By this I 
+already go through Hooks:  it is the the only way of getting an accurate \lstinline{begin} handler. By this, I 
 mean it is either impossible or very hard\slash complicated to create a \lstinline{begin} handler in the 
-right spot in the grammar such that it comes before all its components. These constructs dequeue all the 
-appropriate previous calls once the \lstinline{h_endXX} handler is called.
+right spot in the grammar such that it is executed before all its components. These constructs dequeue all 
+the appropriate previous calls once the \lstinline{h_endXX} handler is called.
 
 If you do not need to go through Hooks, after defining the action in the grammar file and the handler in 
 both sax.c and sax.h, all you need to do is call \lstinline{lastCalled_set()} from the handler. If the new 
