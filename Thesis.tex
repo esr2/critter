@@ -508,18 +508,18 @@ my own experience.
 \chapter{How \programName Works}
 \label{howItWorks}
 
-\autoref{moduleInteraction} shows how \programName is divided up into multiple loosely coupled 
+\autoref{moduleInteraction} shows how \programName is divided up into multiple, loosely coupled 
 modules. Each of these has a unique purpose and is designed to keep the code as clean as possible. 
 The ``Knowledge Barrier'' distinguishes the easily customizable and understandable modules from 
-those which should not be modified without extreme caution. These modules in turn can be 
-conceptually grouped into three categories: \hyperref[parsingTheCode]{Parsing the Code}, 
-\hyperref[callingTheChecks]{Calling the Checks}, and 
-\hyperref[writingTheChecks]{Writing the Checks}.
+those which should not be modified without extreme caution. The modules can also be conceptually 
+grouped into three categories: \hyperref[parsingTheCode]{Parsing the Code} (Grammar and Lexer), 
+\hyperref[callingTheChecks]{Calling the Checks} (Hooks and Sax), and 
+\hyperref[writingTheChecks]{Writing the Checks} (Checks, Comments, and Locations).
 
 \begin{figure}[h!]
 \begin{center}
 \processifversion{PRINT}{\includegraphics[scale=0.6]{ClassInteractionPrint}}
-\processifversion{COLOR}{\includegraphics[scale=0.6]{ClasInteractionColor}}
+\processifversion{COLOR}{\includegraphics[scale=0.6]{ClassInteractionColor}}
 \end{center}
 \caption{Module Interaction of \programName}
 \label{moduleInteraction}
@@ -534,23 +534,22 @@ context free grammar) and output a set of C files to parse code. Control goes ba
 lexical analyzer, which divides the code into distinct tokens, and the parser, which determines how the 
 tokens fit together. \programName is able to parse valid ANSI C code but it does not compile or in 
 anyway track the contents. This means, for example, that \programName sees any variable or function 
-name as just as an \lstinline{IDENTIFIER} (any set of letters that does not already designate a data type) 
-without any context as to where it was defined or used before. Because \programName does not compile 
-code, it cannot perform conditional compilation (specifically, it cannot follow \lstinline{#if} and 
-\lstinline{#define} preprocessor directives). In order to combat the issue of multiple inclusion of header 
-files, \programName stores the name of each file it opens and does not open that file again, even if it is 
-included from another file. \programName does not read standard header files (such as \lstinline{stdlib.h} 
-and \lstinline{strings.h}) because they define data types within \lstinline{#define}s (which \programName 
-cannot evaluate and therefore cannot recognize as a type). For example, the file sys/cdefs.h, which 
-stdio.h eventually includes, has the line \lstinline{#define __signed    signed} and then uses 
-\lstinline{__signed} throughout the file. To adjust for this issue, the lexer instead contains a hack for 
-determining if character strings in the code are \lstinline{IDENTIFIER}s or data type names. Namely, the 
-lexer does a string comparison against common types defined in standard headers such as 
-\lstinline{size_t}, \lstinline{FILE}, \lstinline{pid_t}, etc. If any of these hardcoded checks pass, then the 
-lexer tells the parser it has found a type name instead of an \lstinline{IDENTIFIER}.\footnote{The lack of 
-preprocessing also means that strings which are separated with a `\lstinline{/}' wreak havoc with 
-\programName's lexical analysis and in turn cause parser level syntax errors. Since this style is rare (and 
-often discouraged), I decided to ignore this issue.}
+name as just as an \lstinline{IDENTIFIER} (any set of letters\footnote{Strictly, \lstinline{IDENTIFIER}s fit 
+the regular expression: \lstinline{[a-zA-Z_]([a-zA-Z_]|[0-9])*}.} that does not already designate a data 
+type) without any context as to where it was defined or used before. Because \programName does not 
+compile code, it cannot evaluate expressions within preprocessor directives. Therefore, \programName 
+cannot perform conditional compilation (specifically, it cannot follow \lstinline{#if} and \lstinline{#define}). 
+In order to combat the issue of multiple inclusion of header files, \programName stores the name of each 
+file it opens and does not open that file again, even if it is included from another file. \programName does 
+not read standard header files (such as \lstinline{stdlib.h} and \lstinline{strings.h}) because they define 
+data types within \lstinline{#define}s (which \programName cannot evaluate and therefore cannot 
+recognize as a type). For example, the file sys/cdefs.h, which stdio.h eventually includes, has the line 
+\lstinline{#define __signed    signed} and then uses \lstinline{__signed} throughout the file. To adjust for 
+this issue, the lexer instead contains a hack for determining if character strings in the code are 
+\lstinline{IDENTIFIER}s or data type names. Namely, the lexer does a string comparison against common 
+types defined in standard headers such as \lstinline{size_t}, \lstinline{FILE}, \lstinline{pid_t}, etc. If any of 
+these hardcoded checks pass, then the lexer tells the parser it has found a type name instead of an 
+\lstinline{IDENTIFIER}.\footnote{The lack of preprocessing also means that escaped new lines are left in the code. If these characters occur inside a string, \programName's lexical analysis fails, which in turn causes Bison to falsely report syntax errors. Since this style is rare (and often discouraged), I decided to ignore this issue.}
 
 Bison and Flex track the location of any token or grammar construct. They store this information in a 
 \lstinline{YYLTYPE} structure. (Normally a \lstinline{YYLTYPE} contains 4 fields, \lstinline{first_line}, 
@@ -560,9 +559,9 @@ files.) Each grammar rule can contain multiple actions that consist of C code. T
 reference the location of the entire construct, or any of single component of it, through the prebuilt 
 location mechanism. \programName calls the event handlers (functions in the other modules that 
 respond to finding different code constructs) from these actions, passing in the location of the relevant 
-text.  \autoref{grammar} shows an excerpt of the grammar where actions, and their event handlers within 
+text.  \autoref{grammar} shows an excerpt of the grammar\todo{,?}\ where actions, and their event handlers within 
 the action, are underlined. Some actions are `hidden' in dummy rules (called `subroutines' by Bison) in 
-order to avoid ambiguities within the grammar. Examples of this practice are show in \autoref{grammar} 
+order to avoid ambiguities within the grammar. Examples of this practice are shown in \autoref{grammar} 
 with the \lstinline{beginFOR} and \lstinline{beginIF} rules. Locations passed from the middle of a rule (all 
 the ones passed to \lstinline{begin} handlers) only represent the location of that segment as opposed to 
 the entire construct. For example, in \autoref{grammar}, \lstinline{beginWhile} will only be passed the 
@@ -611,7 +610,7 @@ table and the lexer checks to make sure that any potential \lstinline{IDENTIFIER
 there. Additionally, I modified some of the rules to include the dummy rules with actions. In 
 order to accommodate the inclusion of header files, I had to expand the given lexer functionality to 
 transfer control between files. The specific method of using a stack of buffers\slash files is heavily 
-inspired from the examples in the O'Reily Flex \& Bison book\cite{flex-and-bison}. When transferring to a 
+inspired by the examples in the O'Reilly Flex \& Bison book\cite{flex-and-bison}. When transferring to a 
 different file, the lexer adds the current file to a stack with its file pointer, internal state, and current line 
 number. When it reaches the end of the file, the lexer pops the current file off the stack and goes back 
 to its previous state. The end of program occurs when there are no more files on the 
@@ -944,7 +943,7 @@ of taking in an error message, takes a format string and a variable argument lis
 the rest of its arguments. \yyerror only takes an error message and calls \lyyerror with Bison's internal 
 location in the code and a default high error level. This is because \yyerror is called internally through 
 Bison to represent syntax errors. \yyerror is the only predefined error reporting function; \lyyerror is an 
-extension suggested by O'Reily\cite{flex-and-bison} when using location tracking with Bison\slash Flex 
+extension suggested by O'Reilly\cite{flex-and-bison} when using location tracking with Bison\slash Flex 
 (the `l' represents the variable location). \lyyerrorf was created in the likes of \lstinline{printf} to deal with 
 formatted error messages in one consolidated function.
 
