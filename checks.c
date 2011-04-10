@@ -327,7 +327,7 @@ void isMagicNumber(YYLTYPE location, int progress, char* constant) {
 					}
 				}
 				
-				lyyerror(ERROR_HIGH, location, "Do not use magic numbers");
+				lyyerrorf(ERROR_HIGH, location, "Do not use magic numbers (%s)", constant);
 			}
 			break;
 		case END:
