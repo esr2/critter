@@ -653,8 +653,9 @@ to capture the text in between.
 I chose to make this transition because the event-based system required far less overhead to 
 implement. Instead of spending time building the tree framework and the corresponding methods to 
 traverse it, I was able to focus on implementing stylistic checks. Additionally, the SAX-style framework 
-has the added benefit of being able to examine code on the fly as opposed to after the file has been 
-parsed completely.
+has the added benefit of being able to examine code on the fly, as opposed to after the file has been 
+parsed completely. This feature also increases scalability because the SAX framework discards the parts 
+of the file(s) it has already read.
 
 \section{Calling the Checks}
 \label{callingTheChecks}
@@ -1496,6 +1497,7 @@ Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
 \item To change the tab size, edit the \lstinline{count} function inside c.l.
 \item To change the string representation for each error level, edit the \lyyerror function in c.y. Currently, \lstinline{ERROR_HIGH}=``big problem'', \lstinline{ERROR_NORMAL}=``error'', and \lstinline{ERROR_LOW}=``low priority''.  
 \item Make sure that each \lstinline{IDENTIFIER} in the grammar is either registered through \lstinline{h_registerIdentifer} or is explicitly ignored through \lstinline{h_ignoreIdentifierText}. Otherwise the wrong identifier text will be dequeued and passed into the Sax module. This is because the lexer will always enqueue the \lstinline{IDENTIFIER}'s text before the grammar recognizes it.
+\item Throughout the code, 0 and 1 are used synonymously for false and true respectively whereas \lstinline{NULL} is used for pointers.
 \end{itemize}
 
 \section{Sax and Hooks Modules}
