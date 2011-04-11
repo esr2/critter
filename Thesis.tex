@@ -262,7 +262,7 @@ problem differently, but all succeed in finding some stylistic errors. Three suc
 
 Splint is a tool for ``statically checking C programs for security vulnerabilities and programming 
 mistakes"\cite[p.\ 9]{splint-manual}. It works exactly as \programName does from the user's
-perspective, i.e.\ as a command-line program which prints warnings and errors to \lstinline{stdout}. 
+perspective, i.e.\ as a command-line program which prints warnings to \lstinline{stdout}. 
 Splint displays warnings about basic stylistic errors such as assignments with mismatched types and 
 ignored return values. With more effort, programmers can add annotations (i.e.\ fancy comments) that 
 give Splint a specification to check against. These annotations allow for stronger checks like memory 
@@ -412,11 +412,11 @@ PMD and Checkstyle are great tools; nevertheless, because they only work for Jav
 my problem:\ stylistic error checking in C. In essence PMD\slash Checkstyle and \programName perform 
 very similarly; however, they are built upon entirely different frameworks from \programName. The use of 
 the Visitor Pattern and an AST requires PMD and Checkstyle to read though the entirety of the code 
-before they can produce any errors. In contrast, \programName performs error checking as it reads the 
-code. PMD and Checkstyle also contain graphical user interfaces, both to aid writing checks and to find 
-errors (the latter due to their integration with IDEs). \programName, on the other hand, is a command line 
-program. Furthermore, \programName must be recompiled to take advantage of new checks as opposed 
-to responding at runtime to a configuration file.
+before they can produce any warnings. In contrast, \programName performs error checking as it reads 
+the code. PMD and Checkstyle also contain graphical user interfaces, both to aid writing checks and to 
+find errors (the latter due to their integration with IDEs). \programName, on the other hand, is a command 
+line program. Furthermore, \programName must be recompiled to take advantage of new checks as 
+opposed to responding at runtime to a configuration file.
 
 \chapter{What \programName Does}
 
@@ -444,7 +444,7 @@ $ critTer test.c
 test.c:92.22-92.23: big problem: Do not use magic numbers (5)
 \end{lstlisting}
 \end{subfigure}
-\caption[Example Error and Corresponding Message]{Example Error and Corresponding Message. Here, \programName is complaining that the for loop's exit condition contains a `magic number'. The error message contains the location of the error, the warning level and then the error message.}
+\caption[Example Error and Corresponding Warning]{Example Error and Corresponding Warning. Here, \programName is complaining that the for loop's exit condition contains a `magic number'. The warning message contains the location of the error, the error level as well as the message.}
 \label{errorExample}
 \end{figure}
 
@@ -556,7 +556,7 @@ these hardcoded checks pass, then the lexer tells the parser it has found a type
 Bison and Flex track the location of any token or grammar construct. They store this information in a 
 \lstinline{YYLTYPE} structure. (Normally a \lstinline{YYLTYPE} contains 4 fields, \lstinline{first_line}, 
 \lstinline{first_column}, \lstinline{last_line} and \lstinline{last_column}; however, I have also added a 
-\lstinline{filename} field in order to produce more accurate checks and error messages across a set of 
+\lstinline{filename} field in order to produce more accurate checks and warnings across a set of 
 files.) Each grammar rule can contain multiple actions that consist of C code. These actions can 
 reference the location of the entire construct, or any of single component of it, through the prebuilt 
 location mechanism. \programName calls the event handlers (functions in the other modules that 
@@ -882,14 +882,16 @@ void isCompoundStatementEmpty(YYLTYPE location, int progress) {
 \label{writingTheChecks}
 
 Minimally, each check needs access to the location of the code construct in order to be able to produce 
-an error message. However, checks often need additional information regarding the surrounding context 
+a warning. However, checks often need additional information regarding the surrounding context 
 of the possible error. A simple example is the check against using ``magic 
 numbers''\cite[p.~19]{practice-of-programming} (see \autoref{checkWithContext}). Many programmers 
 consider using numeric constants directly inside the code very poor style and recommend defining a 
-symbolic constant to hold that value. Therefore \programName should only throw an error when it finds 
-a magic number inside a normal statement (as opposed to inside a declaration where it is necessarily 
-defined). This check then needs to know every time a declaration begins and ends as well as each time 
-a number is found. This contextual information can be stored in global variables in the Checks module or passed into the individual check through its parameters (as in \autoref{checkWithContext}).
+symbolic constant to hold that value. Therefore \programName should only throw a warning when it 
+finds a magic number inside a normal statement (as opposed to inside a declaration where it is 
+necessarily defined). This check then needs to know every time a declaration begins and ends as well 
+as each time a number is found. This contextual information can be stored in global variables in the 
+Checks module or passed into the individual check through its parameters (as in 
+\autoref{checkWithContext}).
 
 \begin{figure}
 \begin{lstlisting}[language=C]
@@ -927,7 +929,7 @@ void isMagicNumber(YYLTYPE location, int progress, char* constant) {
 	}
 }
 \end{lstlisting}
-\caption[\programName Check with Additional Context]{\programName check with additional context that throws an error on encountering a magic number outside of a declaration.}
+\caption[\programName Check with Additional Context]{\programName check with additional context that throws a warning on encountering a magic number outside of a declaration.}
 \label{checkWithContext}
 \end{figure}
 
@@ -935,20 +937,20 @@ void isMagicNumber(YYLTYPE location, int progress, char* constant) {
 \newcommand{\lyyerror}{\lstinline{lyyerror}\xspace}
 \newcommand{\lyyerrorf}{\lstinline{lyyerrorf}\xspace}
 
-In order to throw an error, the administrator can call one of three functions: \yyerror, \lyyerror, and 
-\lyyerrorf. Each of these functions outputs an error message to \lstinline{stderr} preceded by the error's 
-location in the code and a warning level (as seen in \autoref{errorExample}). \yyerror and \lyyerrorf 
+In order to throw a warning, the administrator can call one of three functions: \yyerror, \lyyerror, and 
+\lyyerrorf. Each of these functions outputs a warning message to \lstinline{stderr} preceded by the error's 
+location in the code and an error level (as seen in \autoref{errorExample}). \yyerror and \lyyerrorf 
 are each wrappers to \lyyerror, which takes in an error level (\lstinline{enum errorLevel}), a location 
-(\lstinline{YYLTYPE}) and an error message (\lstinline{char *}). In essence, \lyyerror is really a wrapper 
-to \lstinline{fprintf} and defines the formatting of all the error messages\slash locations. \lyyerrorf, instead 
-of taking in an error message, takes a format string and a variable argument list, which it uses with 
-\lstinline{vsprintf} to create an error message. It then passes the newly created message to \lyyerror with 
-the rest of its arguments. \yyerror only takes an error message and calls \lyyerror with Bison's internal 
-location in the code and a default high error level. This is because \yyerror is called internally through 
-Bison to represent syntax errors. \yyerror is the only predefined error reporting function; \lyyerror is an 
-extension suggested by O'Reilly\cite{flex-and-bison} when using location tracking with Bison\slash Flex 
-(the `l' represents the variable location). \lyyerrorf is modeled after \lstinline{printf} and deals with 
-formatted error messages in one consolidated function.
+(\lstinline{YYLTYPE}) and a warning message (\lstinline{char *}). In essence, \lyyerror is really a wrapper 
+to \lstinline{fprintf} and defines the formatting of all the warning messages\slash locations. \lyyerrorf, 
+instead of taking in a warning message, takes a format string and a variable argument list, which it uses 
+with \lstinline{vsprintf} to create a warning message. It then passes the newly created message to 
+\lyyerror with the rest of its arguments. \yyerror only takes a warning message and calls \lyyerror with 
+Bison's internal location in the code and a default high error level. This is because \yyerror is called 
+internally through Bison to represent syntax errors. \yyerror is the only predefined error reporting 
+function; \lyyerror is an extension suggested by O'Reilly\cite{flex-and-bison} when using location tracking 
+with Bison\slash Flex (the `l' represents the variable location). \lyyerrorf is modeled after \lstinline{printf} 
+and deals with formatted warning messages in one consolidated function.
 
 Additionally, there are two helper modules designed to facilitate writing checks: Locations and 
 Comments. The Locations module contains several functions to manipulate \lstinline{YYLTYPE}s.  
@@ -998,7 +1000,7 @@ their installation instructions, go to your working directory from the command l
 
 \subsection{Use}
 In academics, the best use of \programName is as an automated grading system. It is simple to assign a 
-point reduction system based on the number of errors \programName returns over a submission. For 
+point reduction system based on the number of warnings \programName returns over a submission. For 
 example, one might deduct a two point penalty per high error level message, a point per normal error 
 level message and a half a point per low error level message. Not only does it reduce the work needed 
 to grade a submission, but by allowing students to pre-check their work, the submissions become easier 
@@ -1017,7 +1019,7 @@ Before customizing the code, please make sure you both understand how \programNa
 
 The first step of adding a new stylistic check is to figure out what exactly you are checking and which 
 handlers give you the necessary information. The first question to ask is how much context is needed to 
-implement this check. For example, to throw an error on C++ style comments (comments in form of 
+implement this check. For example, to throw a warning on C++ style comments (comments in form of 
 ``\lstinline{// Comment text which ends on a newline}'') requires no context -- it is only dependent on the 
 existence of that code. In contrast, checking for braces around \lstinline{for} loops requires very minimal 
 context: whether or not \lstinline{endCompoundStatement} was the last function called (i.e. right before 
@@ -1066,13 +1068,13 @@ void switchHasDefault(YYLTYPE location, int progress) {
 
 After determining the relevant handlers and additional necessary parameters,\footnote{Each check 
 should have at least one parameter:\ \lstinline{YYLTYPE location}. This value is necessary in order to 
-produce a proper error message. All other parameters are optional and should follow \lstinline{location}. 
-Many checks can be completed using only a progress value or informative string.} one must actually 
-write the check. The easiest way to deal with contextual processing is to use a \lstinline{switch} 
-statement and conditionally set static local variables (\autoref{addCheckExample}). In order to 
-throw an error, one must pass \lstinline{location} to either \lstinline{lyyerror} or \lstinline{lyyerrorf} with an 
-error level and either an error message or format string and arguments respectively (for additional 
-information see \autoref{writingTheChecks}).
+produce a proper warning message. All other parameters are optional and should follow 
+\lstinline{location}. Many checks can be completed using only a progress value or informative string.} 
+one must actually write the check. The easiest way to deal with contextual processing is to use a 
+\lstinline{switch} statement and conditionally set static local variables (\autoref{addCheckExample}). In 
+order to throw a warning, one must pass \lstinline{location} to either \lstinline{lyyerror} or 
+\lstinline{lyyerrorf} with an error level and either a message or format string and arguments respectively 
+(for additional information see \autoref{writingTheChecks}).
 
 \subsubsection{Add an Event Handler}
 
@@ -1191,11 +1193,11 @@ Testing can be accomplished by typing ``\lstinline{make test}'' which uses two s
 local version of \programName over a set of test files and then compares the new output to the previous 
 output. The first script, \lstinline{runOnTests.sh}, has a set of paths over which to run \programName. The 
 error messages are piped to \lstinline{output.txt} after the old output has been copied to 
-\lstinline{output_old.txt}. The second script, \lstinline{checkTestOutput.sh}, uses a list of all the error 
+\lstinline{output_old.txt}. The second script, \lstinline{checkTestOutput.sh}, uses a list of all the warning 
 messages and \lstinline{grep} to break apart the output files check by check. The script then 
 \lstinline{diff}s each section of the files to determine if a check has been broken. In order to add new 
 checks to the testing mechanism, one simply needs to add the check's function name and a significant 
-(non-variable) part of the error message into the appropriate arrays inside \lstinline{runOnTests.sh}.
+(non-variable) part of the warning message into the appropriate arrays inside \lstinline{runOnTests.sh}.
 
 \chapter{Evaluation}
 
@@ -1254,12 +1256,13 @@ or 2 is used `magically'.
 \end{table}
 
 \programName checks whether functions validate pointer parameters inside an \lstinline{assert()} before 
-the parameter is actually used. There are two systematic errors involved with this check. The first is that 
-\programName will output an error when the parameter is being properly validated through code like 
+the parameter is actually used. There are two systematic failures involved with this check. The first is that 
+\programName will output a warning when the parameter is being properly validated through code like 
 `\lstinline{if (param != NULL)}'. This is unavoidable as \programName does not detect the meaning 
-behind the code. The second systematic error involves opaque pointer types; \programName has no way 
-of knowing whether a newly defined type is a wrapper around a pointer. Therefore, it does not make sure 
-parameters of those types are validated. Data is shown in \autoref{resultsValidatePointerParameters}.
+behind the code. The second systematic failure involves opaque pointer types; \programName has no 
+way of knowing whether a newly defined type is a wrapper around a pointer. Therefore, it does not make 
+sure parameters of those types are validated. Data is shown in 
+\autoref{resultsValidatePointerParameters}.
 
 \begin{table}
 \begin{center}
@@ -1281,12 +1284,12 @@ For this check, \programName had a recall of 91.9\% and a precision of 82.9\%. \
 \end{table}
 
 One of the more interesting checks looked for comments above each global variable. Yet again, 
-\programName came up against systematic error. While \programName found each missing comment, it 
-had a large tendency to output extraneous errors. There were two main causes: self commenting code 
-and an uncheckable coding standard. Many times, \programName encountered global variables similar 
-to ``\lstinline!enum BOOLEAN {FALSE, TRUE}!''. Declarations of this kind are self-commenting and 
-further comments would decrease readability. Warnings to add comments are therefore extraneous. The 
-other systematic error was due to a previously acceptable standard of putting comments beneath 
+\programName came up against systematic failure. While \programName found each missing comment, 
+it had a large tendency to output extraneous warnings. There were two main causes: self commenting 
+code and an uncheckable coding standard. Many times, \programName encountered global variables 
+similar to ``\lstinline!enum BOOLEAN {FALSE, TRUE}!''. Declarations of this kind are self-commenting 
+and further comments would decrease readability. Warnings to add comments are therefore extraneous. 
+The other systematic failure was due to a previously acceptable standard of putting comments beneath 
 declarations. As mentioned in \autoref{writingTheChecks}, \programName is unable to associate 
 comments beneath a declaration to that code. Because of this, and the upcoming change to the COS 
 217 coding standard, Dr.\ Dondero and I felt that it was inappropriate to include these results against 
@@ -1308,11 +1311,11 @@ data both before and after filtering.
 \end{tabular}
 \end{center}
 \caption[Test Results for Comments Above Global Variables]{Test Results for Comments Above Global 
-Variables. The number in the parenthesis in upper right corner represents the raw errors reported; the 
-first number is the number of errors reported which were not solved after super imposing the upcoming 
-change in coding standards. For this check, with the raw data, \programName had a recall of 100\% and 
-a precision of 25.3\%. After filtering the data, \programName had a precision of 58.9\%. \human had a 
-recall of 81.6\%.}
+Variables. The number in the parenthesis in upper right corner represents the raw number of errors 
+reported; the first number is the number of errors reported which were not solved after super imposing 
+the upcoming change in coding standards. For this check, with the raw data, \programName had a recall 
+of 100\% and a precision of 25.3\%. After filtering the data, \programName had a precision of 58.9\%. 
+\human had a recall of 81.6\%.}
 \label{resultsCommentsAboveGlobals}
 \end{table}
 
@@ -1363,7 +1366,7 @@ errors. In other cases, as with neverUseCPlusPlusStyleComments and switchHasDefa
 find any errors yet \programName found a set with 100\% precision. Several checks did not have enough 
 data points to perform any meaningful analysis. For example, tooManyFunctionsInFile, 
 tooManyParameters, fileIsTooLong, isCompoundStatementEmpty and switchCasesHaveBreaks each 
-had less than 4 errors reported. In some cases, specifically for isTooDeeplyNested, \human agreed that 
+had less than 4 warnings. In some cases, specifically for isTooDeeplyNested, \human agreed that 
 \programName's output was correct even if there wasn't a specific remedy for the code. During the term, 
 Dr.\ Dondero normally solves this issue by telling the student the code is poorly styled without exacting a 
 penalty.
@@ -1379,7 +1382,7 @@ process. Splint, however, does check for this type of error and can be used in c
 \lstinline{#include} guards, needing to create an opaque pointer type from a \lstinline{struct} and poor 
 indentation.
 
-Overall, \programName did very well. A total of 1226 errors were found over the entire dataset. 
+Overall, \programName did very well. A total of 1226 warnings were produced over the entire dataset. 
 951 of these represented true stylistic errors in the code. \programName's recall was 14.5\% 
 higher than \human's and maintained a relatively high precision of 77.2\%. After filtering, 
 \programName's precision jumped to 90.0\%. Data, before and after filtering, can be seen in 
@@ -1515,13 +1518,12 @@ Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
 \section{Checks Module}
 
 \begin{itemize}
-\item All error messages should be passed to their respective function without an ending newline; one 
-will be added so that each error message appears on one line.
+\item All warning messages should be passed to their respective function without an ending newline; one will be added so that each warning appears on one line.
 \item Use local static variables as opposed to global variables to determine context within checks.
 \item Phrase check function names as questions if there is something to check or commands if there is an automatic warning. For example, if it is never acceptable to use \lstinline{GOTO} statements, phrase the check as a command like ``neverUseGotos''.
 \item To compare entire locations use the methods in the Locations module. Comparing single elements can be done inline. 
 \item Be careful not to free things which were either never allocated (e.g.\ the current location passed to the Sax\slash Hook handler), might be shared between objects (e.g.\ filename strings) or will be freed on its own later (e.g.\ comment texts and locations).
-\item When adding a new check, add the function name and a significant (non-variable) part of the error message to the arrays in \lstinline{runOnTests.sh}. If changing the error message of an existing check, make sure to update the arrays.
+\item When adding a new check, add the function name and a significant (non-variable) part of the warning message to the arrays in \lstinline{runOnTests.sh}. If changing the warning message of an existing check, make sure to update the arrays.
 \end{itemize}
 
 \chapter{Progression of Development}
