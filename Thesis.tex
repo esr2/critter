@@ -135,9 +135,11 @@ have addressed automated stylistic error checking and even fewer are customizabl
 \programName (Critique from the Terminal) fills this gap by providing a tool to check for administrator 
 defined stylistic errors in C code. It uses a SAX style of event-based programming to perform checks 
 and produce reports of errors as the code is being read. Administrators can use predefined checks or 
-create their own to enforce coding standards or help grade and teach ``good style'' to students. In our 
-evaluation, \programName proved to both helpful and reliable by increasing error detection by 16.3\% 
-and missing 2\% of relevant style errors.
+create their own to enforce coding standards or help grade and teach ``good style'' to students. To test 
+\programName's abilities, I ran it over a series of graded student submissions and compared 
+\programName's performance to the grader's. The results proved that \programName is both helpful and 
+reliable. Not only did \programName have a precision rate of 90.0\%, it found 98.1\% of errors. In 
+contrast, the grader had a precision of 100\% and found 83.6\% of errors.
 \end{abstract}
 
 \renewcommand{\abstractname}{Acknowledgements}
@@ -242,7 +244,7 @@ bother one's peers with another round of code reviews, allowing the entire team 
 
 To address these needs I've created \programName (Critique from the Terminal), a customizable style 
 checker for C code. \programName is run from the command line and executes a set of stylistic checks 
-on the source files. Administrators can write their own checks to satisfy their needs. 
+on the source files. Administrators can write their own checks to satisfy their needs.
 
 \chapter{Related Products}
 
