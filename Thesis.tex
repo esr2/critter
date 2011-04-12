@@ -425,8 +425,9 @@ opposed to responding at runtime to a configuration file.
 \programName reads in a set of C source code files and determines if they contain any of the 
 defined stylistic errors. It is run from the command line inside one's working directory. \programName is 
 given a list of .c files to check and reads through each in the given order, pausing to read through 
-included header files. Upon encountering an error, \programName prints out the full location of the error, 
-an error level and a message to \lstinline{stderr} (an example is shown in \autoref{errorExample}). 
+included header files. Upon encountering an error, \programName prints to \lstinline{stderr} a warning 
+containing the full location of the error, an error level and a message (an example is shown in 
+\autoref{errorExample}). 
 
 \begin{figure}
 \begin{subfigure}[b]{.49\linewidth}
@@ -446,7 +447,7 @@ $ critTer test.c
 test.c:92.22-92.23: big problem: Do not use magic numbers (5)
 \end{lstlisting}
 \end{subfigure}
-\caption[Example Error and Corresponding Warning]{Example Error and Corresponding Warning. Here, \programName is complaining that the for loop's exit condition contains a `magic number'. The warning message contains the location of the error, the error level as well as the message.}
+\caption[Example Error and Corresponding Warning]{Example Error and Corresponding Warning. Here, \programName is complaining that the for loop's exit condition contains a `magic number'. The warning  contains the location of the error, the error level as well as the message.}
 \label{errorExample}
 \end{figure}
 
@@ -459,10 +460,10 @@ descriptive. In order to check this property, whenever \programName recognizes a
 declaration it checks that the variable's name exceeds a minimum length. The administrator can write 
 his\slash her own checks as functions to be invoked at each of the relevant callback points.
 
-The set of predefined checks are listed in \autoref{predefinedChecks}. These checks reflect 
-two main purposes: demonstration of the various abilities of \programName and my own arbitrary style 
-choices. In order to show off some of the power of \programName, I wrote a variety of checks that show 
-the various distinct elements that can be examined. Some checks, like isFunctionTooLongByLines and 
+The predefined checks are listed in \autoref{predefinedChecks}. These checks reflect two main 
+purposes: demonstration of the various abilities of \programName and my own arbitrary style choices. In 
+order to show off some of the power of \programName, I wrote a variety of checks that show the various 
+distinct elements that can be examined. Some checks, like isFunctionTooLongByLines and 
 isFunctionTooLongByStatements, are the same check defined on a different unit of length (line vs.\ 
 statement). The style choices I made represent ideas from a variety of sources including Fowler's Bad 
 Smells of Code\cite{refactoring}, Google's style guide\cite{googleStyle}, Code 
