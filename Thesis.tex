@@ -263,12 +263,12 @@ problem differently, but all succeed in finding some stylistic errors. Three suc
 \label{sec:splint}
 
 Splint is a tool for ``statically checking C programs for security vulnerabilities and programming 
-mistakes"\cite[p.\ 9]{splint-manual}. It works exactly as \programName does from the user's
+mistakes''\cite[p.\ 9]{splint-manual}. It works exactly as \programName does from the user's
 perspective, i.e.\ as a command-line program which prints warnings to \lstinline{stdout}. 
 Splint displays warnings about basic stylistic errors such as assignments with mismatched types and 
-ignored return values. With more effort, programmers can add annotations (i.e.\ fancy comments) that 
-give Splint a specification to check against. These annotations allow for stronger checks like memory 
-management, null pointers and ``violations of information hiding''\cite[p. 9]{splint-manual}. 
+ignored return values. With more effort, programmers can add annotations (fancy comments) to their 
+code that give Splint a specification to check against. These annotations allow for stronger checks like 
+memory management, null pointers and ``violations of information hiding''\cite[p. 9]{splint-manual}. 
 Examples of annotations in action are shown in \autoref{splint-annotations}. These checks supersede 
 the set found in the original Lint, Splint's namesake (Splint stands for ``Specification Lint'' and ``Secure 
 Programming Lint''). 
@@ -297,14 +297,14 @@ all the warnings of that type, rather than start adding the annotations needed t
 checking.\cite{evans-email} 
 \end{quote}
 
-Splint and \programName differ in three significant ways. Splint performs a lot of inter-file checks 
+Splint and \programName differ in two significant ways. Splint performs a lot of inter-file checks 
 regarding headers, interfaces, etc., whereas \programName primarily focuses on intra-file checks. 
 They also differ in how they specify what to check. Splint uses a configuration file and command line 
 arguments to determine which of the several hundred pre-defined messages and warnings to display. In 
 contrast, \programName allows administrators to write their own checks and always runs every check 
-that is defined. \todo{AB more distinction from previous point?} Because of this disparity, Splint is limited to checking for commonly accepted errors but 
+that is defined. Because of this disparity, Splint is limited to checking for commonly accepted errors but 
 \programName has the freedom to operate idiosyncratically and check many different (possibly quite 
-arbitrary) coding standards. 
+arbitrary) coding standards. \todo{was this acceptable?}
 
 \section{PMD and Checkstyle}
 \label{sec:pmdAndCheckstyle}
