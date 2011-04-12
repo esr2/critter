@@ -526,7 +526,7 @@ grouped into three categories: \hyperref[parsingTheCode]{Parsing the Code} (Gram
 \processifversion{PRINT}{\includegraphics[scale=0.6]{ClassInteractionPrint}}
 \processifversion{COLOR}{\includegraphics[scale=0.6]{ClassInteractionColor}}
 \end{center}
-\caption{Module Interaction of \programName}
+\caption[Module Interaction of \programName]{Module Interaction of \programName. Arrows represent the flow of control between the modules.}
 \label{moduleInteraction}
 \end{figure}
 
@@ -548,7 +548,7 @@ In order to combat the issue of multiple inclusion of header files, \programName
 file it opens and does not open that file again, even if it is included from another file. \programName does 
 not read standard header files (such as \lstinline{stdlib.h} and \lstinline{strings.h}) because they define 
 data types within \lstinline{#define}s (which \programName cannot evaluate and therefore cannot 
-recognize as a type). For example, the file sys/cdefs.h, which stdio.h eventually includes, has the line 
+recognize as types). For example, the file sys/cdefs.h, which stdio.h eventually includes, has the line 
 \lstinline{#define __signed    signed} and then uses \lstinline{__signed} throughout the file. To adjust for 
 this issue, the lexer instead contains a hack for determining if character strings in the code are 
 \lstinline{IDENTIFIER}s or data type names. Namely, the lexer does a string comparison against common 
@@ -632,22 +632,22 @@ subdirectories and accordingly I decided not to focus on this issue.}
 \section{Some Theory}
 Bison uses an LALR(1) parsing algorithm, meaning it uses Left to Right, Rightmost Derivation to create a 
 parse tree using one token of lookahead. This algorithm maintains a parser table which allows it to avoid 
-backtracking as it parses the source file. Because of this property, call are never mistakenly made from 
+backtracking as it parses the source file. Because of this property, calls are never mistakenly made from 
 the lexer or parser into other modules of \programName.
 
 When compilers translate code into machine language, they first perform lexical analysis and parsing, 
 just like \programName. Where the two start to differ is in the actions for each grammar rule. Compilers 
-store information regarding the semantic value, or meaning of the source code, inside each node. This 
-practice allows compilers to build an Abstract Syntax Tree, which ``conveys the phrase structure of the 
-source program, with all parsing issues resolved but without any semantic 
+store information regarding the semantic value, or meaning of the source code, inside each construct. 
+This practice allows compilers to build an Abstract Syntax Tree, which ``conveys the phrase structure of 
+the source program, with all parsing issues resolved but without any semantic 
 interpretation''\cite{compiler-implementation}. Other modules can then look over the entire tree and 
 determine the meaning of the code as well as stylistic attributes. Both PMD and Checkstyle use this 
-method to drive their tools. 
+method.
 
 Originally, \programName operated in a similar manner; it stored an enumerated value corresponding to 
 the type of construction as the semantic value of each node (see \autoref{progressionOfDevelopment}). 
-The different checks then examined the value of each construction. Instead of expanding along this line 
-of development, I decided to transition to an event-based system, largely inspired by 
+The checks then examined the value of each construction. Instead of expanding along this line of 
+development, I decided to transition to an event-based system, largely inspired by 
 SAX\cite{saxHomepage}. This kind of framework ``reports parsing events (such as the start and end of 
 elements) directly to the application through callbacks, and does not usually build an internal tree. The 
 application implements handlers to deal with the different events, much like handling events in a 
@@ -660,7 +660,7 @@ implement. Instead of spending time building the tree framework and the correspo
 traverse it, I was able to focus on implementing stylistic checks. Additionally, the SAX-style framework 
 has the added benefit of being able to examine code on the fly, as opposed to after the file has been 
 parsed completely. This feature also increases scalability because the SAX framework discards the parts 
-of the file(s) it has already read.
+of the file(s) it has already read. \todo{remove on the fly?}
 
 \section{Calling the Checks}
 \label{callingTheChecks}
@@ -671,11 +671,12 @@ names, \lstinline{break} statements, parameters, etc.). In the code, handlers ar
 ``\lstinline{begin}'', ``\lstinline{end}'' and ``\lstinline{register}'' to signal at what point each is called (as 
 shown in \autoref{grammar}). Each handler is passed, at minimum, the location of the relevant text (in 
 the case of \lstinline{IDENTIFIER}s and numeric constants, the handler is also passed the relevant 
-text itself). Each of these event handlers exist in the file sax.c which in turn calls the administrator 
-defined checks (as shown in \autoref{saxHandlers}). While these checks could be written into the event 
-handlers themselves, it is conventional to separate them into their own functions (and files) in order to 
-preserve the readability of the sax.c file and the code in general. The predefined checks, their function 
-signatures and the handlers which call them are listed in \autoref{predefinedChecksFunctions}.
+text itself). Each of these event handlers exists in the file sax.c which in turn calls the 
+administrator-defined checks (as shown in \autoref{saxHandlers}). While these checks could be written 
+into the event handlers themselves, it is advantageous to separate them into their own functions (and 
+files) in order to preserve the readability of the sax.c file and the code in general. The predefined checks, 
+their function signatures and the handlers which call them are listed in 
+\autoref{predefinedChecksFunctions}.
 \todo{make sure this figure is in the right spot}
 
 \begin{figure}
@@ -719,9 +720,9 @@ execute the action. In all the rules listed in \autoref{grammar}, the action is 
 distinguishing token (like \lstinline{WHILE}) or by the entire rule. However, \autoref{hookGrammar} 
 shows some rules that both need actions at the beginning of the statement and lack distinguishing 
 tokens. Specifically we would like to know when we start a function definition, but we cannot be sure that 
-we are in a function definition until Bison finishes parsing the signature. To fix this issue I have added the 
-Hooks module. This module intercepts what would be normal calls within the SAX framework and then 
-reorders them at the appropriate time. Each call into the Hooks module does one of two things: 
+we are in a function definition until Bison finishes parsing the function's signature. To fix this issue I 
+added the Hooks module. This module intercepts what would be normal calls within the SAX framework 
+and then reorders them at the appropriate time. Each call into the Hooks module does one of two things: 
 enqueues a Sax level function call and its location or dequeues any item after a specified location 
 (\autoref{hooksQueues}). With the beginning of a function, all the elements of the signature are placed 
 on the queue and then dequeued when \lstinline{h_beginFunctionDefinition} is called. 
@@ -965,7 +966,7 @@ Sax layer and are stored in a dynamic array. Adjacent comments (like those in
 module provides the ability to search through this array to find comments in or near a certain location 
 (using the methods from Locations). Finally Comments provides a couple of useful functions when 
 analyzing the comment itself: determining if a comment has words (as opposed to a delimiting comment 
-in the form of \lstinline{/*----*/} etc.) and if a comment contains a specified string (with or without case 
+in the form of \lstinline{/*----*/} etc.) and if a comment contains a given string (with or without case 
 sensitivity).
 
 \begin{figure}
@@ -988,8 +989,8 @@ comments after each location at the end of the file. The second method would be 
 within the lexer to determine if a comment was about to follow. The third and preferred solution is to 
 change the coding standard to have comments precede declarations.\footnote{Princeton University's 
 Introduction to Programming Systems course\cite{cos217} will be changing its coding standards this 
-summer to facilitate using \programName this fall. One of the largest changes will be to put comments 
-before function declarations in header files.}
+summer to facilitate using \programName this fall and thereafter. One of the largest changes will be to put 
+comments before function declarations in header files.}\todo{thereafter?}
 
 \chapter{How to Use \programName}
 
