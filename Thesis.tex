@@ -187,8 +187,6 @@ my sisters who constantly provide me with support and laughter. I owe all my suc
 \doublespacing
 
 \chapter{Introduction}
-
-\todo{Fix this paragraph}
 When one writes, one encounters three different types of errors: syntactic, stylistic and semantic.  
 In the case of writing prose, these errors take the form of spelling and grammar mistakes, poorly phrased 
 passages and logic errors. When writing code, they form syntax errors, poorly styled code and 
@@ -1108,7 +1106,7 @@ over if statements as suggested by O'Reilly\cite[p.~188]{flex-and-bison}.} When 
 throw several errors during compilation and the parser will most likely break. The first tactic to avoid this 
 issue is to never have actions as the first element in a rule; they should always appear after (at least) one 
 component. If this approach is insufficient, you should try burying the action inside a subroutine (like 
-\lstinline{beginFOR} and \lstinline{beginIF} in \autoref{grammar}).
+ \lstinline{beginCompound}, \lstinline{beginIF}, and \lstinline{beginFOR} in \autoref{grammar}).
 
 There are only two reasons to route your new handler through the Hooks module instead of going 
 directly to Sax; the most likely reason is the event occurs inside a construct that already goes through 
