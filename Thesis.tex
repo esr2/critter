@@ -187,13 +187,14 @@ When one writes, one encounters three different types of errors: syntactic, styl
 In the case of writing prose, these errors take the form of spelling and grammar mistakes, poorly phrased 
 passages and logic errors. When writing code, they form syntax errors, poorly styled code and 
 malfunctioning code. Both spelling mistakes and syntax errors represent text that contains something 
-outside the language (be it English, C, etc.). A poorly phrased passage in a paper and poorly styled code 
+outside the language (be it English, C, etc.). A poorly phrased passage in a paper and in code 
 both denote text that is technically valid but hard to understand. Finally, illogical arguments in prose and 
 malfunctioning code both imply errors in the ideas behind the text. There are tools to help one find these 
 errors in both prose and code (see \autoref{errorChecking}). Spell and grammar check exist in nearly 
 every word processor, human editors read manuscripts in order to find stylistic errors, and the reader 
 highlights semantic errors. With code, the compiler shows syntax errors and the user\slash testing 
-reveals semantic errors. Yet stylistic error checking for code has been addressed by relatively few tools.
+reveals semantic errors. Yet automated stylistic error checking for code has been addressed by relatively 
+few tools.
 
 \begin{table}%[h]
 	\begin{center}
@@ -1373,7 +1374,7 @@ data points to perform any meaningful analysis. For example, tooManyFunctionsInF
 tooManyParameters, fileIsTooLong, isCompoundStatementEmpty and switchCasesHaveBreaks each 
 had less than 4 warnings. In some cases, specifically for isTooDeeplyNested, \human agreed that 
 \programName's output was correct even if there wasn't a specific remedy for the code. During the term, 
-Dr.\ Dondero normally solves this issue by telling the student that ``it would be better to factor the code, 
+Dr.\ Dondero normally solves this issue by telling the student that ``it would be better to refactor the code, 
 but it's not clear how''. \todo{look at this again}
 
 In going over the graded assignments, it became clear that \programName had not yet been tuned to find 
