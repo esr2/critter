@@ -576,13 +576,13 @@ entire \lstinline{while} statement.
 
 \begin{figure} 
 \begin{lstlisting}[language=Caml, escapechar=\%, morekeywords={beginIF, beginFOR, beginCompound}]
-beginCompound : /* empty */ {beginCompoundStatement(@$);}
+beginCompound : /* empty */ %\underline{\{beginCompoundStatement(@\$);\}}%
 
 compound_statement
-	: '{' beginCompound '}'										{endCompoundStatement(@$);}
-	| '{' beginCompound statement_list '}'		{endCompoundStatement(@$);}
-	| '{' beginCompound declaration_list '} '	{endCompoundStatement(@$);}
-	| '{' beginCompound declaration_list statement_list '}'	{endCompoundStatement(@$);}
+	: '{' beginCompound '}'										%\underline{\{endCompoundStatement(@\$);\}}%
+	| '{' beginCompound statement_list '}'		%\underline{\{endCompoundStatement(@\$);\}}%
+	| '{' beginCompound declaration_list '} '	%\underline{\{endCompoundStatement(@\$);\}}%
+	| '{' beginCompound declaration_list statement_list '}'	%\underline{\{endCompoundStatement(@\$);\}}%
 	;
 
 beginIF : /*empty*/ %\underline{\{beginIf(@\$);\}}%
