@@ -1,10 +1,10 @@
 %\documentclass[12pt]{report}
 %\documentclass[12pt, twoside]{report}
 %\documentclass[12pt, draft]{report}
-\documentclass[12pt,oneside]{book}
+\documentclass[12pt, oneside]{book}
 \usepackage{setspace}
 \usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
-%\usepackage[inner=1.5in]{geometry}
+%\usepackage[bindingoffset=.75in]{geometry}
 \geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
 %\geometry{landscape}                % Activate for for rotated page geometry
 %\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
@@ -1438,13 +1438,19 @@ their code base and ease the code review process.
 
 \chapter[Predefined Check Functions]{Predefined Check Functions and their Relevant Event Handlers}
  \label{predefinedChecksFunctions}
+ 
 \newlength\saxColSize
-\setlength\saxColSize{\linewidth}
-\addtolength\saxColSize{-10.3cm}
+\addtolength\saxColSize{4.9cm}
+
+\newlength\checkSize
+\setlength\checkSize{\linewidth}
+\addtolength\checkSize{-\saxColSize}
+\addtolength\checkSize{-.7cm}
+
 \newcommand{\vertSize}{3mm}
 
 \addcontentsline{lot}{table}{~\ref{predefinedChecksFunctions} \hspace{4mm}Predefined Check Functions and their Relevant Event Handlers}
-\begin{longtable}{p{9.5cm} p{\saxColSize}}
+\begin{longtable}{p{\checkSize} p{\saxColSize}}
 \toprule
 Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
 \endfirsthead
@@ -1519,7 +1525,7 @@ Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
 \begin{itemize}
 \item Use the DynArray class to handle persistent arrays, stacks and queues. It is a dynamically growing array which holds void pointers. This is the base implementation of how comments are stored as well as the Hook module queues.
 \item To change the tab size, edit the \lstinline{count} function inside c.l.
-\item To change the string representation for each error level, edit the \lyyerror function in c.y. Currently, \lstinline{ERROR_HIGH}=``big problem'', \lstinline{ERROR_NORMAL}=``error'', and \lstinline{ERROR_LOW}=``low priority''.  
+\item To change the string representation for each error level, edit the \lyyerror function in c.y. Currently, \lstinline{ERROR_HIGH} = ``big problem'', \lstinline{ERROR_NORMAL} = ``error'', and \lstinline{ERROR_LOW} = ``low priority''.  
 \item Make sure that each \lstinline{IDENTIFIER} in the grammar is either registered through \lstinline{h_registerIdentifer} or is explicitly ignored through \lstinline{h_ignoreIdentifierText}. Otherwise the wrong identifier text will be dequeued and passed into the Sax module. This is because the lexer will always enqueue the \lstinline{IDENTIFIER}'s text before the grammar recognizes it.
 \item Throughout the code, 0 and 1 are used synonymously for false and true respectively whereas \lstinline{NULL} is used for pointers.
 \end{itemize}
