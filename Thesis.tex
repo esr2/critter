@@ -995,7 +995,7 @@ comments before function declarations in header files.}\todo{thereafter?}
 \chapter{How to Use \programName}
 
 \section{Users}
-Find out from your administrator where you should find their version of \programName. After following 
+Find out from your administrator where you should find their \todo{the proper?} version of \programName. After following 
 their installation instructions, go to your working directory from the command line. Type 
 ``\lstinline{critTer *.c}'' (or if you only want to check one or two files, type their names instead of the 
 \lstinline{*.c}). \programName will output any warnings about your code to \lstinline{stderr}.
@@ -1025,10 +1025,10 @@ The first step of adding a new stylistic check is to figure out what exactly you
 handlers give you the necessary information. The first question to ask is how much context is needed to 
 implement this check. For example, to throw a warning on C++ style comments (comments in form of 
 ``\lstinline{// Comment text which ends on a newline}'') requires no context -- it is only dependent on the 
-existence of that code. In contrast, checking for braces around \lstinline{for} loops requires very minimal 
-context: whether or not \lstinline{endCompoundStatement} was the last function called (i.e. right before 
-\lstinline{endFor} was called, did \programName encounter a `\lstinline!}!' or something else). This 
-minimal context can be established through the use of the \lstinline{lastCalled_get()} function which 
+existence of that code. In contrast, checking for braces around the content of \lstinline{for} loops requires 
+very minimal context: whether or not \lstinline{endCompoundStatement} was the last function called (i.e. 
+right before \lstinline{endFor} was called, did \programName encounter a `\lstinline!}!' or something else). 
+This minimal context can be established through the use of the \lstinline{lastCalled_get()} function which 
 returns a pointer to the last Sax handler called. More complex checks may need additional context. For 
 example, to check that each \lstinline{switch} statement has a \lstinline{default} case, the check needs to 
 keep track of whether it has seen a \lstinline{default} within the current \lstinline{switch} block. The 
@@ -1086,8 +1086,8 @@ If you want to add an event handler, you will have to edit the grammar file. If 
 \programName will break. Having said that, creating a handler is actually quite simple. The first 
 step is to figure out which grammar rule(s) are relevant to the event you would like to capture. In some 
 cases this is incredibly trivial, in others it takes some effort to understand what the grammar is describing. 
-The best method to figure out the various rules is, in my experience, to perform depth-first-search through 
-the different components of the rule until it becomes clear. 
+The best method to figure out the various rules is, in my experience, to perform a manual 
+depth-first-search through the different components of the rule until it becomes clear. 
 
 After finding the grammar rule, adding a \lstinline{register} or \lstinline{end} handler is very simple: 
 define the handler in sax.c/h and add the action ``\lstinline!{newHandler(@X);}!'' after the component you 
@@ -1210,7 +1210,7 @@ checks to the testing mechanism, one simply needs to add the check's function na
 In order to perform an evaluation of \programName's performance, Dr. Robert Dondero graded 
 10 randomly chosen final project submissions for Princeton University's Introduction to Programming 
 Systems (COS 217) \cite{cos217}. There were over 650 assignments available, each of which was 
-anonymized in order to protect the student's privacy. Dr. Dondero has taught the course for many years, 
+anonymized in order to protect the students' privacy. Dr. Dondero has taught the course for many years, 
 making him the perfect person to judge each submission's style. We judged \programName's 
 performance compared to ``true'' errors, which were determined after both Dr. Dondero and 
 \programName looked at each submission. This post-analysis judgement of errors was necessary in 
@@ -1226,13 +1226,14 @@ in response to a true error. In our experiment, \human will always have a precis
 possible for \human to lower this value by changing his mind regarding an error but this never happened 
 in practice.} Recall is an idea from information retrieval to represent the fraction of relevant documents 
 that were retrieved. Here we use it to mean the number of true errors that were found. Throughout 
-\programName's development, we considered recall to be more important than precision. In almost all 
-checks, we prefer \programName to find all the true errors and produce extraneous output over missing 
-some of the true errors and minimizing extraneous output. The notable exception is the check for magic 
-numbers in which producing output regarding 0, 1 and 2 would far outweigh the few times those 
-numbers would be used in a `magic' way. The checks I wrote reflect this preference, however, other 
-administrators can write more `conservative' checks which alter this relationship between recall and 
-precision.
+\programName's development, we considered recall to be more important than precision. We prefer 
+\programName to find all the true errors and produce extraneous output rather than missing 
+some of the true errors and minimizing extraneous output. We think it is better for students and instructors 
+to have to defend their code rather than letting possible errors slide.\footnote{The notable exception is 
+the check for magic numbers in which producing warnings against the use of 0, 1 and 2 in the code 
+would far outweigh the few times those numbers would be used `magically'.} The checks I wrote reflect 
+this preference. However, other administrators can write more `conservative' checks which alter this 
+relationship between recall and precision.
 
 Four checks were very useful and represented about half of all of \programName's output: magic 
 numbers, validating pointer parameters, comments above global variables, and validating function 
@@ -1260,12 +1261,12 @@ or 2 is used `magically'.
 \end{table}
 
 \programName checks whether functions validate pointer parameters inside an \lstinline{assert()} before 
-the parameter is actually used. There are two systematic failures involved with this check. The first is that 
+the parameter is actually used. The check fails systematically in two cases. The first is that 
 \programName will output a warning when the parameter is being properly validated through code like 
 `\lstinline{if (param != NULL)}'. This is unavoidable as \programName does not detect the meaning 
 behind the code. The second systematic failure involves opaque pointer types; \programName has no 
 way of knowing whether a newly defined type is a wrapper around a pointer. Therefore, it does not make 
-sure parameters of those types are validated. Data is shown in 
+sure parameters of those types are validated. Data are shown in 
 \autoref{resultsValidatePointerParameters}.
 
 \begin{table}
@@ -1372,8 +1373,8 @@ data points to perform any meaningful analysis. For example, tooManyFunctionsInF
 tooManyParameters, fileIsTooLong, isCompoundStatementEmpty and switchCasesHaveBreaks each 
 had less than 4 warnings. In some cases, specifically for isTooDeeplyNested, \human agreed that 
 \programName's output was correct even if there wasn't a specific remedy for the code. During the term, 
-Dr.\ Dondero normally solves this issue by telling the student the code is poorly styled without exacting a 
-penalty.
+Dr.\ Dondero normally solves this issue by telling the student that ``it would be better to factor the code, 
+but it's not clear how''. \todo{look at this again}
 
 In going over the graded assignments, it became clear that \programName had not yet been tuned to find 
 all the desired types of style errors. One of the most prevalent ignored issues were lines that exceeded a 
@@ -1383,17 +1384,17 @@ duplicate definitions of the same \lstinline{struct} in different files. While t
 implement in \programName by storing all references to \lstinline{struct}s, it would not be a simple 
 process. Splint, however, does check for this type of error and can be used in conjunction with 
 \programName to provide a more complete set of checks. Other issues that appeared were: missing 
-\lstinline{#include} guards, needing to create an opaque pointer type from a \lstinline{struct} and poor 
+\lstinline{#include} guards, needing to create an opaque pointer type from a \lstinline{struct}, and poor 
 indentation.
 
-Overall, \programName did very well. A total of 1226 warnings were produced over the entire dataset. 
-951 of these represented true stylistic errors in the code. \programName's recall was 14.5\% 
+Overall, \programName did very well. \programName produced a total of 1226 warnings over the entire 
+dataset. 951 of these represented true stylistic errors in the code. \programName's recall was 14.5\% 
 higher than \human's and maintained a relatively high precision of 77.2\%. After filtering, 
-\programName's precision jumped to 90.0\%. Data, before and after filtering, can be seen in 
-\autoref{resultsAllChecks}. These tests conclusively prove the benefit that \programName can provide in 
-terms of automatic style checking. Even without filtering the data, over three quarters of \programName's 
-output was pertinent. Furthermore, it increased error detection by 16.3\%.
-\todo{exceeded expectations}
+\programName's precision jumped to 90.0\%. Dr.\ Dondero and I both judged that precision as excellent. 
+Data, before and after filtering, can be seen in \autoref{resultsAllChecks}. These tests conclusively prove 
+the benefit that \programName can provide in terms of automatic style checking. Even without filtering the 
+data, over three quarters of \programName's output was pertinent. Furthermore, it increased error 
+detection by 16.3\%.
 
 \begin{table}
 \begin{center}
@@ -1416,11 +1417,11 @@ had a precision of 90.0\%. \human had a recall of 83.6\%.}
 
 Given these impressive results, it is clear \programName can help fill the automated stylistic error 
 checking gap. \programName can definitely help Professors (and their TAs) grade assignments both by 
-saving time and increasing the number of errors found. \programName can also help students improve 
-their coding habits and their grades. Additionally, \programName's impressive performance and high 
-degree of customizability give us reason to believe that it will be useful to the world outside of academia. 
-Companies with a defined coding standard can customize \programName to help clean up their code 
-base and ease the code review process. 
+saving time and increasing the number of stylistic errors found. \programName can also help students 
+improve their coding habits and their grades. Additionally, \programName's impressive performance and 
+high degree of customizability give us reason to believe that it will be useful to the world outside of 
+academia. Companies with a defined coding standard can customize \programName to help clean up 
+their code base and ease the code review process. 
 
 \appendix
 \appendixpage
