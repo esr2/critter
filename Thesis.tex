@@ -1,8 +1,10 @@
-\documentclass[12pt]{report}
+%\documentclass[12pt]{report}
 %\documentclass[12pt, twoside]{report}
 %\documentclass[12pt, draft]{report}
+\documentclass[12pt,oneside]{book}
 \usepackage{setspace}
 \usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+%\usepackage[inner=1.5in]{geometry}
 \geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
 %\geometry{landscape}                % Activate for for rotated page geometry
 %\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
@@ -21,7 +23,7 @@
 \renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}
 \renewcommand{\headrulewidth}{0pt}
 \fancyhead[RO]{\small\nouppercase{\leftmark}}
-%\fancyhead[LO]{\leftmark}
+\fancyhead[LE]{\small\nouppercase{\rightmark}}
 
 \pagestyle{plain}
 
@@ -104,11 +106,13 @@
 
 \usepackage{appendix}
 
-%\renewcommand{\topfraction}{0.85}
-%\renewcommand{\textfraction}{0.1}
-%\renewcommand{\floatpagefraction}{0.75}
-
 \doublespacing			% Ask per individual, also remove extra space in section headings
+
+\newcommand{\abstractname}{Abstract}
+\newenvironment{abstract}% 
+{\cleardoublepage\null \vfill\begin{center}%
+ \bfseries \abstractname \end{center}}% 
+ {\vfill\null}
 
 \begin{document}
 \singlespacing
