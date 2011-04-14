@@ -12,6 +12,7 @@
 \usepackage{amssymb}
 \usepackage{epstopdf}
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+\usepackage{epstopdf}
 
 \usepackage[table]{xcolor}
 
@@ -136,16 +137,17 @@
 \listoftodos
 
 \begin{abstract}
-Stylistic errors are a symptom of poorly written and\slash or hard to read code. Sadly, relatively few tools 
-have addressed automated stylistic error checking and even fewer are customizable or written for C. 
-\programName (Critique from the Terminal) fills this gap by providing a tool to check for administrator 
-defined stylistic errors in C code. It uses a SAX style of event-based programming to perform checks 
-and produce reports of errors as the code is being read. Administrators can use predefined checks or 
-create their own to enforce coding standards or help grade and teach ``good style'' to students. To test 
-\programName's abilities, I ran it over a series of graded student submissions and compared 
-\programName's performance to the grader's. The results proved that \programName is both helpful and 
-reliable. Not only did \programName have a precision rate of 90.0\%, it found 98.1\% of errors. In 
-contrast, the grader had a precision of 100\% and found 83.6\% of errors.
+Stylistic errors are a symptom of poorly written code. Sadly, relatively few tools have implemented 
+automated stylistic error checking and even fewer are customizable or written for C. \programName 
+(Critique from the Terminal) fills this void. It provides a tool to check for administrator-defined stylistic 
+errors in C code. \programName uses a SAX style of event-based programming to perform checks 
+and produces warnings as the code is being read. Administrators can use predefined checks or 
+create their own to enforce coding standards. Additionally, they can use \programName to help grade 
+and teach ``good style'' to students. To test \programName's abilities, I ran it over a series of graded 
+student submissions and compared \programName's performance to the grader's. The results proved 
+that \programName is both helpful and reliable. Not only did \programName find 98.1\% of errors, it had a 
+a precision rate of 90.0\%. These rates are excellent, especially given the grader found 83.6\% of errors 
+and had a precision of 100\%.
 \end{abstract}
 
 \renewcommand{\abstractname}{Acknowledgements}
@@ -161,17 +163,19 @@ development to programming design tactics and writing skills. Without his suppor
 good style, this thesis would never have made it to its current state.
 
 I would also like to express my gratitude to Professor Brian Kernighan for helping me enter the Computer 
-Science department my sophomore year and putting up with my two Junior Projects. Without his help 
+Science department my sophomore year and for putting up with my two Junior Projects. Without his help 
 and support, I would not have become a successful CS major.
 
-There are various individuals who have supported me who also deserve mention. Ashton Brown and 
+There are various individuals who have supported me who also deserve mention. I would like to thank 
+Alice Zheng for her wonderful help in creating the \programName logo. Ashton Brown and 
 Slater Stich have been two of my closest friends and biggest supporters this year and throughout my 
 entire college career. Without their help, I would not have been as productive or successful in my efforts 
 on this thesis; without their friendship, my college career would have been significantly less enjoyable. I 
-would also like to thank my teammates for being a wonderful, if often slightly annoying, set of brothers -- I 
-will actively miss all of our `family' dinners next year. Additionally, I'd like to thank Marty Crotty, my coach, 
-who has made me a better competitor and tougher person. Finally I would like to thank my parents and 
-my sisters who constantly provide me with support and laughter. I owe all my success to them.
+would also like to thank my teammates for being a wonderful, if often slightly annoying, set of brothers --- 
+I will actively miss all of our `family' dinners next year. Additionally, I'd like to thank Marty Crotty, my 
+coach, who has made me a better competitor and tougher person. Finally I would like to thank my 
+parents and my sisters who constantly provide me with support and laughter. I owe all my success to 
+them.
 
 \end{abstract}
 
@@ -187,18 +191,17 @@ my sisters who constantly provide me with support and laughter. I owe all my suc
 \doublespacing
 
 \chapter{Introduction}
-When one writes, one encounters three different types of errors: syntactic, stylistic and semantic.  
-In the case of writing prose, these errors take the form of spelling and grammar mistakes, poorly phrased 
-passages and logic errors. When writing code, they form syntax errors, poorly styled code and 
-malfunctioning code. Both spelling mistakes and syntax errors represent text that contains something 
-outside the language (be it English, C, etc.). A poorly phrased passage in a paper and in code 
-both denote text that is technically valid but hard to understand. Finally, illogical arguments in prose and 
-malfunctioning code both imply errors in the ideas behind the text. There are tools to help one find these 
-errors in both prose and code (see \autoref{errorChecking}). Spell and grammar check exist in nearly 
-every word processor, human editors read manuscripts in order to find stylistic errors, and the reader 
-highlights semantic errors. With code, the compiler shows syntax errors and the user\slash testing 
-reveals semantic errors. Yet automated stylistic error checking for code has been addressed by relatively 
-few tools.
+Writing typically contains three types of errors: syntactic, stylistic and semantic.  In the case of writing 
+prose, these errors take the form of spelling and grammar mistakes, poorly phrased passages and logic 
+errors. When writing code, they form syntax errors, poorly styled code and malfunctioning code. Both 
+spelling mistakes and syntax errors represent text that is not within the language (be it English, C, etc.). A 
+poorly phrased passage in prose or code denote text that is technically valid but hard to understand. 
+Finally, illogical arguments in prose and malfunctioning code both imply errors in the ideas behind the 
+text. There are ways to find with these errors in both prose and code (see \autoref{errorChecking}). While 
+all these methods are useful, syntactic error checking is largely automated and therefore much more 
+available and helpful. Good automated semantic error checking requires a currently unavailable level of 
+artificial intelligence. Stylistic error checking, on the other hand, is feasible but has been addressed by 
+very few tools. 
 
 \begin{table}%[h]
 	\begin{center}
@@ -217,49 +220,49 @@ few tools.
 \end{table}
 
 
-From a different point of view, this problem\todo{AB unclear?}\ can be formulated in terms of software quality. 
-There are two perspectives on software quality: that of the user and that of the programmer. 
-Users evaluate software on whether or not it behaves as it ought to. In addition, programmers evaluate 
-software on whether or not it is easily maintainable. Minimally, maintainability implies that 
-code is easy to read and update. Evaluating a program from the user's perspective is common practice 
-and most easily accomplished through automated testing. Though it is possible to evaluate a program 
-from the programmer's perspective, tools that do so only check for certain qualities. Unfortunately, code 
+From a different point of view, this problem can be formulated in terms of software quality. 
+There are two perspectives on software quality:\ that of the user and that of the programmer. 
+Users evaluate software on whether or not it behaves as it ought. Programmers, in addition, evaluate 
+software on whether or not it is easily maintainable. Minimally, maintainability implies that code is easy to 
+read and update. Evaluating a program from the user's perspective is common practice and most easily 
+accomplished through automated testing. Though it is possible to evaluate a program from the 
+programmer's perspective, existing tools that do so only check for specific qualities. Unfortunately, code 
 quality is subjective, so any tool that only performs pre-defined inspections will never be satisfactory to 
 every programmer.
 
-The biggest reason to perform stylistic error checking is to improve readability (the 
-ease with which another programmer can understand a piece of code). In the same way that 
-poor phrasing in a paper often confounds its underlying arguments, poorly written code can easily 
-obscure its underlying function. Furthermore, readable code is easier to revise and update later. 
+The biggest reason to perform stylistic error checking is to improve readability (the ease with which 
+another programmer can understand a piece of code). In the same way that poor phrasing in a paper 
+often confounds its underlying arguments, poorly written code can easily obscure its underlying function. 
+Furthermore, readable code is easier to revise and update. 
 
-In the academic world, professors and TA's often read students' code, especially in introductory level
-courses. In these courses, much of the focus is often on enforcing ``good style'' (though the definition 
-varies from professor to professor).  The successful implementation of automated stylistic error 
-checking can immediately save work for professors by replacing the process of writing the same set of 
-stylistic comments to many students with a set of automated warnings. Students can also directly 
-benefit by applying this tool to their code before submitting assignments --- giving them the chance to 
-improve their grades as well as their coding habits.
+In the academic world, professors and teaching assistants (TAs) often read students' code, especially in 
+introductory level courses. In these courses, much of the focus is on enforcing ``good style'' (though the 
+definition varies from professor to professor).  The successful implementation of an automated stylistic 
+error checker can immediately save work for professors by replacing the process of individually writing 
+the same set of stylistic comments to multiple students with a set of automated warnings. In addition to 
+reducing this repetitive and time consuming task, it also allows for a consistent evaluation. Students also 
+directly benefit by applying this tool to their code prior to submitting assignments --- giving them the 
+chance to improve their grades as well as their coding habits.
 
 In an industrial setting, where it is necessary to read or edit another's code, maintaining readability is 
 essential. Projects are often handed over to new employees or teams who are then expected to be 
-able to contribute immediately. Poorly organized or written code makes this daunting\todo{AB rm?}\ task 
-onerous. Many successful software companies make use of a codified internal style but the 
-enforcement of this policy falls to the employees. Many transgressions are simply due to inattention 
-and could easily be solved by an automated reminder system. Such a tool would reduce the need to 
-bother one's peers with another round of code reviews, allowing the entire team to be more productive. 
+able to contribute immediately. Poorly organized or written code makes this daunting task onerous. Many 
+successful software companies make use of a codified internal style but the enforcement of this policy 
+falls to the employees. Many transgressions are simply due to inattention and could easily be solved by 
+an automated reminder system. Such a tool would improve readability and reduce the need to bother 
+one's peers with another round of code reviews, thereby allowing the entire team to be more productive. 
 
-To address these needs I've created \programName (Critique from the Terminal), a customizable style 
-checker for C code. \programName is run from the command line and executes a set of stylistic checks 
-on the source files. Administrators can write their own checks to satisfy their needs.
-\todo{make sure this is enough of an introduction}
+To address these needs, I have created \programName (Critique from the Terminal), a customizable 
+style-checker for C code. \programName is run from the command line and executes a set of stylistic 
+checks on the source files. Additionally, administrators can create checks to satisfy their personal needs.
 
 \chapter{Related Products}
 
 Many tools exist to help improve code. Minimally, compilers often produce warnings about unused code 
-or poorly placed comparisons\slash assignments. Tools like Clang\cite{clang} and Uno\cite{Uno} go 
-even further and look for bugs such as uninitialized variables, out of bounds array indexing and memory 
+or assignments within \lstinline{if} statements. Tools like Clang\cite{clang} and Uno\cite{Uno} go 
+even further and look for bugs such as uninitialized variables, out-of-bounds array indexing and memory 
 errors. These tools do not focus on style or readability explicitly and still largely operate on the same 
-level as a compiler.  Other tools try very hard to fill the stylistic error checking gap. Each approaches the 
+level as a compiler.  Other tools try very hard to fill the stylistic error checking void. Each approaches the 
 problem differently, but all succeed in finding some stylistic errors. Three such tools are 
 \hyperref[sec:splint]{Splint}\cite{splint-manual}, \hyperref[sec:pmdAndCheckstyle]{PMD}\cite{pmd}, and 
 \hyperref[sec:pmdAndCheckstyle]{Checkstyle}\cite{checkstyle}.
@@ -272,11 +275,11 @@ mistakes''\cite[p.\ 9]{splint-manual}. It works exactly as \programName does fro
 perspective, i.e.\ as a command-line program which prints warnings to \lstinline{stdout}. 
 Splint displays warnings about basic stylistic errors such as assignments with mismatched types and 
 ignored return values. With more effort, programmers can add annotations (fancy comments) to their 
-code that give Splint a specification to check against. These annotations allow for stronger checks like 
-memory management, null pointers and ``violations of information hiding''\cite[p. 9]{splint-manual}. 
-Examples of annotations in action are shown in \autoref{splint-annotations}. These checks supersede 
-the set found in the original Lint, Splint's namesake (Splint stands for ``Specification Lint'' and ``Secure 
-Programming Lint''). 
+code that gives Splint a specification against which to check. These annotations allow for stronger 
+checks like memory management, null pointers and ``violations of information 
+hiding''\cite[p. 9]{splint-manual}. Examples of annotations in action are shown in 
+\autoref{splint-annotations}. These checks supersede the set found in the original Lint, Splint's 
+namesake:\ ``Specification Lint'' and ``Secure Programming Lint''. 
 
 \begin{figure}
 \begin{lstlisting}[frame=single, language=C]
@@ -288,10 +291,10 @@ typedef /*@abstract@*/ /*@immutable@*/ int weekDay;
 \end{figure}
 
 While these annotations provide an extensive feature set, they are a huge inconvenience. They 
-require programmers to specifically write their code to meet the specification, not only of the client, but 
-also of the tool. For new programmers (often the ones who need the most error checking), these 
-annotations are almost impossible to implement on top of learning to program, as suggested by  
-David Evans (one of the authors) in a private email. He states:
+require programmers to specifically write their code to meet both the specification of the client and also  
+of the tool. For new programmers --- often the ones who need the most error checking --- these 
+annotations are almost impossible to implement on top of learning to program.
+David Evans, one of the authors of Splint, says as much in a private email. He states:
 \begin{quote} \singlespacing
 One of the goals of the original design of Splint was for programmers who add no annotations to start 
 getting some useful warnings right away, including warnings that encourage them to start adding 
@@ -305,17 +308,17 @@ checking.\cite{evans-email}
 Splint and \programName differ in two significant ways. Splint performs a lot of inter-file checks 
 regarding headers, interfaces, etc., whereas \programName primarily focuses on intra-file checks. 
 They also differ in how they specify what to check. Splint uses a configuration file and command line 
-arguments to determine which of the several hundred pre-defined messages and warnings to display. In 
-contrast, \programName allows administrators to write their own checks and always runs every check 
-that is defined. Because of this disparity, Splint is limited to checking for commonly accepted errors but 
-\programName has the freedom to operate idiosyncratically and check many different (possibly quite 
-arbitrary) coding standards. \todo{was this acceptable?}
+arguments to determine which of the several-hundred pre-defined messages and warnings to display. In 
+contrast, \programName allows administrators to easily write their own checks and always runs every 
+check that is defined. Because of this disparity, Splint is limited to checking for commonly accepted errors 
+but \programName has the freedom to operate idiosyncratically and check many different --- possibly 
+quite arbitrary --- coding standards.
 
 \section{PMD and Checkstyle}
 \label{sec:pmdAndCheckstyle}
 
 PMD is a tool for checking Java code. It is integrated into a dozen or so popular IDEs.
-PMD comes pre-made with over 250 checks broken up mostly by purpose such as Braces Rules, 
+PMD comes with over 250 checks, which are mostly organized by purpose such as Braces Rules, 
 Basic Rules, Coupling Rules, etc. Some checks also deal explicitly with a certain 
 library or platform like Android, Jakarta and JUnit. PMD works by passing source code into a 
 JavaCC-generated parser and receiving an Abstract Syntax Tree (a.k.a.\ AST, a tree-based model of 
@@ -365,17 +368,17 @@ public class CountRule extends AbstractJavaRule {
 	}
 }
 \end{lstlisting}
-\caption[Example PMD Rule]{Example PMD rule which counts the number of expressions in the source code.}
+\caption[Example of a PMD Rule]{Example of a PMD rule which counts the number of expressions in the source code.}
 \label{pmd-rule}
 \end{figure}
 
 Checkstyle provides similar functionality to PMD in that it checks Java code for stylistic errors.  It was 
 designed to help programmers adhere to coding standards. Later, its designers added checks for bug 
-prevention, class design problems, etc. Accordingly, Checkstyle provides many checks out of the box 
-(namely those regarding duplicate code, class design, whitespace, etc.). Like PMD, it uses an AST and 
-the Visitor Pattern to check code. Custom rules are registered through an XML file and passed to 
-Checkstyle at runtime. An example check which determines how many methods are in a class is shown 
-in \autoref{checkstyle-rule}.
+prevention, class design problems, and other common errors. Accordingly, Checkstyle comes standard 
+with many checks include those regarding duplicate code, class design, whitespace, etc. Like PMD, it 
+uses an AST and the Visitor Pattern to check code. Custom rules are registered through an XML file and 
+passed to Checkstyle at runtime. An example check which determines how many methods are in a class 
+is shown in \autoref{checkstyle-rule}.
 
 \begin{figure}
 \begin{lstlisting}[language=Java]
@@ -411,26 +414,26 @@ public class MethodLimitCheck extends Check
    }
 }
 \end{lstlisting}
-\caption[Example Checkstyle Check]{Example Checkstyle check which counts the number of methods in a class.}
+\caption[Example of a Checkstyle Check]{Example of a Checkstyle check which counts the number of methods in a class.}
 \label{checkstyle-rule}
 \end{figure}
 
 PMD and Checkstyle are great tools; nevertheless, because they only work for Java, they do not solve 
-my problem:\ stylistic error checking in C. In essence PMD\slash Checkstyle and \programName perform 
-very similarly; however, they are built upon entirely different frameworks from \programName. The use of 
-the Visitor Pattern and an AST requires PMD and Checkstyle to read though the entirety of the code 
-before they can produce any warnings. In contrast, \programName performs error checking as it reads 
-the code. PMD and Checkstyle also contain graphical user interfaces, both to aid writing checks and to 
-find errors (the latter due to their integration with IDEs). \programName, on the other hand, is a command 
-line program. Furthermore, \programName must be recompiled to take advantage of new checks as 
-opposed to responding at runtime to a configuration file.
+my problem:\ stylistic error checking in C. In essence PMD, Checkstyle and \programName perform 
+very similarly; however, PMD and Checkstyle are built upon entirely different frameworks from 
+\programName. The use of the Visitor Pattern and an AST requires PMD and Checkstyle to read though 
+the entirety of the code before they can produce any warnings. In contrast, \programName performs error 
+checking as it reads the code. PMD and Checkstyle also contain graphical user interfaces, both to aid 
+writing checks and to find errors (the latter due to their integration with IDEs). \programName, on the 
+other hand, is a command line program. Another difference is \programName must be recompiled in 
+order to take advantage of any added checks as opposed to responding at runtime to a configuration file.
 
 \chapter{What \programName Does}
 
 \programName reads in a set of C source code files and determines if they contain any of the 
 defined stylistic errors. It is run from the command line inside one's working directory. \programName is 
 given a list of .c files to check and reads through each in the given order, pausing to read through 
-included header files. Upon encountering an error, \programName prints to \lstinline{stderr} a warning 
+included header files. Upon encountering an error, \programName prints a warning to \lstinline{stderr} 
 containing the full location of the error, an error level and a message (an example is shown in 
 \autoref{errorExample}). 
 
@@ -452,29 +455,29 @@ $ critTer test.c
 test.c:92.22-92.23: big problem: Do not use magic numbers (5)
 \end{lstlisting}
 \end{subfigure}
-\caption[Example Error and Corresponding Warning]{Example Error and Corresponding Warning. Here, \programName is complaining that the for loop's exit condition contains a `magic number'. The warning  contains the location of the error, the error level as well as the message.}
+\caption[Example of an Error and Corresponding Warning]{Example of an Error and Corresponding Warning. Here, \programName is complaining that the for loop's exit condition contains a `magic number'. The warning  contains the location of the error, the error level as well as the message.}
 \label{errorExample}
 \end{figure}
 
-\todo{AB CritTer has been designed such that}
-The administrator is responsible for defining the set of checked stylistic errors. \programName 
-comes with a set of predefined checks that the administrator may use or discard at his\slash her 
-discretion. Checks are event driven and are called when the appropriate element in the code is reached. 
-For example, it is often desirable to make sure that variables have long enough names to be adequately 
-descriptive. In order to check this property, whenever \programName recognizes a variable inside a 
-declaration it checks that the variable's name exceeds a minimum length. The administrator can write 
-his\slash her own checks as functions to be invoked at each of the relevant callback points.
+\programName places the responsibility on the administrator to define the set of stylistic errors to check.
+\programName comes with a set of predefined checks that the administrator may use or discard at 
+his\slash her discretion. Checks are event driven and are called when the appropriate element in the 
+code is reached. For example, it is often desirable to make sure that variables have long enough names 
+to be adequately descriptive. In order to check this property, whenever \programName recognizes a 
+variable inside a declaration it checks that the variable's name exceeds a minimum length. The 
+administrator can write his\slash her own checks as functions to be invoked at each of the relevant 
+callback points.
 
 The predefined checks are listed in \autoref{predefinedChecks}. These checks reflect two main 
-purposes: demonstration of the various abilities of \programName and my own arbitrary style choices. In 
+ideas:\ to demonstrate the strength and abilities of \programName as well as my own stylistic choices. In 
 order to show off some of the power of \programName, I wrote a variety of checks that show the various 
-distinct elements that can be examined. Some checks, like isFunctionTooLongByLines and 
+distinct elements that can be examined. Some checks, such as isFunctionTooLongByLines and 
 isFunctionTooLongByStatements, are the same check defined on a different unit of length (line vs.\ 
 statement). The style choices I made represent ideas from a variety of sources including Fowler's Bad 
 Smells of Code\cite{refactoring}, Google's style guide\cite{googleStyle}, Code 
 Complete\cite{code-complete}, C-Style: Standards and Guidelines\cite{standards}, The Practice of 
 Programming\cite{practice-of-programming}, PMD\cite{pmd} and Checkstyle\cite{checkstyle}, as well as 
-my own experience.
+my own experience and preferences.
 
 \begin{table}
 \small
@@ -522,7 +525,7 @@ my own experience.
 modules. Each of these has a unique purpose and is designed to keep the code as clean as possible. 
 The ``Knowledge Barrier'' distinguishes the easily customizable and understandable modules from 
 those which should not be modified without extreme caution. The modules can also be conceptually 
-grouped into three categories: \hyperref[parsingTheCode]{Parsing the Code} (Grammar and Lexer), 
+grouped into three categories: \hyperref[parsingTheCode]{Parsing the Code} (Lexer and Parser), 
 \hyperref[callingTheChecks]{Calling the Checks} (Hooks and Sax), and 
 \hyperref[writingTheChecks]{Writing the Checks} (Checks, Comments, and Locations).
 
@@ -538,10 +541,10 @@ grouped into three categories: \hyperref[parsingTheCode]{Parsing the Code} (Gram
 \section{Parsing the Code}
 \label{parsingTheCode}
 
-\programName is built on top of Flex and Bison, a lexical analyzer and a  parser generator respectively. 
+\programName is built on top of Flex and Bison, a lexical analyzer and parser generator, respectively. 
 These two programs each take in a specification file (which defines a set of tokens and a corresponding 
 context free grammar) and output a set of C files to parse code. Control goes back and forth between the 
-lexical analyzer, which divides the code into distinct tokens, and the parser, which determines how the 
+lexical analyzer --- which divides the code into distinct tokens --- and the parser --- which determines how the 
 tokens fit together. \programName is able to parse valid ANSI C code but it does not compile or in 
 anyway track the contents. This means, for example, that \programName sees any variable or function 
 name as just as an \lstinline{IDENTIFIER} (any set of letters\footnote{Strictly, \lstinline{IDENTIFIER}s fit 
@@ -556,24 +559,23 @@ data types within \lstinline{#define}s (which \programName cannot evaluate and t
 recognize as types). For example, the file sys/cdefs.h, which stdio.h eventually includes, has the line 
 \lstinline{#define __signed    signed} and then uses \lstinline{__signed} throughout the file. To adjust for 
 this issue, the lexer instead contains a hack for determining if character strings in the code are 
-\lstinline{IDENTIFIER}s or data type names. Namely, the lexer does a string comparison against common 
+\lstinline{IDENTIFIER}s or data type names. The lexer does a string comparison against common 
 types defined in standard headers such as \lstinline{size_t}, \lstinline{FILE}, \lstinline{pid_t}, etc. If any of 
 these hardcoded checks pass, then the lexer tells the parser it has found a type name instead of an 
 \lstinline{IDENTIFIER}.\footnote{The lack of preprocessing also means that escaped new lines are left in the code. If these characters occur inside a string, \programName's lexical analysis fails, which in turn causes Bison to falsely report syntax errors. Since this style is rare (and often discouraged), I decided to ignore this issue.}
 
 Bison and Flex track the location of any token or grammar construct. They store this information in a 
-\lstinline{YYLTYPE} structure. (Normally a \lstinline{YYLTYPE} contains 4 fields, \lstinline{first_line}, 
+\lstinline{YYLTYPE} structure. Normally a \lstinline{YYLTYPE} contains 4 fields, \lstinline{first_line}, 
 \lstinline{first_column}, \lstinline{last_line} and \lstinline{last_column}; however, I have also added a 
 \lstinline{filename} field in order to produce more accurate checks and warnings across a set of 
-files.) Each grammar rule can contain multiple actions that consist of C code. These actions can 
+files. Each grammar rule can contain multiple actions that consist of C code. These actions can 
 reference the location of the entire construct, or any of single component of it, through the prebuilt 
-location mechanism. \programName calls the event handlers (functions in the other modules that 
-respond to finding different code constructs) from these actions, passing in the location of the relevant 
-text.  \autoref{grammar} shows an excerpt of the grammar\todo{,?}\ where actions, and their event handlers within 
-the action, are underlined. Some actions are `hidden' in dummy rules (called `subroutines' by Bison) in 
+location mechanism. Event handlers are functions in the Sax and Hooks modules that 
+respond to finding different code constructs. \programName calls the event handlers from actions, passing in the location of the relevant text.  \autoref{grammar} shows an excerpt of the grammar where actions and the event handlers within 
+the actions are underlined. Some actions are `hidden' in dummy rules (called `subroutines' by Bison) in 
 order to avoid ambiguities within the grammar. Examples of this practice are shown in \autoref{grammar} 
-with the \lstinline{beginFOR} and \lstinline{beginIF} rules. Locations passed from the middle of a rule (all 
-the ones passed to \lstinline{begin} handlers) only represent the location of that segment as opposed to 
+with the \lstinline{beginCompound}, \lstinline{beginFOR} and \lstinline{beginIF} rules. Locations passed from the middle of a rule (all 
+those passed to \lstinline{begin} handlers) represent only the location of that segment and not 
 the entire construct. For example, in \autoref{grammar}, \lstinline{beginWhile} will only be passed the 
 location of the word ``\lstinline{while}'' whereas \lstinline{endWhile} will be passed the location of the 
 entire \lstinline{while} statement.
@@ -612,14 +614,14 @@ iteration_statement
 \label{grammar}
 \end{figure} 
 
-Instead of writing them from scratch, I found Flex and Bison input files specifying the C language
+Instead of writing them anew, I found Flex and Bison input files specifying the C language
 online\cite{originalGrammar} and modified them to add additional functionality. The only major 
 modification of the actual grammar was to add the ability to recognize and dynamically add 
 \lstinline{typedef} definitions as types. \programName stores these type names in an internal symbol 
-table and the lexer checks to make sure that any potential \lstinline{IDENTIFIER}s are not already listed 
-there. Additionally, I modified some of the rules to include the dummy rules with actions. In 
+table and the lexer checks to make sure that potential \lstinline{IDENTIFIER}s are not already listed 
+in the table. Additionally, I modified some of the grammar rules to include dummy rules with actions. In 
 order to accommodate the inclusion of header files, I had to expand the given lexer functionality to 
-transfer control between files. The specific method of using a stack of buffers\slash files is heavily 
+transfer control between files. The specific method of using a stack of buffers and file pointers is heavily 
 inspired by the examples in the O'Reilly Flex \& Bison book\cite{flex-and-bison}. When transferring to a 
 different file, the lexer adds the current file to a stack with its file pointer, internal state, and current line 
 number. When it reaches the end of the file, the lexer pops the current file off the stack and goes back 
@@ -663,9 +665,9 @@ to capture the text in between.
 I chose to make this transition because the event-based system required far less overhead to 
 implement. Instead of spending time building the tree framework and the corresponding methods to 
 traverse it, I was able to focus on implementing stylistic checks. Additionally, the SAX-style framework 
-has the added benefit of being able to examine code on the fly, as opposed to after the file has been 
+has the added benefit of being able to examine code as it parses, as opposed to after the file has been 
 parsed completely. This feature also increases scalability because the SAX framework discards the parts 
-of the file(s) it has already read. \todo{remove on the fly?}
+of the file(s) it has already read.
 
 \section{Calling the Checks}
 \label{callingTheChecks}
@@ -674,14 +676,13 @@ Much like SAX, \programName calls event handlers at the beginning and end of con
 declarations, statements, parameter lists, etc.) as well as when it finds singular elements (variable 
 names, \lstinline{break} statements, parameters, etc.). In the code, handlers are prefaced by the words 
 ``\lstinline{begin}'', ``\lstinline{end}'' and ``\lstinline{register}'' to signal at what point each is called (as 
-shown in \autoref{grammar}). Each handler is passed, at minimum, the location of the relevant text (in 
+shown in \autoref{grammar}). At minimum, each handler is passed the location of the relevant text --- in 
 the case of \lstinline{IDENTIFIER}s and numeric constants, the handler is also passed the relevant 
-text itself). Each of these event handlers exists in the file sax.c which in turn calls the 
+text itself. Each of these event handlers exists in the file sax.c which in turn calls the 
 administrator-defined checks (as shown in \autoref{saxHandlers}). While these checks could be written 
-into the event handlers themselves, it is advantageous to separate them into their own functions (and 
-files) in order to preserve the readability of the sax.c file and the code in general. The predefined checks, 
-their function signatures and the handlers which call them are listed in 
-\autoref{predefinedChecksFunctions}.
+into the event handlers themselves, it is advantageous to separate them into their own functions in order 
+to preserve the readability of the sax.c file and the code in general. \autoref{predefinedChecksFunctions} 
+lists the predefined checks, their function signatures, and the handlers which call them.
 \todo{make sure this figure is in the right spot}
 
 \begin{figure}
@@ -718,19 +719,19 @@ void endDeclaration(YYLTYPE location) {
 \label{saxHandlers}
 \end{figure}
 
-Unfortunately some handlers cannot actually be called at the time the construction is recognized. This 
-is because Bison executes actions as they are encountered inside each grammar rule. At the 
-beginning of a rule, Bison would not know which rule it was actually matching when it needed to 
-execute the action. In all the rules listed in \autoref{grammar}, the action is preceded by some 
-distinguishing token (like \lstinline{WHILE}) or by the entire rule. However, \autoref{hookGrammar} 
-shows some rules that both need actions at the beginning of the statement and lack distinguishing 
-tokens. Specifically we would like to know when we start a function definition, but we cannot be sure that 
-we are in a function definition until Bison finishes parsing the function's signature. To fix this issue I 
-added the Hooks module. This module intercepts what would be normal calls within the SAX framework 
-and then reorders them at the appropriate time. Each call into the Hooks module does one of two things: 
-enqueues a Sax level function call and its location or dequeues any item after a specified location 
-(\autoref{hooksQueues}). With the beginning of a function, all the elements of the signature are placed 
-on the queue and then dequeued when \lstinline{h_beginFunctionDefinition} is called. 
+Unfortunately, some handlers cannot actually be called at the time the construct is recognized. This 
+is because Bison executes actions as they are encountered inside each grammar rule. If actions were 
+placed at the beginning of a rule, Bison would not know which to act upon. In all the rules listed in 
+\autoref{grammar}, the action is preceded by some distinguishing token (e.g. \lstinline{WHILE}) or by the 
+entire rule. However, \autoref{hookGrammar} shows some rules that both need actions at the beginning 
+of the statement and lack distinguishing tokens. Specifically we would like to know when we start a 
+function definition, but we cannot be sure that we are in a function definition until Bison finishes parsing 
+the function's signature. To fix this issue I added the Hooks module. This module intercepts what would 
+be normal calls within the SAX framework and then reorders them at the appropriate time. Each call into 
+the Hooks module does one of two things:\ it enqueues a Sax level function call and its location or it 
+dequeues any item after a specified location (\autoref{hooksQueues}). With the beginning of a function, 
+all the elements of the signature are placed on the queue and then dequeued when 
+\lstinline{h_beginFunctionDefinition} is called. 
 
 
 \begin{figure}
@@ -789,8 +790,8 @@ function_definition
 \label{hooksQueues}
 \end{figure}
 
-Another reason for the Hooks module is to make the appropriate calls into the Sax layer regarding 
-\lstinline{IDENTIFIER}s and numeric constants. The lowest order structure Bison operates with is the 
+The Hooks module also makes the appropriate calls into the Sax layer regarding 
+\lstinline{IDENTIFIER}s and numeric constants. The lowest order structure Bison can manipulate is the 
 token, meaning it cannot know the textual representation. Flex, on the other hand, operates on the actual 
 text. The Hooks module takes the separate calls from both modules regarding the location and the text of 
 \lstinline{IDENTIFIER}s and constants and routes them into a combined call in the SAX layer. This can 
@@ -831,18 +832,18 @@ N/A & endFunctionDefinition \\
 \label{handlerTimeline}
 \end{figure}
 
-Event handlers for major and common constructs, as well as the beginning and end of each file and the 
-program, have been implemented. Smaller items, like the handlers for registration of operators and data 
-types, have yet to be implemented. The addition of further handlers is very possible, although should 
-only be done after fully comprehending how the system works. Specifically, it is critical to route handlers 
-through Hooks only when they occur inside statements and declarations (as well as anything else which 
-is reordered in Hooks) and through Sax otherwise. Otherwise events could be called in the wrong order 
-(if they miss going through Hooks) or not at all (if they go through Hooks without anything to release them 
-from the queue).
+Event handlers for major and common constructs, the beginning and end of each file, and the 
+program have been implemented. Smaller items, including the handlers for registration of operators and 
+data types, have yet to be implemented. It is easy to add more handlers; however, administrators should 
+only attempt to do so after fully comprehending how the system works. Specifically, it is crucial to route 
+handlers through Hooks only when they occur inside constructs which are already rerouted inside Hooks 
+(such as statements and declarations). Otherwise events could be called in the wrong order (if they miss 
+going through Hooks) or not at all (if they go through Hooks without anything to release them from the 
+queue).
 
 In addition to the basic SAX style system, I have implemented one shortcut to help identify code context 
 without an excess of global variables. Every time a handler is called, it sets the 
-\lstinline{lastCalledFunction} (through a setter). Checks can then use this variable to easily figure out 
+\lstinline{lastCalledFunction} through a setter. Checks can then use this variable to easily figure out 
 what the previous context was without additional calls or variables (as shown in 
 \autoref{lastCalledExample}).
 
@@ -891,13 +892,13 @@ void isCompoundStatementEmpty(YYLTYPE location, int progress) {
 \label{writingTheChecks}
 
 Minimally, each check needs access to the location of the code construct in order to be able to produce 
-a warning. However, checks often need additional information regarding the surrounding context 
+a warning. Additionally, checks often need further information regarding the surrounding context 
 of the possible error. A simple example is the check against using ``magic 
 numbers''\cite[p.~19]{practice-of-programming} (see \autoref{checkWithContext}). Many programmers 
 consider using numeric constants directly inside the code very poor style and recommend defining a 
 symbolic constant to hold that value. Therefore \programName should only throw a warning when it 
-finds a magic number inside a normal statement (as opposed to inside a declaration where it is 
-necessarily defined). This check then needs to know every time a declaration begins and ends as well 
+finds a magic number inside a normal statement as opposed to inside a declaration where it is 
+necessarily defined. This check then needs to know every time a declaration begins and ends as well 
 as each time a number is found. This contextual information can be stored in global variables in the 
 Checks module or passed into the individual check through its parameters (as in 
 \autoref{checkWithContext}).
@@ -947,32 +948,32 @@ void isMagicNumber(YYLTYPE location, int progress, char* constant) {
 \newcommand{\lyyerrorf}{\lstinline{lyyerrorf}\xspace}
 
 In order to throw a warning, the administrator can call one of three functions: \yyerror, \lyyerror, and 
-\lyyerrorf. Each of these functions outputs a warning message to \lstinline{stderr} preceded by the error's 
+\lyyerrorf. Each of these functions prints a warning message to \lstinline{stderr} preceded by the error's 
 location in the code and an error level (as seen in \autoref{errorExample}). \yyerror and \lyyerrorf 
 are each wrappers to \lyyerror, which takes in an error level (\lstinline{enum errorLevel}), a location 
 (\lstinline{YYLTYPE}) and a warning message (\lstinline{char *}). In essence, \lyyerror is really a wrapper 
-to \lstinline{fprintf} and defines the formatting of all the warning messages\slash locations. \lyyerrorf, 
-instead of taking in a warning message, takes a format string and a variable argument list, which it uses 
-with \lstinline{vsprintf} to create a warning message. It then passes the newly created message to 
-\lyyerror with the rest of its arguments. \yyerror only takes a warning message and calls \lyyerror with 
+to \lstinline{fprintf} and defines the formatting for the warnings messages and locations. Instead of 
+receiving a warning message, \lyyerrorf accepts a format string and a variable argument list, which it 
+uses with \lstinline{vsprintf} to create a warning message. It then passes the newly created message to 
+\lyyerror with the rest of its arguments. \yyerror only accepts a warning message and calls \lyyerror with 
 Bison's internal location in the code and a default high error level. This is because \yyerror is called 
 internally through Bison to represent syntax errors. \yyerror is the only predefined error reporting 
 function; \lyyerror is an extension suggested by O'Reilly\cite{flex-and-bison} when using location tracking 
-with Bison\slash Flex (the `l' represents the variable location). \lyyerrorf is modeled after \lstinline{printf} 
+with Bison\slash Flex. The `l' represents the variable location. \lyyerrorf is modeled after \lstinline{printf} 
 and deals with formatted warning messages in one consolidated function.
 
 Additionally, there are two helper modules designed to facilitate writing checks: Locations and 
 Comments. The Locations module contains several functions to manipulate \lstinline{YYLTYPE}s.  
-Specifically it contains methods to compare locations in various directions\slash distances as well as 
-allocate, copy and free \lstinline{YYLTYPE}s. The Comments module tracks all the comments found 
-while running \programName. Comment contents and locations are registered through calls from the 
-Sax layer and are stored in a dynamic array. Adjacent comments (like those in 
-\autoref{adjacentComments}) are recognized and combined into one larger comment. Additionally the 
-module provides the ability to search through this array to find comments in or near a certain location 
-(using the methods from Locations). Finally Comments provides a couple of useful functions when 
-analyzing the comment itself: determining if a comment has words (as opposed to a delimiting comment 
-in the form of \lstinline{/*----*/} etc.) and if a comment contains a given string (with or without case 
-sensitivity).
+Specifically it contains methods to compare locations as well as allocate, copy and free 
+\lstinline{YYLTYPE}s. The Comments module tracks all the comments found while running 
+\programName. Comments' contents and locations are registered through calls from the Sax layer and 
+are stored in a dynamic array. Adjacent comments (like those in \autoref{adjacentComments}) are 
+recognized and combined into one larger comment. Additionally the module provides the ability to 
+search through this array to find comments in or near a given location (using the methods from 
+Locations). Finally, the Comments module provides two useful functions for analyzing the comment itself. 
+The first determines if a comment has words --- signifying that it is not a delimiting comment in the form of 
+\lstinline{/*----*/}. The second checks whether a comment contains a given string with or without case 
+sensitivity.
 
 \begin{figure}
 \begin{lstlisting}[language=C]
@@ -984,23 +985,23 @@ sensitivity).
 \label{adjacentComments}
 \end{figure}
 
-There are some coding styles which are very hard for \programName to check. For example, when 
+\programName has difficulty checking some coding styles. For example, when 
 checking that each global variable has a comment, it is trivial to check if there is a comment before that 
-declaration. However, if the comment appears after the declaration (as is common in some header 
-files), \programName is unable to find the comment. This is because \programName, at the end of a 
-declaration, has not read or stored the following comment. There are three solutions to this issue. The 
-first is a creative hack in which one stores every location of a global variable and then searches for 
-comments after each location at the end of the file. The second method would be to perform lookahead 
-within the lexer to determine if a comment was about to follow. The third and preferred solution is to 
-change the coding standard to have comments precede declarations.\footnote{Princeton University's 
-Introduction to Programming Systems course\cite{cos217} will be changing its coding standards this 
-summer to facilitate using \programName this fall and thereafter. One of the largest changes will be to put 
-comments before function declarations in header files.}\todo{thereafter?}
+declaration. If, however, the comment appears after the declaration, as is common in some header 
+files, \programName is unable to find the comment. This is because, at the end of a declaration, 
+\programName has not yet read or stored the forthcoming comment. There are three solutions to this 
+issue. The first is a creative hack in which one stores every location of a global variable and then 
+searches for comments after each location at the end of the file. The second method would be to perform 
+lookahead within the lexer to determine if a comment was about to follow. The third and preferred 
+solution is to change the coding standard to have comments precede declarations.\footnote{Princeton 
+University's Introduction to Programming Systems course\cite{cos217} will be changing its coding 
+standards this summer to facilitate using \programName this fall and thereafter. One of the largest 
+changes will be to put comments before function declarations in header files.}
 
 \chapter{How to Use \programName}
 
 \section{Users}
-Find out from your administrator where you should find their \todo{the proper?} version of \programName. After following 
+Find out from your administrator where you should find their version of \programName. After following 
 their installation instructions, go to your working directory from the command line. Type 
 ``\lstinline{critTer *.c}'' (or if you only want to check one or two files, type their names instead of the 
 \lstinline{*.c}). \programName will output any warnings about your code to \lstinline{stderr}.
@@ -1015,23 +1016,24 @@ level message and a half a point per low error level message. Not only does it r
 to grade a submission, but by allowing students to pre-check their work, the submissions become easier 
 to read through good, consistent style.
 
-In industry, \programName should be used by programmers before submitting code to peer reviews. This 
-creates an automated reminder system against any code that does not adhere to the accepted coding 
-standards. This makes the code base more consistent and readable without direct peer enforcement. 
-Furthermore, the team can be more productive when they spend less time correcting stylistic errors.
+In industry, \programName should be used by programmers before submitting code for peer review. This 
+creates an automated system to alert against any code that does not adhere to the accepted coding 
+standard. In this way, \programName helps make the code base more consistent and readable without 
+direct peer enforcement. Furthermore, the team can be more productive when they spend less time 
+correcting their peers' stylistic errors.
 
 \subsection{Customization}
-Before customizing the code, please make sure you both understand how \programName works (see 
+Before customizing the code, it is important to both understand how \programName works (see 
 \autoref{howItWorks}) and have looked through the code conventions in \autoref{conventions}.
 
 \subsubsection{Add a Check}
 
-The first step of adding a new stylistic check is to figure out what exactly you are checking and which 
-handlers give you the necessary information. The first question to ask is how much context is needed to 
-implement this check. For example, to throw a warning on C++ style comments (comments in form of 
-``\lstinline{// Comment text which ends on a newline}'') requires no context -- it is only dependent on the 
+The first step of adding a new stylistic check is to determine precisely what you wish to check and which 
+handlers will give you the necessary information. Then determine how much context is needed 
+to implement this check. For example, to throw a warning on C++ style comments (comments in form of 
+``\lstinline{// Comment text which ends on a newline}'') requires no context --- it is only dependent on the 
 existence of that code. In contrast, checking for braces around the content of \lstinline{for} loops requires 
-very minimal context: whether or not \lstinline{endCompoundStatement} was the last function called (i.e. 
+very minimal context:\ whether or not \lstinline{endCompoundStatement} was the last function called (i.e.\ 
 right before \lstinline{endFor} was called, did \programName encounter a `\lstinline!}!' or something else). 
 This minimal context can be established through the use of the \lstinline{lastCalled_get()} function which 
 returns a pointer to the last Sax handler called. More complex checks may need additional context. For 
@@ -1087,45 +1089,45 @@ order to throw a warning, one must pass \lstinline{location} to either \lstinlin
 
 \subsubsection{Add an Event Handler}
 
-If you want to add an event handler, you will have to edit the grammar file. If you damage this file, \todo{fix} 
-\programName will break. Having said that, creating a handler is actually quite simple. The first 
+In order to add an event handler, it is necessary to edit the grammar file. This is not trivial and should be 
+undertaken with great care. Having said that, creating a handler itself is actually quite simple. The first 
 step is to figure out which grammar rule(s) are relevant to the event you would like to capture. In some 
 cases this is incredibly trivial, in others it takes some effort to understand what the grammar is describing. 
-The best method to figure out the various rules is, in my experience, to perform a manual 
+In my experience, the best method to figure out the various rules is to perform a manual 
 depth-first-search through the different components of the rule until it becomes clear. 
 
 After finding the grammar rule, adding a \lstinline{register} or \lstinline{end} handler is very simple: 
 define the handler in sax.c/h and add the action ``\lstinline!{newHandler(@X);}!'' after the component you 
 want to recognize. The \lstinline{@X} references the location of either the component (where \lstinline{X} 
-= the number of the component) or the entire rule (where \lstinline{X} = `\lstinline{$}'). \autoref{grammar}
- and \autoref{hookGrammar} show examples of these calls. Unfortunately adding \lstinline{begin} 
-handlers can be much more difficult than the previous cases although, in principle, the process is 
-identical. This is due to the possibility of adding ambiguities to the grammar.\footnote{The shift\slash 
-reduce conflict for if-else statements was removed by giving explicit precedence for if-else statements 
-over if statements as suggested by O'Reilly\cite[p.~188]{flex-and-bison}.} When this happens, Bison will 
-throw several errors during compilation and the parser will most likely break. The first tactic to avoid this 
-issue is to never have actions as the first element in a rule; they should always appear after (at least) one 
-component. If this approach is insufficient, you should try burying the action inside a subroutine (like 
- \lstinline{beginCompound}, \lstinline{beginIF}, and \lstinline{beginFOR} in \autoref{grammar}).
+= the number of the component) or the entire rule (where \lstinline{X} = `\lstinline{$}'). \autoref{grammar} 
+and \autoref{hookGrammar} show examples of these calls. Adding \lstinline{begin} handlers can be 
+much more difficult than the previous cases although, in principle, the process is identical. This is due to 
+the possibility of adding ambiguities to the grammar.\footnote{The shift\slash reduce conflict for if-else 
+statements was removed by giving explicit precedence for if-else statements over if statements as 
+suggested by O'Reilly\cite[p.~188]{flex-and-bison}.} When this happens, Bison will throw several errors 
+during compilation and the parser will most likely break. The first tactic to avoid this issue is to never 
+place actions as the first element in a rule; they should always appear after (at least) one component. If 
+this approach is insufficient, you should try burying the action inside a dummy rule (such as 
+\lstinline{beginCompound}, \lstinline{beginIF}, and \lstinline{beginFOR} in \autoref{grammar}).
 
 There are only two reasons to route your new handler through the Hooks module instead of going 
 directly to Sax; the most likely reason is the event occurs inside a construct that already goes through 
 Hooks. Declarations, function signatures, and statements currently go through Hooks. This means that 
 events like \lstinline{registerConst} must also go through Hooks in order to be released to Sax at the right 
 time (see \autoref{callingTheChecks}). The second motive is the reason why those constructs 
-already go through Hooks:  it is the the only way of getting an accurate \lstinline{begin} handler. By this, I 
-mean it is either impossible or very hard\slash complicated to create a \lstinline{begin} handler in the 
-right spot in the grammar such that it is executed before all its components. These constructs dequeue all 
-the appropriate previous calls once the \lstinline{h_endXX} handler is called.
+already go through Hooks:  it is the only way of getting an accurate \lstinline{begin} handler. By this, I 
+mean it is either impossible or exceptionally complicated to create a \lstinline{begin} handler in the 
+correct place in the grammar such that it is executed before all of its components. These constructs 
+dequeue all the appropriate previous calls once the \lstinline{h_endXX} handler is called.
 
 If you do not need to go through Hooks, after defining the action in the grammar file and the handler in 
-both sax.c and sax.h, all you need to do is call \lstinline{lastCalled_set()} from the handler. If the new 
+sax.c/h, all you need to do is call \lstinline{lastCalled_set()} from the handler. If the new 
 handler needs to go through Hooks, you need to create two handlers: \lstinline{newHandler} in Sax and 
 \lstinline{h_newHandler} in Hooks (where \lstinline{h_newHandler} is called from the action in the 
-grammar file). If the event just needs to be released at the correct time (i.e. it appears within a hooked 
+grammar file). If the event just needs to be released at the correct time (i.e.\ it appears within a hooked 
 construct), the Hooks handler should call \lstinline{enqueueFunctionAndLocation} to enqueue the Sax 
-handler. If the handler needs to dequeue elements, it should call \lstinline{dequeueUntil}, followed by the 
-sax handler and \lstinline{lastCalled_set()}. Examples of both direct and indirect routes from the 
+handler. If the handler needs to dequeue some elements, it should call \lstinline{dequeueUntil}, followed 
+by the sax handler and \lstinline{lastCalled_set()}. Examples of both direct and indirect routes from the 
 Lexer\slash Parser to Sax are shown in \autoref{saxAndHooksHandlers}.
 
 \begin{figure}
@@ -1210,22 +1212,20 @@ checks to the testing mechanism, one simply needs to add the check's function na
 
 \chapter{Evaluation}
 
-\newcommand{\human}{Dr.\ Dondero\xspace}
+\newcommand{\human}{Dr.~Dondero\xspace}
 
-In order to perform an evaluation of \programName's performance, Dr. Robert Dondero graded 
-10 randomly chosen final project submissions for Princeton University's Introduction to Programming 
-Systems (COS 217) \cite{cos217}. There were over 650 assignments available, each of which was 
-anonymized in order to protect the students' privacy. Dr. Dondero has taught the course for many years, 
-making him the perfect person to judge each submission's style. We judged \programName's 
-performance compared to ``true'' errors, which were determined after both Dr. Dondero and 
-\programName looked at each submission. This post-analysis judgement of errors was necessary in 
-order to properly take into account errors that Dr. Dondero originally missed and  \programName found. 
-We did allow \programName to perform an iterative analysis of the submissions as a whole, mirroring 
-the development process we hope other administrators will go through as they develop their own 
-checks. The iterative process mostly affected checks like \lstinline{functionIsTooLong} where there was a 
-threshold value that needed to be tuned. 
+In order to evaluate of \programName's performance, Dr.\ Robert Dondero graded 10 randomly chosen 
+final project submissions for Princeton University's Introduction to Programming Systems (COS 217) 
+\cite{cos217}. There were over 650 assignments available, each of which was anonymized in order to 
+protect the students' privacy. Dr.~Dondero has taught the course for many years, making him the perfect 
+person to judge each submission's style. We judged \programName's performance compared to ``true'' 
+errors, which were determined after both Dr.~Dondero and \programName looked at each submission. 
+This post-analysis judgement of errors was necessary in order to properly take into account errors that 
+Dr.~Dondero originally missed and  \programName found. We did allow \programName to perform an 
+iterative analysis of the submissions as a whole, mirroring the development process we hope other 
+administrators will go through as they develop their own checks. The iterative process mostly affected 
+checks like \lstinline{functionIsTooLong} where there was a threshold value that needed to be tuned. 
 
-\todo{define how I got the numbers for precision and recall?}
 We measured two properties:\ precision and recall. Precision represents what fraction of the output was 
 in response to a true error. In our experiment, \human will always have a precision of 100\%.\footnote{It is 
 possible for \human to lower this value by changing his mind regarding an error but this never happened 
@@ -1242,11 +1242,11 @@ relationship between recall and precision.
 
 Four checks were very useful and represented about half of all of \programName's output: magic 
 numbers, validating pointer parameters, comments above global variables, and validating function 
-comments. The check for magic numbers was one of the qualitatively hardest for Dr.\ Dondero to perform 
+comments. The check for magic numbers was one of the qualitatively hardest for Dr.~Dondero to perform 
 because numerals do not stand out from code. This is shown in the data in 
-\autoref{resultsMagicNumbers} where Dr.\ Dondero missed almost as many magic numbers as he 
-caught. This check is also interesting in that by its very nature it will miss some errors, namely when 0, 1 
-or 2 is used `magically'. 
+\autoref{resultsMagicNumbers} where Dr.~Dondero missed almost as many magic numbers as he 
+caught. This check is also interesting in that, by its very nature, it will miss some errors; specifically when 
+0, 1 or 2 is used `magically'. 
 
 \begin{table}
 \begin{center}
@@ -1261,7 +1261,7 @@ or 2 is used `magically'.
 	\bottomrule
 \end{tabular}
 \end{center}
-\caption[Test Results for Magic Numbers]{Test Results for Magic Numbers. For this check, \programName had a recall of 83.6\% and a precision of 80.7\%. \human had a recall of 60.0\%.}
+\caption[Test Results for Magic Numbers]{Test Results for Magic Numbers. For this check, \programName had a recall of 83.6\% ($\frac{46}{46+9}$) and a precision of 80.7\% ($\frac{46}{46+11}$). \human had a recall of 60.0\% ($\frac{33}{33+22}$).}
 \label{resultsMagicNumbers}
 \end{table}
 
@@ -1329,7 +1329,7 @@ of 100\% and a precision of 25.3\%. After filtering the data, \programName had a
 \label{resultsCommentsAboveGlobals}
 \end{table}
 
-The check to validate function comments is an ideal check. One of Dr.\ Dondero's biggest time 
+The check to validate function comments is an ideal check. One of Dr.~Dondero's biggest time 
 drains in grading assignments is checking that each function has an appropriate comment. 
 \programName is able to easily check whether the function has a comment and whether that comment 
 refers to each of its parameters and its return value. More importantly, \programName had a perfect 
@@ -1370,7 +1370,7 @@ For this check, \programName had a recall of 100\% and a precision of 100\%. \hu
 \label{resultsValidateFunctionComments}
 \end{table}
 
-In addition to those mentioned above, \programName ran 16 checks over the data set. In some cases, 
+In addition to those mentioned above, \programName ran 16 checks over the dataset. In some cases, 
 like useEnumNotDefine and functionIsTooLong, \programName and \human found the same set of 
 errors. In other cases, as with neverUseCPlusPlusStyleComments and switchHasDefault, \human did not 
 find any errors yet \programName found a set with 100\% precision. Several checks did not have enough 
@@ -1379,12 +1379,12 @@ tooManyParameters, fileIsTooLong, isCompoundStatementEmpty and switchCasesHaveBr
 had less than 4 warnings. In some cases, specifically for isTooDeeplyNested, \human agreed that 
 \programName's output was correct even if there wasn't a specific remedy for the code. During the term, 
 Dr.\ Dondero normally solves this issue by telling the student that ``it would be better to refactor the code, 
-but it's not clear how''. \todo{look at this again}
+but it's not clear how''.
 
 In going over the graded assignments, it became clear that \programName had not yet been tuned to find 
 all the desired types of style errors. One of the most prevalent ignored issues were lines that exceeded a 
 maximum length. \programName can be configured to check for this error by editing the code in the lexer 
-which tracks the column position of the source file. Another useful check would be to recognized 
+which tracks the column position of the source file. Another useful check would be to recognize 
 duplicate definitions of the same \lstinline{struct} in different files. While this would be possible to 
 implement in \programName by storing all references to \lstinline{struct}s, it would not be a simple 
 process. Splint, however, does check for this type of error and can be used in conjunction with 
@@ -1395,7 +1395,7 @@ indentation.
 Overall, \programName did very well. \programName produced a total of 1226 warnings over the entire 
 dataset. 951 of these represented true stylistic errors in the code. \programName's recall was 14.5\% 
 higher than \human's and maintained a relatively high precision of 77.2\%. After filtering, 
-\programName's precision jumped to 90.0\%. Dr.\ Dondero and I both judged that precision as excellent. 
+\programName's precision jumped to 90.0\%. Dr.~Dondero and I both judged that precision as excellent. 
 Data, before and after filtering, can be seen in \autoref{resultsAllChecks}. These tests conclusively prove 
 the benefit that \programName can provide in terms of automatic style checking. Even without filtering the 
 data, over three quarters of \programName's output was pertinent. Furthermore, it increased error 
@@ -1556,17 +1556,17 @@ Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
 
 \programName's development has been reasonably linear and has consisted of slowly adding modules 
 as new situations arose. Getting Bison and Flex to parse the sample C code took a significant portion of 
-time at the beginning; especially the added elements such as tracking \lstinline{typedef}s and 
+time at the beginning, especially the added elements such as tracking \lstinline{typedef}s and 
 dynamically reading header files. Once the code could be read without issue, the next step was to start 
 adding some minimal checks.
 
-The first version of \programName consisted of the Main, Grammar and Lexer, and Checks modules 
+The first version of \programName consisted of the Main, Lexer and Parser, and Checks modules 
 (although they were not conceived as such at that point). At this stage, Checks contained four checks 
-which were called directly from the actions in the grammar (\autoref{1.0grammar}). Comment tracking 
-had been implemented inside Checks and was passed a different value for the beginning, middle and 
-end of a comment. Context was determined by setting an enumerated value for the statement as a whole 
-(underlined in \autoref{1.0grammar}). While this initial version was functional, it involved tedious 
-manipulation of the grammar as well as very little ability to perform contextual processing.
+which were called directly from the actions in the grammar (\autoref{1.0grammar}). Minimal comment 
+tracking had been implemented inside the Checks module within a single function. Context was 
+determined by setting an enumerated value for the statement as a whole (underlined in 
+\autoref{1.0grammar}). While this initial version was functional, it involved tedious manipulation of the 
+grammar as well as very little ability to perform contextual processing.
 
 \begin{figure}
 \begin{lstlisting}[language=Caml, escapechar=\%]
