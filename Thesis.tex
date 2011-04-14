@@ -134,8 +134,6 @@
 \end{flushright}
 \newpage
 
-\listoftodos
-
 \begin{abstract}
 Stylistic errors are a symptom of poorly written code. Sadly, relatively few tools have implemented 
 automated stylistic error checking and even fewer are customizable or written for C. \programName 
@@ -669,8 +667,10 @@ has the added benefit of being able to examine code as it parses, as opposed to 
 parsed completely. This feature also increases scalability because the SAX framework discards the parts 
 of the file(s) it has already read.
 
+\singlespacing
 \section{Calling the Checks}
 \label{callingTheChecks}
+\doublespacing 
 
 Much like SAX, \programName calls event handlers at the beginning and end of constructs (functions, 
 declarations, statements, parameter lists, etc.) as well as when it finds singular elements (variable 
@@ -786,15 +786,16 @@ function_definition
 	\includegraphics[scale=0.5]{hooksQueuesPartD.pdf}
 \end{subfigure}
 \end{center}
-\caption[Representation of the Hooks Module]{Representation of the Hooks Module. \\(\subref{hooksQueuesA}) The initial queue with functions associated to locations 11, 12 and 13. \\(\subref{hooksQueuesB}) The queue after another function\slash location pair has been enqueued. \\ (\subref{hooksQueuesC}) The call at location 15 causes a call into the Sax layer followed by every stored call after the given location (12) in the queue. \\ (\subref{hooksQueuesD}) The resulting queue.}
+\caption[Representation of the Hooks Module]{Representation of the Hooks Module. (\subref{hooksQueuesA}) The initial queue with functions associated to locations 11, 12 and 13. (\subref{hooksQueuesB}) The queue after another function\slash location pair has been enqueued. (\subref{hooksQueuesC}) The call at location 15 causes a call into the Sax layer followed by every stored call after the given location (12) in the queue. (\subref{hooksQueuesD}) The resulting queue.}
 \label{hooksQueues}
 \end{figure}
 
 The Hooks module also makes the appropriate calls into the Sax layer regarding 
 \lstinline{IDENTIFIER}s and numeric constants. The lowest order structure Bison can manipulate is the 
-token, meaning it cannot know the textual representation. Flex, on the other hand, operates on the actual 
-text. The Hooks module takes the separate calls from both modules regarding the location and the text of 
-\lstinline{IDENTIFIER}s and constants and routes them into a combined call in the SAX layer. This can 
+token, meaning it cannot know the textual representation of a given \lstinline{IDENTIFIER} or constant. 
+Flex, on the other hand, operates on the actual text. Each module makes one call into Hooks for each 
+\lstinline{IDENTIFIER} or constant regarding the text or location. The Hooks module then takes the 
+information from these separate calls and combines them into one call in the SAX layer. This can 
 best be seen in \autoref{handlerTimeline}.
 
 \begin{figure}
