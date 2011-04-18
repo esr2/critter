@@ -1,10 +1,10 @@
 %\documentclass[12pt]{report}
 %\documentclass[12pt, twoside]{report}
 %\documentclass[12pt, draft]{report}
-\documentclass[12pt, oneside]{book}
+\documentclass[12pt, inner=.5in]{book}
 \usepackage{setspace}
-\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
-%\usepackage[bindingoffset=.75in]{geometry}
+%\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\usepackage[bindingoffset=.75in]{geometry}
 \geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
 %\geometry{landscape}                % Activate for for rotated page geometry
 %\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
@@ -56,6 +56,14 @@
   \DOTIS{#1}
   \vskip 0\p@
 }}
+
+\makeatletter
+\def\cleardoublepage{\clearpage\if@twoside \ifodd\c@page\else
+    \hbox{}
+    \thispagestyle{empty}
+    \newpage
+    \if@twocolumn\hbox{}\newpage\fi\fi\fi}
+\makeatother \clearpage{\pagestyle{plain}\cleardoublepage}
 
 %todonotes
 \usepackage{todonotes}
@@ -110,6 +118,7 @@
 \usepackage{appendix}
 
 \doublespacing			% Ask per individual, also remove extra space in section headings
+\setlength\parskip{0cm}
 
 \newcommand{\abstractname}{Abstract}
 \newenvironment{abstract}% 
@@ -682,8 +691,8 @@ text itself. Each of these event handlers exists in the file sax.c which in turn
 administrator-defined checks (as shown in \autoref{saxHandlers}). While these checks could be written 
 into the event handlers themselves, it is advantageous to separate them into their own functions in order 
 to preserve the readability of the sax.c file and the code in general. \autoref{predefinedChecksFunctions} 
-lists the predefined checks, their function signatures, and the handlers which call them.
-
+lists the predefined checks, their function signatures, and the handlers which call them. 
+ 
 \begin{figure}
 \begin{lstlisting}[language=C]
 void registerConstant(YYLTYPE location, char* constant) {
@@ -1526,7 +1535,7 @@ Check Function \& Purpose & Relevant Sax Handlers \\ \midrule
 \item Use the DynArray class to handle persistent arrays, stacks and queues. It is a dynamically growing array which holds void pointers. This is the base implementation of how comments are stored as well as the Hook module queues.
 \item To change the tab size, edit the \lstinline{count} function inside c.l.
 \item To change the string representation for each error level, edit the \lyyerror function in c.y. Currently, \lstinline{ERROR_HIGH} = ``big problem'', \lstinline{ERROR_NORMAL} = ``error'', and \lstinline{ERROR_LOW} = ``low priority''.  
-\item Make sure that each \lstinline{IDENTIFIER} in the grammar is either registered through \lstinline{h_registerIdentifer} or is explicitly ignored through \lstinline{h_ignoreIdentifierText}. Otherwise the wrong identifier text will be dequeued and passed into the Sax module. This is because the lexer will always enqueue the \lstinline{IDENTIFIER}'s text before the grammar recognizes it.
+\item Make sure that each instance of \lstinline{IDENTIFIER} in the grammar is either explicitly registered through \lstinline{h_registerIdentifer} or ignored by invoking \lstinline{h_ignoreIdentifierText}. Otherwise the wrong identifier text will be dequeued and passed into the Sax module. This is because the lexer will always enqueue the \lstinline{IDENTIFIER}'s text before the grammar recognizes it.
 \item Throughout the code, 0 and 1 are used synonymously for false and true respectively whereas \lstinline{NULL} is used for pointers.
 \end{itemize}
 
@@ -1562,8 +1571,8 @@ adding some minimal checks.
 
 The first version of \programName consisted of the Main, Lexer and Parser, and Checks modules 
 (although they were not conceived as such at that point). At this stage, Checks contained four checks 
-which were called directly from the actions in the grammar (\autoref{1.0grammar}). Minimal comment 
-tracking had been implemented inside the Checks module within a single function. Context was 
+which were called directly from the actions in the grammar (\autoref{1.0grammar}). The Checks module 
+also contained a single function which performed minimal comment tracking. Context was 
 determined by setting an enumerated value for the statement as a whole (underlined in 
 \autoref{1.0grammar}). While this initial version was functional, it involved tedious manipulation of the 
 grammar as well as very little ability to perform contextual processing.
@@ -1580,7 +1589,7 @@ selection_statement
 \label{1.0grammar}
 \end{figure}
 
-This dependency on the grammar file was the motivation to change the framework in version 2. The first 
+This dependency on the grammar file motivated the change in framework in version 2. The first 
 step was to adopt the SAX style of processing. The alternative was to try to use an AST and Visitor 
 Pattern (like PMD and Checkstyle) but this would have involved a lot of overhead to write the framework 
 code. The SAX style is relatively lightweight and was the far easier (and simpler) alternative. The 
@@ -1589,10 +1598,10 @@ checks to be added. The comment tracking system was moved into its own module an
 previous enumerated value contexts were removed. However, in adding more checks, I realized that 
 some calls into the Sax module were simply not going to be in the right order. 
 
-This problem prompted final version (3) which added the Hooks module. The inspiration behind the 
+This problem prompted the final version (3) which added the Hooks module. The inspiration behind the 
 Hooks module was the queue of function pointers. The insight of storing the pointers to the event 
 handlers made this entire implementation (and version) possible. After adding the Hooks module, I was 
-able to add even more checks and focus on cleaning up the code. In the process of adding more checks, 
+able to add even more checks and focus on refactoring the code. In the process of adding more checks, 
 I decided to store the last called event handler in order to minimize the number of handlers any given 
 check needed to be called from. This eventually led to the \lstinline{lastCalledFunction} methods.  At 
 this point I moved all the code regarding \lstinline{YYLTYPE}s into the Locations module and added finer 
