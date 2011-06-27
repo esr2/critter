@@ -44,8 +44,8 @@ void hasBraces(YYLTYPE location, char* construct) {
 			return;
 		}
 		
-		/*lyyerrorf(ERROR_NORMAL, location, 
-								"Please use braces after all %s statements", construct); */
+		lyyerrorf(ERROR_NORMAL, location, 
+              "Please use braces after all %s statements", construct);
 	}
 	
 }
@@ -80,9 +80,9 @@ void isFunctionTooLongByStatements(YYLTYPE location, int progress) {
 			break;
 		case END:
 			if (statementCount >= MAX_FUNCTION_LENGTH) {
-				/*lyyerrorf(ERROR_NORMAL, location, 
-										"Function is too long by statement count, "
-										"should be less than %d statements", MAX_FUNCTION_LENGTH);*/
+				lyyerrorf(ERROR_NORMAL, location, 
+                  "Function is too long by statement count, "
+                  "should be less than %d statements", MAX_FUNCTION_LENGTH);
 			}
 			break;
 		default:
@@ -474,8 +474,8 @@ void isIfElsePlacementValid(YYLTYPE location, int progress) {
 			ifLastLine = location.last_line;
 			/* check that, if bracketed, appears on multiple lines */
 			if (ifIsBracketed && ((location.last_line - location.first_line) <= 0)) {
-				/*	lyyerror(ERROR_LOW, location,
-									"When using braces with an if statement, use multiple lines"); */
+				lyyerror(ERROR_LOW, location,
+                "When using braces with an if statement, use multiple lines");
 				hadError = 1;
 			}
 			break;
@@ -490,8 +490,8 @@ void isIfElsePlacementValid(YYLTYPE location, int progress) {
 			if (ifIsBracketed) {
 				/* else should be on same line as '}' */
 				if (location.first_line != ifLastLine) {
-					/*lyyerror(ERROR_LOW, location, 
-										"Please put the else on the same line as the closing if brace"); */
+					lyyerror(ERROR_LOW, location, 
+                   "Please put the else on the same line as the closing if brace");
 				}
 			} else {
 				/* else should be on line after the if statement finishes */
