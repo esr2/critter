@@ -496,8 +496,8 @@ void isIfElsePlacementValid(YYLTYPE location, int progress) {
 			} else {
 				/* else should be on line after the if statement finishes */
 				if ((location.first_line - ifLastLine) <= 0) {
-					/*lyyerror(ERROR_LOW, location,
-										"Please put the else on the line after the if"); */
+					lyyerror(ERROR_LOW, location,
+                   "Please put the else on the line after the if");
 				}
 			}
 			
