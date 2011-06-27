@@ -278,7 +278,7 @@ void isVariableNameTooShort(YYLTYPE location, int progress, char* identifier) {
 	int MINIMUM_VARIABLE_NAME_LENGTH = 3;
 	static int inDeclaration = 0;
 	char *acceptableVariables[9] = {"i", "j", "k", "c", "n", "fp", "fd",
-																	"pc", "ul"};
+																	"pc"};
 	int numAcceptable = 9;
 	
 	switch (progress) {
