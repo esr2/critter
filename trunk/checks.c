@@ -19,6 +19,8 @@
 
 /**
  * Check if the file exceeds a maximum length.
+ *
+ * COS217 MAX_FILE_LENGTH = 500
  */
 void isFileTooLong(YYLTYPE location) {
 	int MAX_FILE_LENGTH = 500;
@@ -50,6 +52,8 @@ void hasBraces(YYLTYPE location, char* construct) {
 
 /**
  * Check if a function exceeds a maximum line count.
+ *
+ * COS217 MAX_FUNCTION_LENGTH = 140
  */
 void isFunctionTooLongByLines(YYLTYPE location) {
 	int MAX_FUNCTION_LENGTH = 140;
@@ -61,7 +65,7 @@ void isFunctionTooLongByLines(YYLTYPE location) {
 }
 
 /**
- * Check if there are too many parameters in the function declaration.
+ * Check if a function exceeds a maximum statement count.
  */
 void isFunctionTooLongByStatements(YYLTYPE location, int progress) {
 	int MAX_FUNCTION_LENGTH = 50;
@@ -88,6 +92,8 @@ void isFunctionTooLongByStatements(YYLTYPE location, int progress) {
 
 /**
  * Checks if there are too many parameters in the function declaration.
+ *
+ * COS217 MAX_NUM_PARAMETERS = 7
  */
 void tooManyParameters(YYLTYPE location, int progress) {
 	int MAX_NUM_PARAMETERS = 7;
@@ -123,6 +129,8 @@ void tooManyParameters(YYLTYPE location, int progress) {
 
 /**
  * Warn against using C++ style single line comments.
+ *
+ * COS217
  */
 void neverUseCPlusPlusComments(YYLTYPE location) {
 	lyyerror(ERROR_NORMAL, location, "Do not use C++ style comments");
@@ -130,6 +138,8 @@ void neverUseCPlusPlusComments(YYLTYPE location) {
 
 /**
  * Check for comments before some construct.
+ *
+ * COS217 - files and global variables
  */
 void hasComment(YYLTYPE location, char* construct) {
 	char* text = comment_getCommentAbove(location, 1, NULL);
@@ -138,13 +148,13 @@ void hasComment(YYLTYPE location, char* construct) {
 		// comment not found
 		lyyerrorf(ERROR_HIGH, location,
 							"Please include a descriptive comment above each %s", construct);
-	} else {
-		//printf("comment is %s\n", text);
 	}
 }
 
 /**
  * Check that each switch statement has a default case.
+ *
+ * COS217 
  */
 void switchHasDefault(YYLTYPE location, int progress) {
 	static int started = 0;
@@ -171,6 +181,8 @@ void switchHasDefault(YYLTYPE location, int progress) {
 
 /**
  * Check that each switch case has a break or return statement.
+ *
+ * COS217 
  */
 void switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase) {
 	static int numCases = 0;
@@ -209,8 +221,8 @@ void switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase) {
 /**
  * Check whether a region of code (i.e. a compound statement) nests too deeply.
  *
- * MAX_NESTING_LEVEL = 3 permits function, loop, if. Further nesting is deemed
- * too much.
+ * COS217 MAX_NESTING_LEVEL = 3: permits function, loop, if. Further nesting
+ * is deemed too much.
  */
 void isTooDeeplyNested(YYLTYPE location, int progress) {
 	int MAX_NESTING_LEVEL = 3; 
@@ -239,6 +251,8 @@ void isTooDeeplyNested(YYLTYPE location, int progress) {
 
 /**
  * Warn against using #define instead of enum for declarations.
+ *
+ * COS217 
  */
 void useEnumNotDefine(YYLTYPE location) {
 	lyyerror(ERROR_NORMAL, location, 
@@ -247,6 +261,8 @@ void useEnumNotDefine(YYLTYPE location) {
 
 /**
  * Warn against using GOTO statements.
+ *
+ * COS217 
  */
 void neverUseGotos(YYLTYPE location) {
 	lyyerror(ERROR_HIGH, location, "Never use GOTO statements");
@@ -254,6 +270,9 @@ void neverUseGotos(YYLTYPE location) {
 
 /**
  * Check if a variable's name exceeds a minimum length.
+ *
+ * COS217 MINIMUM_VARIABLE_NAME_LENGTH = 3
+ * accepted short names: "i", "j", "k", "c", "n", "fp", "fd", "pc", "ul"
  */
 void isVariableNameTooShort(YYLTYPE location, int progress, char* identifier) {
 	int MINIMUM_VARIABLE_NAME_LENGTH = 3;
@@ -295,6 +314,8 @@ void isVariableNameTooShort(YYLTYPE location, int progress, char* identifier) {
  * Warn against using magic numbers outside of a declaration. (Presumably,
  * inside a declaration, a variable will be initialized to a magic
  * number and then used throughout the rest of the code).
+ *
+ * COS217 acceptable numbers = 0, 1, 2 but never in case statements
  */
 void isMagicNumber(YYLTYPE location, int progress, char* constant) {
 	int acceptableNumbers[3] = {0, 1, 2};
@@ -308,7 +329,9 @@ void isMagicNumber(YYLTYPE location, int progress, char* constant) {
 			break;
 		case MIDDLE:
 			if (lastCalled_get() == registerCase) {
-				lyyerror(ERROR_HIGH, location, "Do not use magic numbers");
+        /* never use numbers in case statements */
+				lyyerrorf(ERROR_HIGH, location, "Do not use magic numbers (%s)",
+                  constant);
 			} else if (inDeclaration == 0) {
 				int number = (int)strtol(constant, (char**)NULL, 0);
 				int i;
@@ -334,6 +357,8 @@ void isMagicNumber(YYLTYPE location, int progress, char* constant) {
 
 /**
  * Check if each global variable has a comment.
+ *
+ * COS217
  */
 void globalHasComment(YYLTYPE location, int progress) {
 	static int inFunction = 0;
@@ -357,6 +382,8 @@ void globalHasComment(YYLTYPE location, int progress) {
 
 /**
  * Check if the loop length exceeds a maximum length.
+ *
+ * COS217 MAX_LOOP_LENGTH = 35
  */
 void isLoopTooLong(YYLTYPE location) {
 	int MAX_LOOP_LENGTH = 35;
@@ -404,6 +431,8 @@ void isCompoundStatementEmpty(YYLTYPE location, int progress) {
 
 /**
  * Check if there are too many functions in a file.
+ *
+ * COS217 MAX_FUNCTIONS_PER_FILE = 15
  */
 void tooManyFunctionsInFile(YYLTYPE location, int progress) {
 	int MAX_FUNCTIONS_PER_FILE = 15;
@@ -490,6 +519,8 @@ static void freeText(void* element, void* extra) {
  * Check if function comments have the appropriate contents. Specifically check
  * that the comment mentions each parameter (by name) and what the function
  * returns.
+ *
+ * COS217
  */
 void isFunctionCommentValid(YYLTYPE location, enum commandType command,
 														char* text) {
@@ -628,6 +659,8 @@ void isFunctionCommentValid(YYLTYPE location, enum commandType command,
  * an assert() before being used. This check will most likely produce a couple
  * of false warnings (ie throw an error on a proper use of the pointer) because
  * it is only checking for asserts.
+ *
+ * COS217 
  */
 void arePointerParametersValidated(YYLTYPE location, enum commandType command,
 																	 char* identifier) {
@@ -714,6 +747,8 @@ void arePointerParametersValidated(YYLTYPE location, enum commandType command,
 /**
  * Check that function names contain a common prefix. Prefix matching stops
  * upon seeing an underscore.
+ *
+ * COS217
  */
 void doFunctionsHaveCommonPrefix(YYLTYPE location, int progress,
 																 char* identifier) {
@@ -838,6 +873,8 @@ void doFunctionsHaveCommonPrefix(YYLTYPE location, int progress,
 /**
  * Check that there are enough local comments in the function relative to the
  * number of control/selection statements.
+ *
+ * COS217 maxDiscrepancy = 4
  */
 void functionHasEnoughLocalComments(YYLTYPE location, int progress, int isComment) {
 	/* count up the number of elements that really should have comments
@@ -871,6 +908,8 @@ void functionHasEnoughLocalComments(YYLTYPE location, int progress, int isCommen
 
 /**
  * Check that all fields in a struct have a comment.
+ *
+ * COS217
  */
 void structFieldsHaveComments(YYLTYPE location, int progress) {
 	static int numFields;
