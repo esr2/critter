@@ -1,7 +1,11 @@
-/*--------------------------------------------------------------------*/
-/* dynarray.h                                                         */
-/* Author: Bob Dondero                                                */
-/*--------------------------------------------------------------------*/
+/*
+ *  dynarray.h
+ *  
+ *
+ *  Created by Bob Dondero
+ *  Copyright 2011 CritTer. All rights reserved.
+ *
+ */
 
 #ifndef DYNARRAY_INCLUDED
 #define DYNARRAY_INCLUDED

@@ -1,7 +1,11 @@
-/*--------------------------------------------------------------------*/
-/* dynarray.c                                                         */
-/* Author: Bob Dondero                                                */
-/*--------------------------------------------------------------------*/
+/*
+ *  dynarray.c
+ *  
+ *
+ *  Created by Bob Dondero
+ *  Copyright 2011 CritTer. All rights reserved.
+ *
+ */
 
 #include "dynarray.h"
 #include <assert.h>
