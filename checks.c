@@ -277,9 +277,9 @@ void neverUseGotos(YYLTYPE location) {
 void isVariableNameTooShort(YYLTYPE location, int progress, char* identifier) {
 	int MINIMUM_VARIABLE_NAME_LENGTH = 3;
 	static int inDeclaration = 0;
-	char *acceptableVariables[9] = {"i", "j", "k", "c", "n", "fp", "fd",
+	char *acceptableVariables[8] = {"i", "j", "k", "c", "n", "fp", "fd",
 																	"pc"};
-	int numAcceptable = 9;
+	int numAcceptable = 8;
 	
 	switch (progress) {
 		case BEGINNING:
