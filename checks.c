@@ -279,7 +279,7 @@ void isVariableNameTooShort(YYLTYPE location, int progress, char* identifier) {
 	static int inDeclaration = 0;
 	char *acceptableVariables[8] = {"i", "j", "k", "c", "n", "fp", "fd",
 																	"pc"};
-	int numAcceptable = 8;
+	int numAcceptable = sizeof(acceptableVariables)/sizeof(char*);
 	
 	switch (progress) {
 		case BEGINNING:
