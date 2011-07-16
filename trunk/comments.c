@@ -130,8 +130,8 @@ char* comment_getCommentBelow(YYLTYPE location, int compareDistance, YYLTYPE *re
 }
 
 /**
- * Find the comment within compareDistance below the location. Returns the text
- * of the comment or NULL if not found.
+ * Find the comment within the location. Returns the text of the comment or
+ * NULL if not found.
  */
 char* comment_getCommentWithin(YYLTYPE location, YYLTYPE *returnLocation) {
 	if (location.first_line > location.last_line) {
