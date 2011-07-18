@@ -105,7 +105,7 @@ void setCompareDistance(int distance) {
 
 /**
  * Is the comment within compareDistance above the sought location?
- * Returns 0 if valid and 1 if not.
+ * Returns 0 if valid and 1 if not (to comply with dynarray_search).
  */
 int isLocationAbove(const void *element1, const void *element2) {
 	// taking advantage of how dynarray compares elements
@@ -130,7 +130,7 @@ int isLocationAbove(const void *element1, const void *element2) {
 
 /**
  * Is the comment within compareDistance below the sought location?
- * Returns 0 if valid and 1 if not.
+ * Returns 0 if valid and 1 if not (to comply with dynarray_search).
  */
 int isLocationBelow(const void *element1, const void *element2) {
 	// taking advantage of how dynarray compares elements
@@ -155,7 +155,7 @@ int isLocationBelow(const void *element1, const void *element2) {
 
 /**
  * Is the comment within the sought location?
- * Returns 0 if valid and 1 if not.
+ * Returns 0 if valid and 1 if not (to comply with dynarray_search).
  */
 int isLocationWithin(const void *element1, const void *element2) {
 	// taking advantage of how dynarray compares elements
