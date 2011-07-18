@@ -200,3 +200,29 @@ int isLocationWithin(const void *element1, const void *element2) {
 	
 	return 0;
 }
+
+/**
+ * Does the location start on the same line as the sought location?
+ * Returns 0 if valid and 1 if not (to comply with dynarray_search).
+ */
+int doesLocationStartOnTheSameLine(const void *element1, const void *element2) {
+	// taking advantage of how dynarray compares elements
+	YYLTYPE *commentLocation = (YYLTYPE*)element1;
+	YYLTYPE *soughtLocation = (YYLTYPE*)element2;
+
+  assert(commentLocation != NULL);
+	assert(soughtLocation != NULL);
+	
+	assert(commentLocation->filename != NULL);
+	assert(soughtLocation->filename != NULL);
+  
+  if (strcmp(commentLocation->filename, soughtLocation->filename) == 0) {
+		int distance = commentLocation->first_line - soughtLocation->last_line;
+		if (distance == 0) {
+			return 0;
+		}
+	}
+	
+	return 1;
+
+}
