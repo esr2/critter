@@ -51,7 +51,7 @@ void endFile(YYLTYPE location) {
 	   to compare against. Do this at the end of the file so that all the
 	   comments have been found already. */
 	YYLTYPE begin = {1, 1, 1, 1, location.filename};
-	hasComment(begin, "file");
+	fileHasComment(begin);
 	
 	isFileTooLong(location);
 	tooManyFunctionsInFile(location, END);

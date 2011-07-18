@@ -37,6 +37,7 @@ void isFunctionTooLongByLines(YYLTYPE location);
 void isFunctionTooLongByStatements(YYLTYPE location, int progress);
 void tooManyParameters(YYLTYPE location, int progress);
 void neverUseCPlusPlusComments(YYLTYPE location);
+void fileHasComment(YYLTYPE location);
 void hasComment(YYLTYPE location, char* construct);
 void switchHasDefault(YYLTYPE location, int progress);
 void switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase);

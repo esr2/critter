@@ -137,9 +137,24 @@ void neverUseCPlusPlusComments(YYLTYPE location) {
 }
 
 /**
+ * Check for a comment at the beginning of a file.
+ *
+ * COS217
+ */
+void fileHasComment(YYLTYPE location) {
+	char* text = comment_getCommentOnSameLine(location, NULL);
+  
+	if (text == NULL) {
+		// comment not found
+		lyyerrorf(ERROR_HIGH, location,
+							"Please include a descriptive comment at the start of each file");
+	}
+}
+
+/**
  * Check for comments before some construct.
  *
- * COS217 - files and global variables
+ * COS217 - global variables
  */
 void hasComment(YYLTYPE location, char* construct) {
 	char* text = comment_getCommentAbove(location, 1, NULL);
