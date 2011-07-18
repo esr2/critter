@@ -149,6 +149,14 @@ char* comment_getCommentWithin(YYLTYPE location, YYLTYPE *returnLocation) {
 }
 
 /**
+ * Find the comment that starts on the same line as the location. Returns the
+ * text of the comment or NULL if not found.
+ */
+char* comment_getCommentOnSameLine(YYLTYPE location, YYLTYPE *returnLocation) {
+	return getComment(&location, doesLocationStartOnTheSameLine, returnLocation);
+}
+
+/**
  * Checks if the given text contains a letter (most likely meaning it has words).
  * Returns -1 on error, 0 on false and 1 on true;
  */
