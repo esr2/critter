@@ -710,7 +710,7 @@ void arePointerParametersValidated(YYLTYPE location, enum commandType command,
 			
 			if (inParameterList == 1) {
 				/* if the parameter is a pointer, store the name */
-				if (parameterIsAPointer) {
+				if (parameterIsAPointer && (strcmp("argv", identifier) != 0)) {
 					DynArray_add(parameterNames, strdup(identifier));
 				}
 				
