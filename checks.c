@@ -305,7 +305,7 @@ void isVariableNameTooShort(YYLTYPE location, int progress, char* identifier) {
 				if (strlen(identifier) < MINIMUM_VARIABLE_NAME_LENGTH) {
 					int i;
 					
-					/* see if number is within the acceptableVariables array */
+					/* see if variable name is within the acceptableVariables array */
 					for (i = 0; i < numAcceptable; i++) {
 						if (strcmp(acceptableVariables[i], identifier) == 0) {
 							return;
