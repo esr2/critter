@@ -8,7 +8,7 @@ PATHS=(
  "/Users/erinrosenbaum/Documents/Senior_Year/Thesis/ish/spr02/student_13"
  )
 
-PROGRAM="/Users/erinrosenbaum/Documents/Senior_Year/Thesis/repository/trunk/critTer"
+PROGRAM="/Users/erinrosenbaum/Documents/Senior_Year/Thesis/critTer/trunk/critTer"
 
 echo $(date) >&2
 
