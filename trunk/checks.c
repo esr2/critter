@@ -628,17 +628,22 @@ void isFunctionCommentValid(YYLTYPE location, enum commandType command,
 			
 			/* look for each parameter name */
 			int i;
+      char missingParameters[500];
 			int numParameters = DynArray_getLength(parameters);
 			int numParametersInComment = 0;
 			for (i = 0; i < numParameters; i++) {
 				if (comment_contains(commentText, (char*)DynArray_get(parameters, i), 0)) {
 					numParametersInComment++;
-				}
+				} else {
+          strcat(missingParameters, (char*)DynArray_get(parameters, i));
+          strcat(missingParameters, " ");
+        }
 			}
 			
 			if (numParametersInComment < numParameters) {
-				lyyerror(ERROR_HIGH, location, 
-								"A function's comment should refer to each parameter by name");
+				lyyerrorf(ERROR_HIGH, location, 
+								  "A function's comment should refer to each parameter "
+                  "by name: %s", missingParameters);
 			}
 			
 			/* if didReturnSomething, look for the word 'return' */
