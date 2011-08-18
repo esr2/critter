@@ -811,7 +811,11 @@ void doFunctionsHaveCommonPrefix(YYLTYPE location, int progress,
 						char* name = DynArray_removeAt(functionNames, i);
 						if (strcmp(name, "main") != 0) {
 							DynArray_add(functionsInFile, name);
-						}
+						} else {
+              /* if the file has a main function */
+              DynArray_free(functionsInFile);
+              return;
+            }
 						loc = DynArray_removeAt(functionLocations, i);
 						freeLocations(loc, NULL);
 					} else {
