@@ -362,7 +362,7 @@ type_qualifier_list
 	| type_qualifier_list type_qualifier
 	;
 
-beginParamList : /*empty*/ {h_beginParameterList(@$)};
+beginParamList : /*empty*/ {h_beginParameterList(@$);}
 
 parameter_type_list
 	: beginParamList parameter_list					{h_endParameterList(@$);}
@@ -439,7 +439,7 @@ beginCompound : /* empty */ {beginCompoundStatement(@$);}
 compound_statement
 	: '{' beginCompound '}'									{endCompoundStatement(@$);}
 	| '{' beginCompound statement_list '}'					{endCompoundStatement(@$);}
-	| '{' beginCompound declaration_list '} '				{endCompoundStatement(@$);}
+	| '{' beginCompound declaration_list '}'				{endCompoundStatement(@$);}
 	| '{' beginCompound declaration_list statement_list '}'	{endCompoundStatement(@$);}
 	;
 
