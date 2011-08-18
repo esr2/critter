@@ -9,7 +9,7 @@
 
 #include "locations.h"
 #include <stdlib.h>
-#include <strings.h>
+#include <string.h>
 #include <assert.h>
 
 int locationsAreEqual(YYLTYPE location, YYLTYPE* other, int checkAll) {

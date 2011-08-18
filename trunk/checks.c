@@ -9,7 +9,7 @@
 
 #include "checks.h"
 #include <stdio.h>
-#include <strings.h>
+#include <string.h>
 #include <assert.h>
 #include <stdlib.h>
 #include "dynarray.h"
