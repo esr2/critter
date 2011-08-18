@@ -66,6 +66,7 @@ int locationIsBeforeOrEqual(YYLTYPE location, YYLTYPE* other, int checkAll) {
 
 void freeLocations(void* element, void* extra) { 
 	YYLTYPE *location = (YYLTYPE *)element;
+  if (location == NULL) return;
 	if (location->filename != NULL) { free(location->filename); }
 	free(element); 
 }
