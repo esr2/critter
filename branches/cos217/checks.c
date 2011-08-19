@@ -9,7 +9,7 @@
 
 #include "checks.h"
 #include <stdio.h>
-#include <strings.h>
+#include <string.h>
 #include <assert.h>
 #include <stdlib.h>
 #include "dynarray.h"
@@ -628,17 +628,23 @@ void isFunctionCommentValid(YYLTYPE location, enum commandType command,
 			
 			/* look for each parameter name */
 			int i;
+      char missingParameters[500];
+      memset(missingParameters, '\0', 500);
 			int numParameters = DynArray_getLength(parameters);
 			int numParametersInComment = 0;
 			for (i = 0; i < numParameters; i++) {
 				if (comment_contains(commentText, (char*)DynArray_get(parameters, i), 0)) {
 					numParametersInComment++;
-				}
+				} else {
+          strcat(missingParameters, (char*)DynArray_get(parameters, i));
+          strcat(missingParameters, " ");
+        }
 			}
 			
 			if (numParametersInComment < numParameters) {
-				lyyerror(ERROR_HIGH, location, 
-								"A function's comment should refer to each parameter by name");
+				lyyerrorf(ERROR_HIGH, location, 
+								  "A function's comment should refer to each parameter "
+                  "by name: %s", missingParameters);
 			}
 			
 			/* if didReturnSomething, look for the word 'return' */
@@ -684,6 +690,7 @@ void arePointerParametersValidated(YYLTYPE location, enum commandType command,
 	static int inParameterList;
 	static int parameterIsAPointer;
 	static int inFunction = 0;
+  static char * parameterName = NULL;
 	
 	switch (command) {
 		case BEGIN_FUNCTION:
@@ -695,9 +702,17 @@ void arePointerParametersValidated(YYLTYPE location, enum commandType command,
 			break;
 		case BEGIN_PARAM_LIST:
 			inParameterList++;
+      parameterName = NULL;
 			break;
 		case REGISTER_PARAM:
 			/* called after all elements in a parameter */
+      /* determine if parameter was a relevant pointer and store it */
+      if (parameterIsAPointer && (parameterName != NULL) &&
+          strcmp("argv", parameterName) != 0) {
+        DynArray_add(parameterNames, strdup(parameterName));
+      }
+      
+      if (parameterName != NULL) { free(parameterName); }
 			parameterIsAPointer = 0;
 			break;
 		case END_PARAM_LIST:
@@ -709,14 +724,11 @@ void arePointerParametersValidated(YYLTYPE location, enum commandType command,
 			}
 			
 			if (inParameterList == 1) {
-				/* if the parameter is a pointer, store the name */
-				if (parameterIsAPointer) {
-					DynArray_add(parameterNames, strdup(identifier));
-				}
-				
+				/* if identifier is a parameter that isn't argv, store the name 
+           temporarily. */
+        parameterName = strdup(identifier);
 				return;
 			}
-			
 			
 			if (strcmp("assert", identifier) == 0) {
 				lastIdentifierWasAssert = 1;
@@ -811,7 +823,11 @@ void doFunctionsHaveCommonPrefix(YYLTYPE location, int progress,
 						char* name = DynArray_removeAt(functionNames, i);
 						if (strcmp(name, "main") != 0) {
 							DynArray_add(functionsInFile, name);
-						}
+						} else {
+              /* if the file has a main function */
+              DynArray_free(functionsInFile);
+              return;
+            }
 						loc = DynArray_removeAt(functionLocations, i);
 						freeLocations(loc, NULL);
 					} else {
