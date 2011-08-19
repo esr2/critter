@@ -629,6 +629,7 @@ void isFunctionCommentValid(YYLTYPE location, enum commandType command,
 			/* look for each parameter name */
 			int i;
       char missingParameters[500];
+      memset(missingParameters, '\0', 500);
 			int numParameters = DynArray_getLength(parameters);
 			int numParametersInComment = 0;
 			for (i = 0; i < numParameters; i++) {
