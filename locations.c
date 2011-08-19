@@ -9,7 +9,7 @@
 
 #include "locations.h"
 #include <stdlib.h>
-#include <strings.h>
+#include <string.h>
 #include <assert.h>
 
 int locationsAreEqual(YYLTYPE location, YYLTYPE* other, int checkAll) {
@@ -66,6 +66,7 @@ int locationIsBeforeOrEqual(YYLTYPE location, YYLTYPE* other, int checkAll) {
 
 void freeLocations(void* element, void* extra) { 
 	YYLTYPE *location = (YYLTYPE *)element;
+  if (location == NULL) return;
 	if (location->filename != NULL) { free(location->filename); }
 	free(element); 
 }

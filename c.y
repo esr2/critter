@@ -334,7 +334,7 @@ direct_declarator
 	: IDENTIFIER			{h_registerIdentifier(@$);}
 	| '(' declarator ')'
 	| direct_declarator '[' {h_beginDirectDeclarator(@1);} constant_expression ']'	{h_endDirectDeclarator(@$);}
-	| direct_declarator '[' {h_beginDirectDeclarator(@1);} ']'						{h_endDirectDeclarator(@$);}
+	| direct_declarator '[' {h_beginDirectDeclarator(@1);  h_registerPointer(@2);} ']'						{h_endDirectDeclarator(@$);}
 	| direct_declarator '(' {h_beginDirectDeclarator(@1);} parameter_type_list ')'	{h_endDirectDeclarator(@$);}
 	| direct_declarator '(' {h_beginDirectDeclarator(@1);} identifier_list ')'		{h_endDirectDeclarator(@$);}
 	| direct_declarator '(' {h_beginDirectDeclarator(@1);} ')'						{h_endDirectDeclarator(@$);}
