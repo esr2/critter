@@ -690,6 +690,7 @@ void arePointerParametersValidated(YYLTYPE location, enum commandType command,
 	static int inParameterList;
 	static int parameterIsAPointer;
 	static int inFunction = 0;
+  static char * parameterName = NULL;
 	
 	switch (command) {
 		case BEGIN_FUNCTION:
@@ -701,9 +702,17 @@ void arePointerParametersValidated(YYLTYPE location, enum commandType command,
 			break;
 		case BEGIN_PARAM_LIST:
 			inParameterList++;
+      parameterName = NULL;
 			break;
 		case REGISTER_PARAM:
 			/* called after all elements in a parameter */
+      /* determine if parameter was a relevant pointer and store it */
+      if (parameterIsAPointer && (parameterName != NULL) &&
+          strcmp("argv", parameterName) != 0) {
+        DynArray_add(parameterNames, strdup(parameterName));
+      }
+      
+      if (parameterName != NULL) { free(parameterName); }
 			parameterIsAPointer = 0;
 			break;
 		case END_PARAM_LIST:
@@ -715,14 +724,11 @@ void arePointerParametersValidated(YYLTYPE location, enum commandType command,
 			}
 			
 			if (inParameterList == 1) {
-				/* if the parameter is a pointer, store the name */
-				if (parameterIsAPointer && (strcmp("argv", identifier) != 0)) {
-					DynArray_add(parameterNames, strdup(identifier));
-				}
-				
+				/* if identifier is a parameter that isn't argv, store the name 
+           temporarily. */
+        parameterName = strdup(identifier);
 				return;
 			}
-			
 			
 			if (strcmp("assert", identifier) == 0) {
 				lastIdentifierWasAssert = 1;
