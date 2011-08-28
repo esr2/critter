@@ -213,10 +213,11 @@ void count() {
  */
 int check_type() {
 	if (strcmp(yytext, "size_t") == 0 || 
-		strcmp(yytext, "FILE") == 0   ||
-		strcmp(yytext, "pid_t") == 0  ||
-		strcmp(yytext, "sigset_t") == 0)
-	{
+			strcmp(yytext, "FILE") == 0   ||
+			strcmp(yytext, "pid_t") == 0  ||
+			strcmp(yytext, "sigset_t") == 0 ||
+			strcmp(yytext, "clock_t") == 0 ||
+			strcmp(yytext, "sighandler_t") == 0) {
 		return TYPE_NAME;
 	}
 
