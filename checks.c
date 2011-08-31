@@ -1,6 +1,6 @@
 /*
  *  checks.c
- *  
+ *
  *
  *  Created by Erin Rosenbaum on 11/22/10.
  *  Copyright 2010 CritTer. All rights reserved.
@@ -24,9 +24,9 @@
  */
 void isFileTooLong(YYLTYPE location) {
 	int MAX_FILE_LENGTH = 500;
-	
+
 	if (location.first_line > MAX_FILE_LENGTH) {
-		lyyerrorf(ERROR_NORMAL, location, 
+		lyyerrorf(ERROR_NORMAL, location,
               "File is too long, should be less than %d lines",
               MAX_FILE_LENGTH);
 	}
@@ -43,11 +43,11 @@ void hasBraces(YYLTYPE location, char* construct) {
 			/* at the end of an else if [else] */
 			return;
 		}
-		
-		lyyerrorf(ERROR_NORMAL, location, 
-              "Please use braces after all %s statements", construct);
+
+		/* Dondero lyyerrorf(ERROR_NORMAL, location,
+              "Please use braces after all %s statements", construct); */
 	}
-	
+
 }
 
 /**
@@ -57,7 +57,7 @@ void hasBraces(YYLTYPE location, char* construct) {
  */
 void isFunctionTooLongByLines(YYLTYPE location) {
 	int MAX_FUNCTION_LENGTH = 140;
-	
+
 	if (location.last_line - location.first_line + 1 >= MAX_FUNCTION_LENGTH) {
 		lyyerrorf(ERROR_NORMAL, location, "Function is too long by line count, "
               "should be less than %d lines", MAX_FUNCTION_LENGTH);
@@ -70,7 +70,7 @@ void isFunctionTooLongByLines(YYLTYPE location) {
 void isFunctionTooLongByStatements(YYLTYPE location, int progress) {
 	int MAX_FUNCTION_LENGTH = 50;
 	static int statementCount = 0;
-	
+
 	switch (progress) {
 		case BEGINNING:
 			statementCount = 0;
@@ -80,7 +80,7 @@ void isFunctionTooLongByStatements(YYLTYPE location, int progress) {
 			break;
 		case END:
 			if (statementCount >= MAX_FUNCTION_LENGTH) {
-				lyyerrorf(ERROR_NORMAL, location, 
+				lyyerrorf(ERROR_NORMAL, location,
                   "Function is too long by statement count, "
                   "should be less than %d statements", MAX_FUNCTION_LENGTH);
 			}
@@ -97,19 +97,19 @@ void isFunctionTooLongByStatements(YYLTYPE location, int progress) {
  */
 void tooManyParameters(YYLTYPE location, int progress) {
 	int MAX_NUM_PARAMETERS = 7;
-	
+
 	static int numParameters = -1;
 	static int nestedListLevel = -1; /* should = 0 inside a non-nested
 																			parameter list */
-	
+
 	switch (progress) {
 		case BEGINNING:
 			nestedListLevel++;
-			if (nestedListLevel == 0) { 
-				numParameters = 0; 
+			if (nestedListLevel == 0) {
+				numParameters = 0;
 			}
 			break;
-		case MIDDLE: 
+		case MIDDLE:
 			if (nestedListLevel == 0) {
 				numParameters++;
 			}
@@ -143,7 +143,7 @@ void neverUseCPlusPlusComments(YYLTYPE location) {
  */
 void fileHasComment(YYLTYPE location) {
 	char* text = comment_getCommentOnSameLine(location, NULL);
-  
+
 	if (text == NULL) {
 		// comment not found
 		lyyerrorf(ERROR_HIGH, location,
@@ -157,7 +157,7 @@ void fileHasComment(YYLTYPE location) {
  * COS217 - global variables
  */
 void hasComment(YYLTYPE location, char* construct) {
-	char* text = comment_getCommentAbove(location, 1, NULL);
+	char* text = comment_getCommentAbove(location, /* Dondero 1 */ 2, NULL);
 
 	if (text == NULL) {
 		// comment not found
@@ -169,12 +169,12 @@ void hasComment(YYLTYPE location, char* construct) {
 /**
  * Check that each switch statement has a default case.
  *
- * COS217 
+ * COS217
  */
 void switchHasDefault(YYLTYPE location, int progress) {
 	static int started = 0;
 	static int found = 0;
-	
+
 	switch (progress) {
 		case BEGINNING:
 			started = 1;
@@ -197,13 +197,13 @@ void switchHasDefault(YYLTYPE location, int progress) {
 /**
  * Check that each switch case has a break or return statement.
  *
- * COS217 
+ * COS217
  */
 void switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase) {
 	static int numCases = 0;
 	static int numBreaks = 0;
 
-	
+
 	switch (progress) {
 		case BEGINNING:
 			numCases = 0;
@@ -223,7 +223,7 @@ void switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase) {
 		case END:
 			if (numCases > numBreaks) {
 				int numMissing = numCases - numBreaks;
-				lyyerrorf(ERROR_HIGH, location, 
+				lyyerrorf(ERROR_HIGH, location,
 									"Each case/default in a switch statement should "
 									"have a break statement, you're missing %d", numMissing);
 			}
@@ -240,17 +240,17 @@ void switchCasesHaveBreaks(YYLTYPE location, int progress, int isCase) {
  * is deemed too much.
  */
 void isTooDeeplyNested(YYLTYPE location, int progress) {
-	int MAX_NESTING_LEVEL = 3; 
+	int MAX_NESTING_LEVEL = 3;
 
 	/* Statement inside just a function is at level 0 */
 	static int nestedLevel = -1;
-	
+
 	switch (progress) {
 		case BEGINNING:
 			nestedLevel++;
 			break;
 		case END:
-			/* complain only at the highest point which is too deep -- i.e. 
+			/* complain only at the highest point which is too deep -- i.e.
 			 * avoid complaining on each further offense/level past the max */
 			if (nestedLevel == MAX_NESTING_LEVEL) {
 				lyyerror(ERROR_HIGH, location,
@@ -267,17 +267,17 @@ void isTooDeeplyNested(YYLTYPE location, int progress) {
 /**
  * Warn against using #define instead of enum for declarations.
  *
- * COS217 
+ * COS217
  */
 void useEnumNotDefine(YYLTYPE location) {
-	lyyerror(ERROR_NORMAL, location, 
+	lyyerror(ERROR_NORMAL, location,
 					 "It would be better to use enum to define integral constants");
 }
 
 /**
  * Warn against using GOTO statements.
  *
- * COS217 
+ * COS217
  */
 void neverUseGotos(YYLTYPE location) {
 	lyyerror(ERROR_HIGH, location, "Never use GOTO statements");
@@ -292,10 +292,23 @@ void neverUseGotos(YYLTYPE location) {
 void isVariableNameTooShort(YYLTYPE location, int progress, char* identifier) {
 	int MINIMUM_VARIABLE_NAME_LENGTH = 3;
 	static int inDeclaration = 0;
+   /* Dondero
 	char *acceptableVariables[8] = {"i", "j", "k", "c", "n", "fp", "fd",
 																	"pc"};
+   */
+	char *acceptableVariables[] = {
+		"c", "pc", "c1", "c2", "uc", "ac",
+		"s", "ps", "s1", "s2", "us", "as",
+		"i", "pi", "i1", "i2", "ui", "ai",
+		"l", "pl", "l1", "l2", "ul", "al",
+		"f", "pf", "f1", "f2", "af",
+		"d", "pd", "d1", "d2", "ad",
+		"pv",
+		"o", "po", "ao",
+		"j", "k", "n", "m"
+	};
 	int numAcceptable = sizeof(acceptableVariables)/sizeof(char*);
-	
+
 	switch (progress) {
 		case BEGINNING:
 			inDeclaration++;
@@ -304,15 +317,15 @@ void isVariableNameTooShort(YYLTYPE location, int progress, char* identifier) {
 			if (inDeclaration) {
 				if (strlen(identifier) < MINIMUM_VARIABLE_NAME_LENGTH) {
 					int i;
-					
+
 					/* see if variable name is within the acceptableVariables array */
 					for (i = 0; i < numAcceptable; i++) {
 						if (strcmp(acceptableVariables[i], identifier) == 0) {
 							return;
 						}
 					}
-					
-					lyyerrorf(ERROR_NORMAL, location, 
+
+					lyyerrorf(ERROR_NORMAL, location,
 										"Variable/function name '%s' is too short", identifier);
 				}
 			}
@@ -335,9 +348,9 @@ void isVariableNameTooShort(YYLTYPE location, int progress, char* identifier) {
 void isMagicNumber(YYLTYPE location, int progress, char* constant) {
 	int acceptableNumbers[3] = {0, 1, 2};
 	int numAcceptable = sizeof(acceptableNumbers)/sizeof(int);
-	
+
 	static int inDeclaration = 0;
-	
+
 	switch (progress) {
 		case BEGINNING:
 			inDeclaration++;
@@ -357,7 +370,7 @@ void isMagicNumber(YYLTYPE location, int progress, char* constant) {
 						return;
 					}
 				}
-				
+
 				lyyerrorf(ERROR_HIGH, location, "Do not use magic numbers (%s)",
 									constant);
 			}
@@ -377,7 +390,7 @@ void isMagicNumber(YYLTYPE location, int progress, char* constant) {
  */
 void globalHasComment(YYLTYPE location, int progress) {
 	static int inFunction = 0;
-	
+
 	switch (progress) {
 		case BEGINNING:
 			inFunction = 1;
@@ -402,9 +415,9 @@ void globalHasComment(YYLTYPE location, int progress) {
  */
 void isLoopTooLong(YYLTYPE location) {
 	int MAX_LOOP_LENGTH = 35;
-	
+
 	if (location.last_line - location.first_line + 1 >= MAX_LOOP_LENGTH) {
-		lyyerrorf(ERROR_NORMAL, location, 
+		lyyerrorf(ERROR_NORMAL, location,
 							"Loop is too long, should be less than %d lines; "
 							"consider pulling out the code into its own function",
 							MAX_LOOP_LENGTH);
@@ -416,7 +429,7 @@ void isLoopTooLong(YYLTYPE location) {
  */
 void isCompoundStatementEmpty(YYLTYPE location, int progress) {
 	static void (*context)(YYLTYPE);
-	
+
 	switch (progress) {
 		case BEGINNING:
 			context = lastCalled_get();
@@ -425,13 +438,13 @@ void isCompoundStatementEmpty(YYLTYPE location, int progress) {
 			if (lastCalled_get() == beginCompoundStatement) {
 				/* create a good error message */
 				char *parent = NULL;
-				
+
 				if (context == beginIf) { parent = "if statements"; }
 				else if (context == beginElse) { parent = "else statements"; }
 				else if (context == beginFor) { parent = "for loops"; }
 				else if (context == beginWhile) { parent = "while loops"; }
 				else if (context == beginDoWhile) { parent = "doWhile loops"; }
-				
+
 				if (parent) {
 					lyyerrorf(ERROR_HIGH, location, "Do not use empty %s", parent);
 				} else {
@@ -452,14 +465,14 @@ void isCompoundStatementEmpty(YYLTYPE location, int progress) {
 void tooManyFunctionsInFile(YYLTYPE location, int progress) {
 	int MAX_FUNCTIONS_PER_FILE = 15;
 	static int numFunctions = 0;
-	
+
 	switch (progress) {
 		case MIDDLE:
 			numFunctions++;
 			break;
 		case END:
 			if (numFunctions > MAX_FUNCTIONS_PER_FILE) {
-				lyyerrorf(ERROR_LOW, location, 
+				lyyerrorf(ERROR_LOW, location,
 									"There are too many functions in this file. "
 									"Please limit yourself to %d", MAX_FUNCTIONS_PER_FILE);
 			}
@@ -475,14 +488,14 @@ void tooManyFunctionsInFile(YYLTYPE location, int progress) {
  *  - if an if statement is bracketed, it should appear on multiple lines
  *  - if an if statement is bracketed, the else statement should be on the same
  *    line as the closing brace
- *  - if an if statement is unbracketed, the else statement should appear on 
+ *  - if an if statement is unbracketed, the else statement should appear on
  *    the next line
  */
 void isIfElsePlacementValid(YYLTYPE location, int progress) {
 	static int ifIsBracketed = 0;
 	static int ifLastLine;
 	static int hadError = 0;
-	
+
 	switch (progress) {
 		case BEGINNING:
 			ifIsBracketed = (lastCalled_get() == endCompoundStatement);
@@ -501,12 +514,12 @@ void isIfElsePlacementValid(YYLTYPE location, int progress) {
 				hadError = 0;
 				return;
 			}
-			
+
 			if (ifIsBracketed) {
 				/* else should be on same line as '}' */
 				if (location.first_line != ifLastLine) {
-					lyyerror(ERROR_LOW, location, 
-                   "Please put the else on the same line as the closing if brace");
+					/* Dondero lyyerror(ERROR_LOW, location,
+                   "Please put the else on the same line as the closing if brace"); */
 				}
 			} else {
 				/* else should be on line after the if statement finishes */
@@ -515,7 +528,7 @@ void isIfElsePlacementValid(YYLTYPE location, int progress) {
                    "Please put the else on the line after the if");
 				}
 			}
-			
+
 			hadError = 0;
 			break;
 		default:
@@ -547,14 +560,14 @@ void isFunctionCommentValid(YYLTYPE location, enum commandType command,
 	static int isFirstBracket;
 	static int bracketLine;
 	static int bracketColumn;
-	
+
 	char* commentText = NULL;
 	char* commentTextAbove = NULL;
-	char* commentTextBetween = NULL;	
+	char* commentTextBetween = NULL;
 	YYLTYPE commentLocationAbove;
 	YYLTYPE commentLocationBetween;
 	YYLTYPE* commentLocation = NULL;
-	
+
 	switch (command) {
 		case BEGIN_FUNCTION:
 			inFunction = 1;
@@ -591,13 +604,13 @@ void isFunctionCommentValid(YYLTYPE location, enum commandType command,
 			/* find comment text */
 			commentTextAbove = comment_getCommentAbove(*beginFunctionLocation, 2,
 																								 &commentLocationAbove);
-			
+
 			YYLTYPE * between = allocateLocation(*beginFunctionLocation);
 			between->first_line = beginFunctionLocation->last_line;
 			between->first_column = beginFunctionLocation->last_column;
 			between->last_line = bracketLine;
 			between->last_column = bracketColumn;
-			
+
 			commentTextBetween = comment_getCommentWithin(*between,
 																										&commentLocationBetween);
 			freeLocations(between, NULL);
@@ -609,10 +622,10 @@ void isFunctionCommentValid(YYLTYPE location, enum commandType command,
 				commentText = commentTextAbove;
 				commentLocation = &commentLocationAbove;
 			}
-			
+
 			int commentHasContent = comment_isContentful(commentText);
-			
-			
+
+
 			if (commentText == NULL || (commentHasContent != 1)) {
 				lyyerror(ERROR_HIGH, location,
                  "Please include a descriptive comment above each function");
@@ -622,10 +635,10 @@ void isFunctionCommentValid(YYLTYPE location, enum commandType command,
 				freeLocations(beginFunctionLocation, NULL);
 				DynArray_map(parameters, freeText, NULL);
 				DynArray_free(parameters);
-				
+
 				return;
 			}
-			
+
 			/* look for each parameter name */
 			int i;
       char missingParameters[500];
@@ -640,29 +653,29 @@ void isFunctionCommentValid(YYLTYPE location, enum commandType command,
           strcat(missingParameters, " ");
         }
 			}
-			
+
 			if (numParametersInComment < numParameters) {
-				lyyerrorf(ERROR_HIGH, location, 
+				lyyerrorf(ERROR_HIGH, location,
 								  "A function's comment should refer to each parameter "
                   "by name: %s", missingParameters);
 			}
-			
+
 			/* if didReturnSomething, look for the word 'return' */
 			if (didReturnSomething) {
 				if (!comment_contains(commentText, "return", 1)) {
-					lyyerror(ERROR_HIGH, location, 
+					lyyerror(ERROR_HIGH, location,
 									 "A function's comment should explicitly state what "
 									 "the function returns");
 				}
 			}
-			
-			/* check that the comment is not on the same line as the function 
+
+			/* check that the comment is not on the same line as the function
 				 declaration */
 			if (commentLocation->first_line == beginFunctionLocation->first_line) {
 				lyyerror(ERROR_NORMAL, location,
 								 "Please put function comments above the function declaration");
 			}
-			
+
 			/* clean up */
 			inFunction = 0;
 			freeLocations(beginFunctionLocation, NULL);
@@ -681,7 +694,7 @@ void isFunctionCommentValid(YYLTYPE location, enum commandType command,
  * of false warnings (ie throw an error on a proper use of the pointer) because
  * it is only checking for asserts.
  *
- * COS217 
+ * COS217
  */
 void arePointerParametersValidated(YYLTYPE location, enum commandType command,
 																	 char* identifier) {
@@ -691,7 +704,7 @@ void arePointerParametersValidated(YYLTYPE location, enum commandType command,
 	static int parameterIsAPointer;
 	static int inFunction = 0;
   static char * parameterName = NULL;
-	
+
 	switch (command) {
 		case BEGIN_FUNCTION:
 			inFunction = 1;
@@ -711,7 +724,7 @@ void arePointerParametersValidated(YYLTYPE location, enum commandType command,
           strcmp("argv", parameterName) != 0) {
         DynArray_add(parameterNames, strdup(parameterName));
       }
-      
+
       if (parameterName != NULL) { free(parameterName); }
 			parameterIsAPointer = 0;
 			break;
@@ -722,14 +735,14 @@ void arePointerParametersValidated(YYLTYPE location, enum commandType command,
 			if (!inFunction) {
 				return;
 			}
-			
+
 			if (inParameterList == 1) {
-				/* if identifier is a parameter that isn't argv, store the name 
+				/* if identifier is a parameter that isn't argv, store the name
            temporarily. */
         parameterName = strdup(identifier);
 				return;
 			}
-			
+
 			if (strcmp("assert", identifier) == 0) {
 				lastIdentifierWasAssert = 1;
 			} else {
@@ -768,7 +781,7 @@ void arePointerParametersValidated(YYLTYPE location, enum commandType command,
 		default:
 			break;
 	}
-	
+
 }
 
 /**
@@ -783,10 +796,10 @@ void doFunctionsHaveCommonPrefix(YYLTYPE location, int progress,
 	static DynArray_T functionLocations;
 	static int functionNameIsFound;
 	static int inFunction;
-	
+
 	/* ASSUMPTION: the first identifier to appear after a begin function call
 	 is the name of the function */
-	
+
 	switch (progress) {
 		case BEGINNING:
 			functionNames = DynArray_new(0);
@@ -808,11 +821,11 @@ void doFunctionsHaveCommonPrefix(YYLTYPE location, int progress,
 		case END:
 			if (identifier && strcmp(identifier, "file") == 0) {
 				/* end of file */
-				
+
 				/* go through array and find all entries where the location
 				   matches the current file name. Check these entries for a
 				   common prefix and then remove them from the arrays */
-				
+
 				/* grab all the relevant names */
 				DynArray_T functionsInFile = DynArray_new(0);
 				int i, j;
@@ -834,7 +847,7 @@ void doFunctionsHaveCommonPrefix(YYLTYPE location, int progress,
 						i++;
 					}
 				}
-				
+
 				/* throw error on first mismatch and stop checking at
 					 first underscore */
 				int numNames = DynArray_getLength(functionsInFile);
@@ -845,7 +858,7 @@ void doFunctionsHaveCommonPrefix(YYLTYPE location, int progress,
 				char * names[numNames];
 				DynArray_toArray(functionsInFile, (void**)&names);
 				size_t length = strlen(names[0]);
-				
+
 				int foundMismatch = 0;
 				for (i = 0; i < length; i++) {
 					char c = names[0][i];
@@ -854,37 +867,37 @@ void doFunctionsHaveCommonPrefix(YYLTYPE location, int progress,
 						   checking the function names */
 						break;
 					}
-					
+
 					for (j = 1; j < numNames; j++) {
 						if (names[j][i] != c) {
 							foundMismatch = 1;
 							break;
 						}
 					}
-					if (foundMismatch) { 
+					if (foundMismatch) {
 						break;
 					}
 				}
-				
+
 				if (foundMismatch) {
-					lyyerror(ERROR_NORMAL, location, 
+					lyyerror(ERROR_NORMAL, location,
 									 "Please prefix all function names with a reasonable "
 									 "module name");
 				} else {
 					char prefix[i+1];
 					strncpy(prefix, names[0], i);
 					prefix[i] = '\0';
-					
+
 					if (strstrInsensitive(location.filename, prefix) == NULL) {
 						lyyerrorf(ERROR_NORMAL, location,
 											"Please match function prefixes to the module name, "
 											"%s and %s do not match", prefix, location.filename);
 					}
 				}
-				
+
 				DynArray_map(functionsInFile, freeText, NULL);
 				DynArray_free(functionsInFile);
-				
+
 			} else if (identifier && strcmp(identifier, "function") == 0) {
 				inFunction = 0;
 			} else {
@@ -898,7 +911,7 @@ void doFunctionsHaveCommonPrefix(YYLTYPE location, int progress,
 		default:
 			break;
 	}
-	
+
 }
 
 /**
@@ -911,12 +924,12 @@ void functionHasEnoughLocalComments(YYLTYPE location, int progress, int isCommen
 	/* count up the number of elements that really should have comments
 	   associated to them in some fashion: if, for, while, do while, switch */
 	static int numElements;
-	
+
 	/* count up the number of comments that appear in the function */
 	static int numComments;
-	
-	int maxDiscrepancy = 4;
-	
+
+	int maxDiscrepancy = /* Dondero 4 */ 8;
+
 	switch (progress) {
 		case BEGINNING:
 			numComments = 0;
@@ -934,7 +947,7 @@ void functionHasEnoughLocalComments(YYLTYPE location, int progress, int isCommen
 		default:
 			break;
 	}
-	
+
 }
 
 /**
@@ -947,7 +960,7 @@ void structFieldsHaveComments(YYLTYPE location, int progress) {
 	int numComments = 0;
 	YYLTYPE commentLocation;
 	YYLTYPE * searchLocation = allocateLocation(location);
-	
+
 	switch (progress) {
 		case BEGINNING:
 			numFields = 0;
@@ -960,7 +973,7 @@ void structFieldsHaveComments(YYLTYPE location, int progress) {
 				numComments++;
 				searchLocation->first_line = commentLocation.last_line + 1;
 			}
-			
+
 			if (numFields > numComments) {
 				lyyerrorf(ERROR_NORMAL, location,
 									"Please comment all the fields in a struct, you're missing %d",
@@ -970,6 +983,6 @@ void structFieldsHaveComments(YYLTYPE location, int progress) {
 		default:
 			break;
 	}
-	
+
 	freeLocations(searchLocation, NULL);
 }
